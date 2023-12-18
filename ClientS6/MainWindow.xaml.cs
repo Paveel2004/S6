@@ -1,0 +1,95 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Text.Json;
+using System.IO;
+using System.Dynamic;
+using System.Diagnostics;
+
+namespace ClientS6
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+        static void SerializeToJsonFile<T>(T obj, string filePath)
+        {
+            using(FileStream fs = File.Create(filePath))
+            {
+                JsonSerializer.SerializeAsync(fs, obj, new JsonSerializerOptions { WriteIndented = true }).Wait();
+
+            }
+        }
+
+        private void Connection_Button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                
+                string jsonFilePath = "data.json",
+                    exeDataCollectionPath = "\"C:\\Users\\ASUS\\source\\repos\\Data collection\\Data collection\\bin\\Debug\\net6.0\\Data collection.exe\"";
+                Process process = new Process();
+
+                var data = new
+                {
+                    port = int.Parse(PORT.Text),
+                    serverAddress = IP.Text
+                };
+
+                SerializeToJsonFile(data, jsonFilePath);
+                process.StartInfo.FileName = exeDataCollectionPath;
+                process.Start();
+               
+
+
+
+
+
+
+
+
+
+
+
+            }
+
+
+            /* // Создаем TcpClient и подключаемся к серверу
+             using TcpClient client = new TcpClient(serverAddress, port);
+
+             using NetworkStream stream = client.GetStream();
+
+             string message = "Привет, сервер!";
+             byte[] data = Encoding.UTF8.GetBytes(message);
+             stream.Write(data, 0, data.Length);
+
+             //Ответ от сервера
+             data = new byte[256];
+             int bytesRead = stream.Read(data, 0, data.Length);
+             string response = Encoding.UTF8.GetString(data, 0, bytesRead);
+         } */
+            catch (Exception ex)
+            { 
+                MessageBox.Show(ex.Message);
+            }
+        }
+    }
+}
