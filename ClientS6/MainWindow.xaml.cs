@@ -57,18 +57,7 @@ namespace ClientS6
                 SerializeToJsonFile(data, jsonFilePath);
                 process.StartInfo.FileName = exeDataCollectionPath;
                 process.Start();
-               
-
-
-
-
-
-
-
-
-
-
-
+            
             }
 
 
