@@ -21,7 +21,8 @@ using System.Threading;
 using System.Collections.Concurrent;
 using System.Data.SQLite;
 using S6.DataBase;
-
+using S6.JsonClass;
+using Newtonsoft.Json;
 
 namespace S6
 {
@@ -111,7 +112,7 @@ namespace S6
       
                 using NetworkStream stream = tcpClient.GetStream();
 
-                byte[] data = new byte[256];
+                byte[] data = new byte[5000];
                 int bytesRead;
 
                 // Читаем данные из потока
@@ -119,7 +120,8 @@ namespace S6
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
 
-                    Query($"INSERT INTO TestTable (MessageString) VALUES ('{message}')", DataBaseHelper.connectionString);
+                    SystemInfo systemInfo = JsonConvert.DeserializeObject<SystemInfo>(message);
+                    Query($"INSERT INTO Процессор ([Серийный номер], Модель, Загруженность, [Количество ядер], Архитектура, Температура) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.CPU.Name}',{systemInfo.CPU.CpuUsage},{systemInfo.CPU.CoreCount},'{systemInfo.CPU.Architecture}',{systemInfo.CPU.Temperature})", DataBaseHelper.connectionString);
 
 
                     // Отправляем подтверждение клиенту
