@@ -122,6 +122,7 @@ namespace S6
 
                     SystemInfo systemInfo = JsonConvert.DeserializeObject<SystemInfo>(message);
                     Query($"INSERT INTO Процессор ([Серийный номер], Модель, Загруженность, [Количество ядер], Архитектура, Температура) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.CPU.Name}',{systemInfo.CPU.CpuUsage},{systemInfo.CPU.CoreCount},'{systemInfo.CPU.Architecture}',{systemInfo.CPU.Temperature})", DataBaseHelper.connectionString);
+                    Query($"INSERT INTO Система ([Операционная система], Разрядность, [Сериный номер], [Количество пользователей], Состояние, [Версия ОС], [SID Текущего пользователя]) VALUES ('{systemInfo.OS.OS}',{systemInfo.OS.Architecture}),'{systemInfo.OS.SerialNumber}',{systemInfo.OS.NumberOfUsers},'{systemInfo.OS.SystemState}','{systemInfo.OS.VersionOS},'{systemInfo.OS.SerialNumber}'",DataBaseHelper.connectionString);
 
 
                     // Отправляем подтверждение клиенту
