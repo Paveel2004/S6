@@ -10,5 +10,6 @@ namespace S6.JsonClass
     {
         public string UserName { get; set; }
         public string UserSID { get; set; }
+        public string UserState { get; set; }
     }
 }

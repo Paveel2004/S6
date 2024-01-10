@@ -40,7 +40,9 @@ namespace S6
             InitializeComponent();
             Menu.Items.Add(new MenuItem { Text = "Устройства", ClickHandler = Devices_Click });
             Menu.Items.Add(new MenuItem { Text = "Пользователи", ClickHandler = Users_Click });
-            Menu.Items.Add(new MenuItem { Text = "Графики" });
+            Menu.Items.Add(new MenuItem { Text = "Жёсткий диск" });
+            Menu.Items.Add(new MenuItem { Text = "ОС" });
+            Menu.Items.Add(new MenuItem { Text = "График" });
 
             Menu.Items.Add(new MenuItem { Text = "Настройки" });
 
@@ -121,10 +123,12 @@ namespace S6
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
 
                     SystemInfo systemInfo = JsonConvert.DeserializeObject<SystemInfo>(message);
-                    Query($"INSERT INTO Процессор ([Серийный номер], Модель, Загруженность, [Количество ядер], Архитектура, Температура) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.CPU.Name}',{systemInfo.CPU.CpuUsage},{systemInfo.CPU.CoreCount},'{systemInfo.CPU.Architecture}',{systemInfo.CPU.Temperature})", DataBaseHelper.connectionString);
-                    Query($"INSERT INTO Система ([Операционная система], Разрядность, [Сериный номер], [Количество пользователей], Состояние, [Версия ОС], [SID Текущего пользователя]) VALUES ('{systemInfo.OS.OS}',{systemInfo.OS.Architecture}),'{systemInfo.OS.SerialNumber}',{systemInfo.OS.NumberOfUsers},'{systemInfo.OS.SystemState}','{systemInfo.OS.VersionOS},'{systemInfo.OS.SerialNumber}'",DataBaseHelper.connectionString);
+                    Query($"INSERT OR REPLACE INTO Процессор ([Серийный номер], Модель, Загруженность, [Количество ядер], Архитектура, Температура) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.CPU.Name}',{systemInfo.CPU.CpuUsage},{systemInfo.CPU.CoreCount},'{systemInfo.CPU.Architecture}',{systemInfo.CPU.Temperature})", DataBaseHelper.connectionString);
+                    Query($"INSERT OR REPLACE INTO Система ([Операционная система], Разрядность, [Серийный номер], [Количество пользователей], Состояние, [Версия ОС], [Текущий пользователь]) " +
+            $"VALUES ('{systemInfo.OS.OS}',{systemInfo.OS.Architecture},'{systemInfo.OS.SerialNumber}',{systemInfo.OS.NumberOfUsers},'{systemInfo.OS.SystemState}','{systemInfo.OS.VersionOS}','{systemInfo.USER.UserSID}')", DataBaseHelper.connectionString);
 
-
+                    Query($"INSERT OR REPLACE INTO  Пользователи (SID, [Имя пользователя], Статус, [Серийный номер системы]) VALUES ('{systemInfo.USER.UserSID}','{systemInfo.USER.UserName}','{systemInfo.USER.UserState}','{systemInfo.OS.SerialNumber}')",DataBaseHelper.connectionString);
+                    Query($"INSERT OR REPLACE INTO Сеть (IP,MAC) VALUES ('{systemInfo.NETWORK.IP}','{systemInfo.NETWORK.MAC}')", DataBaseHelper.connectionString);
                     // Отправляем подтверждение клиенту
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);
@@ -200,7 +204,7 @@ namespace S6
                         {
                             while (reader.Read())
                             {
-                                UsersInfo users = new UsersInfo(reader["Имя пользователя"].ToString(), reader["Статус"].ToString(), reader["Операционная система"].ToString(), reader["Серийный номер системы"].ToString());
+                                UsersInfo users = new UsersInfo(reader["SID"].ToString(), reader["Имя пользователя"].ToString(), reader["Статус"].ToString(), reader["Операционная система"].ToString(), reader["Серийный номер ОС"].ToString());
                                 Information_ListBox.Items.Add(users);
                             }
                         }
