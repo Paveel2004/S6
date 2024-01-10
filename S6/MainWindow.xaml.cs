@@ -128,7 +128,9 @@ namespace S6
             $"VALUES ('{systemInfo.OS.OS}',{systemInfo.OS.Architecture},'{systemInfo.OS.SerialNumber}',{systemInfo.OS.NumberOfUsers},'{systemInfo.OS.SystemState}','{systemInfo.OS.VersionOS}','{systemInfo.USER.UserSID}')", DataBaseHelper.connectionString);
 
                     Query($"INSERT OR REPLACE INTO  Пользователи (SID, [Имя пользователя], Статус, [Серийный номер системы]) VALUES ('{systemInfo.USER.UserSID}','{systemInfo.USER.UserName}','{systemInfo.USER.UserState}','{systemInfo.OS.SerialNumber}')",DataBaseHelper.connectionString);
-                    Query($"INSERT OR REPLACE INTO Сеть (IP,MAC) VALUES ('{systemInfo.NETWORK.IP}','{systemInfo.NETWORK.MAC}')", DataBaseHelper.connectionString);
+                    Query($"INSERT OR REPLACE INTO Сеть (IP,MAC,[Ethernet speed]) VALUES ('{systemInfo.NETWORK.IP}','{systemInfo.NETWORK.MAC}',{systemInfo.NETWORK.EthernetSpeed})", DataBaseHelper.connectionString);
+                    Query($"INSERT OR REPLACE INTO [Оперативная память] ([Тип памяти], Загруженность, Объём, id) VALUES ('{systemInfo.RAM.RamType}',{systemInfo.RAM.RamUsage},{systemInfo.RAM.TotalPhisicalMemory},'{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString); 
+                    Query($"INSERT OR REPLACE INTO BIOS ([Версия BIOS],[Серийный номер]) VALUES ('{systemInfo.BIOS.BiosVeesion}','{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString);
                     // Отправляем подтверждение клиенту
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);

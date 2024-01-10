@@ -10,5 +10,6 @@ namespace S6.JsonClass
     {
         public string IP { get; set; }
         public string MAC { get; set; }
+        public string EthernetSpeed { get; set; }
     }
 }

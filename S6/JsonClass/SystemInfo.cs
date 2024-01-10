@@ -13,5 +13,7 @@ namespace S6.JsonClass
         public BIOSInfo BIOS { get; set; }
         public UserInfo USER { get; set; }
         public NetworkInfo NETWORK { get; set; }
+        public RamInfo RAM { get; set; }
+
     }
 }
