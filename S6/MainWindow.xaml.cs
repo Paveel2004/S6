@@ -23,6 +23,7 @@ using System.Data.SQLite;
 using S6.DataBase;
 using S6.JsonClass;
 using Newtonsoft.Json;
+using System.Security.AccessControl;
 
 namespace S6
 {
@@ -38,12 +39,13 @@ namespace S6
         {
 
             InitializeComponent();
-            Menu.Items.Add(new MenuItem { Text = "Устройства", ClickHandler = Devices_Click });
+            Menu.Items.Add(new MenuItem { Text = "Устройства в сети", ClickHandler = Devices_Click });
             Menu.Items.Add(new MenuItem { Text = "Пользователи", ClickHandler = Users_Click });
-            Menu.Items.Add(new MenuItem { Text = "Жёсткий диск" });
-            Menu.Items.Add(new MenuItem { Text = "ОС" });
-            Menu.Items.Add(new MenuItem { Text = "График" });
+            Menu.Items.Add(new MenuItem { Text = "Операционная система", ClickHandler = OS_Click });
 
+
+            Menu.Items.Add(new MenuItem { Text = "Дисковое пространство" });
+            Menu.Items.Add(new MenuItem { Text = "Аналитика и графики" });
             Menu.Items.Add(new MenuItem { Text = "Настройки" });
 
 
@@ -51,6 +53,14 @@ namespace S6
 
 
         }
+        private void OS_Click(object sender, RoutedEventArgs e)
+        {
+            Information_ListBox.Items.Clear();
+            DisplayOS();
+
+        }
+
+
         private ConcurrentQueue<string> messagesQueue = new ConcurrentQueue<string>();
         static async Task StartServer()
         {
@@ -125,12 +135,14 @@ namespace S6
                     SystemInfo systemInfo = JsonConvert.DeserializeObject<SystemInfo>(message);
                     Query($"INSERT OR REPLACE INTO Процессор ([Серийный номер], Модель, Загруженность, [Количество ядер], Архитектура, Температура) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.CPU.Name}',{systemInfo.CPU.CpuUsage},{systemInfo.CPU.CoreCount},'{systemInfo.CPU.Architecture}',{systemInfo.CPU.Temperature})", DataBaseHelper.connectionString);
                     Query($"INSERT OR REPLACE INTO Система ([Операционная система], Разрядность, [Серийный номер], [Количество пользователей], Состояние, [Версия ОС], [Текущий пользователь]) " +
-            $"VALUES ('{systemInfo.OS.OS}',{systemInfo.OS.Architecture},'{systemInfo.OS.SerialNumber}',{systemInfo.OS.NumberOfUsers},'{systemInfo.OS.SystemState}','{systemInfo.OS.VersionOS}','{systemInfo.USER.UserSID}')", DataBaseHelper.connectionString);
+            $"VALUES ('{systemInfo.OS.OS}',{systemInfo.OS.Architecture},'{systemInfo.OS.SerialNumber}',{systemInfo.OS.NumberOfUsers},'{systemInfo.OS.SystemState}','{systemInfo.OS.VersionOS}','{systemInfo.USER.UserName}')", DataBaseHelper.connectionString);
 
                     Query($"INSERT OR REPLACE INTO  Пользователи (SID, [Имя пользователя], Статус, [Серийный номер системы]) VALUES ('{systemInfo.USER.UserSID}','{systemInfo.USER.UserName}','{systemInfo.USER.UserState}','{systemInfo.OS.SerialNumber}')",DataBaseHelper.connectionString);
                     Query($"INSERT OR REPLACE INTO Сеть (IP,MAC,[Ethernet speed]) VALUES ('{systemInfo.NETWORK.IP}','{systemInfo.NETWORK.MAC}',{systemInfo.NETWORK.EthernetSpeed})", DataBaseHelper.connectionString);
-                    Query($"INSERT OR REPLACE INTO [Оперативная память] ([Тип памяти], Загруженность, Объём, id) VALUES ('{systemInfo.RAM.RamType}',{systemInfo.RAM.RamUsage},{systemInfo.RAM.TotalPhisicalMemory},'{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString); 
+                    Query($"INSERT OR REPLACE INTO [Оперативная память] ([Тип памяти], Загруженность, Объём, BIOS) VALUES ('{systemInfo.RAM.RamType}',{systemInfo.RAM.RamUsage},{systemInfo.RAM.TotalPhisicalMemory},'{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString); 
                     Query($"INSERT OR REPLACE INTO BIOS ([Версия BIOS],[Серийный номер]) VALUES ('{systemInfo.BIOS.BiosVeesion}','{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString);
+                    Query($"INSERT OR REPLACE INTO Устройство (Процессор, [Оперативная память], BIOS, Система, [MAC Адрес]) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.BIOS.SerialNumber}','{systemInfo.BIOS.SerialNumber}','{systemInfo.OS.SerialNumber}','{systemInfo.NETWORK.MAC}')", DataBaseHelper.connectionString);
+                    
                     // Отправляем подтверждение клиенту
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);
@@ -146,7 +158,7 @@ namespace S6
                 tcpClient.Close();
             }
         }
-
+      
 
         public void DisplayDevices()
         {
@@ -169,7 +181,7 @@ namespace S6
                                     int.Parse(reader["Архитектура процессора"].ToString()), // Преобразование в int
                                     reader["IP Адрес"].ToString(),
                                     reader["MAC Адрес"].ToString(),
-                                    double.Parse(reader["Скорость передачи данных в сети"].ToString()), // Преобразование в double
+                                    double.Parse(reader["Скорость Ethernet"].ToString()), // Преобразование в double
                                     reader["Операционная система"].ToString(),
                                     int.Parse(reader["Разрядность системы"].ToString()), // Преобразование в int
                                     reader["Состояние системы"].ToString(),
@@ -177,7 +189,7 @@ namespace S6
                                     reader["Загруженность оперативной памяти"].ToString(),
                                     reader["Объём оперативной памяти"].ToString(), // Преобразование в string
                                     reader["Тип оперативной памяти"].ToString(), // Преобразование в string
-                                    reader["Имя пользователя"].ToString());
+                                    reader["Текущий пользователь"].ToString());
                                 Information_ListBox.Items.Add(devices);
                             }
                             
@@ -188,6 +200,40 @@ namespace S6
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                }
+            }
+        }
+        public void DisplayOS()
+        {
+            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Система", connection))
+                    {
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while(reader.Read())
+                            {
+                                InfoDisplayOS os = new (
+                                      reader["Операционная система"].ToString(),
+                                      int.Parse(reader["Разрядность"].ToString()),
+                                      reader["Серийный номер"].ToString(),
+                                      int.Parse(reader["Количество пользователей"].ToString()),
+                                      reader["Состояние"].ToString(),
+                                      reader["Версия ОС"].ToString(),
+                                      reader["Текущий пользователь"].ToString()
+                                      );
+                                Information_ListBox.Items.Add(os);
+                            }
+                        }
+                    }    
+
+                }
+                catch (Exception ex)
+                { 
+                    MessageBox.Show(ex.Message, "Error");   
                 }
             }
         }
