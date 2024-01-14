@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace S6.JsonClass
         public UserInfo USER { get; set; }
         public NetworkInfo NETWORK { get; set; }
         public RamInfo RAM { get; set; }
+        public List<DiskInfo> DISK { get; set; }
 
     }
 }

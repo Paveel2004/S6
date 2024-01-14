@@ -33,8 +33,10 @@ namespace S6
     public partial class MainWindow : Window
     {
         private bool isMenuVisible = true;
+        private delegate void UpdateListBoxDelegate();
 
-
+        private UpdateListBoxDelegate updateListBoxDelegate;
+        private object lockObject = new object();
         public MainWindow()
         {
 
@@ -42,26 +44,40 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Устройства в сети", ClickHandler = Devices_Click });
             Menu.Items.Add(new MenuItem { Text = "Пользователи", ClickHandler = Users_Click });
             Menu.Items.Add(new MenuItem { Text = "Операционная система", ClickHandler = OS_Click });
-
-
-            Menu.Items.Add(new MenuItem { Text = "Дисковое пространство" });
+            Menu.Items.Add(new MenuItem { Text = "Дисковое пространство", ClickHandler = Disk_Click });
             Menu.Items.Add(new MenuItem { Text = "Аналитика и графики" });
             Menu.Items.Add(new MenuItem { Text = "Настройки" });
 
-
+            Task.Run(() => UpdateListBox());
             StartServer();
 
 
         }
+        private async Task UpdateListBox()
+        {
+            while (true)
+            {
+                if (updateListBoxDelegate != null)
+                {
+                    await Task.Run(() => Application.Current.Dispatcher.Invoke(() => updateListBoxDelegate()));
+                }
+                await Task.Delay(100);
+            }
+        }
+        private void Disk_Click(object sender, RoutedEventArgs e)
+        {
+
+            updateListBoxDelegate = new (DisplayDisk);
+        }
         private void OS_Click(object sender, RoutedEventArgs e)
         {
-            Information_ListBox.Items.Clear();
-            DisplayOS();
+
+            updateListBoxDelegate = new (DisplayOS);
 
         }
 
 
-        private ConcurrentQueue<string> messagesQueue = new ConcurrentQueue<string>();
+        //private ConcurrentQueue<string> messagesQueue = new ConcurrentQueue<string>();
         static async Task StartServer()
         {
             TcpListener server = null;
@@ -83,7 +99,7 @@ namespace S6
                     // Ожидаем входящее подключение
                     TcpClient client = await server.AcceptTcpClientAsync();
                     //MessageBox.Show("Подключен клиент!");
-
+                    
                     // Обрабатываем подключенного клиента в отдельном потоке
                     Task.Run(() => HandleClient(client));
                 }
@@ -102,19 +118,19 @@ namespace S6
         {
             using (SQLiteConnection connection = new SQLiteConnection(connecrionString))
             {
-                try
-                {
+               // try
+               // {
                     connection.Open();
                     using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
                     {
                         cmd.ExecuteNonQuery();
                     }
                     connection.Close();
-                }
-                catch (Exception ex)
+                //}
+             /*   catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                }
+                }*/
             }
         }
         static async void HandleClient(TcpClient tcpClient)
@@ -142,12 +158,32 @@ namespace S6
                     Query($"INSERT OR REPLACE INTO [Оперативная память] ([Тип памяти], Загруженность, Объём, BIOS) VALUES ('{systemInfo.RAM.RamType}',{systemInfo.RAM.RamUsage},{systemInfo.RAM.TotalPhisicalMemory},'{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString); 
                     Query($"INSERT OR REPLACE INTO BIOS ([Версия BIOS],[Серийный номер]) VALUES ('{systemInfo.BIOS.BiosVeesion}','{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString);
                     Query($"INSERT OR REPLACE INTO Устройство (Процессор, [Оперативная память], BIOS, Система, [MAC Адрес]) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.BIOS.SerialNumber}','{systemInfo.BIOS.SerialNumber}','{systemInfo.OS.SerialNumber}','{systemInfo.NETWORK.MAC}')", DataBaseHelper.connectionString);
-                    
-                    // Отправляем подтверждение клиенту
+                    for (int i = 0; i < systemInfo.DISK.Count; i++)
+                    {
+                       
+                        var disk = systemInfo.DISK[i];
+
+                        try
+                        {
+                            Query($"INSERT OR REPLACE INTO Диски ([Имя диска], [Объём диска], [Свободное место], [Серийный номер системы]) " +
+                                    $"VALUES ('{disk.DeviceID}', {disk.Size}, {disk.FreeSpace}, '{systemInfo.OS.SerialNumber}')", DataBaseHelper.connectionString);
+                        }
+                        catch (Exception ex)
+                        {
+
+                            Query($"UPDATE Диски\r\nSET [Объём диска] = {disk.Size}, [Свободное место] = {disk.FreeSpace}\r\n" +
+                                    $"WHERE [Имя диска] = '{disk.DeviceID}' AND [Серийный номер системы] = '{systemInfo.OS.SerialNumber}';\r\n",
+                                    DataBaseHelper.connectionString);
+                           
+                        }
+                    }
+
+                    // Отправляем подтверждение клиенту 
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);
                 }
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
@@ -162,6 +198,7 @@ namespace S6
 
         public void DisplayDevices()
         {
+            Information_ListBox.Items.Clear();
             using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
                 try
@@ -203,8 +240,41 @@ namespace S6
                 }
             }
         }
+        public void DisplayDisk()
+        {
+            Information_ListBox.Items.Clear();
+            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM DiskIndo", connection)) 
+                    { 
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                DiskInfoDisplay disk = new(
+                                    reader["Имя диска"].ToString(),
+                                    ulong.Parse(reader["Объём диска"].ToString()),
+                                    ulong.Parse(reader["Свободное место"].ToString()),
+                                    reader["Текущий пользователь"].ToString(),
+                                    reader["Операционная система"].ToString());
+                                Information_ListBox.Items.Add(disk);
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error");
+                }
+            }
+        }
         public void DisplayOS()
         {
+            Information_ListBox.Items.Clear();
             using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
                 try
@@ -228,8 +298,8 @@ namespace S6
                                 Information_ListBox.Items.Add(os);
                             }
                         }
-                    }    
-
+                    }
+                    connection.Close();
                 }
                 catch (Exception ex)
                 { 
@@ -240,6 +310,7 @@ namespace S6
 
         public void DisplayUsers()
         {
+            Information_ListBox.Items.Clear();
             // Обработчик события для второй кнопки
             using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
@@ -269,13 +340,13 @@ namespace S6
         private void Devices_Click(object sender, RoutedEventArgs e)
         {
             // Обработчик события для первой кнопки
-            Information_ListBox.Items.Clear();
-            DisplayDevices();
+
+            updateListBoxDelegate = new (DisplayDevices);
         }
         private void Users_Click(object sender, RoutedEventArgs e)
         {
-            Information_ListBox.Items.Clear();
-            DisplayUsers();
+
+            updateListBoxDelegate = new (DisplayUsers);
 
         }
 
