@@ -22,8 +22,11 @@ using System.Collections.Concurrent;
 using System.Data.SQLite;
 using S6.DataBase;
 using S6.JsonClass;
+using S6.MoreWindow;
 using Newtonsoft.Json;
 using System.Security.AccessControl;
+using System.IO;
+
 
 namespace S6
 {
@@ -46,12 +49,17 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Операционная система", ClickHandler = OS_Click });
             Menu.Items.Add(new MenuItem { Text = "Дисковое пространство", ClickHandler = Disk_Click });
             Menu.Items.Add(new MenuItem { Text = "Аналитика и графики" });
-            Menu.Items.Add(new MenuItem { Text = "Настройки" });
+            Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
 
             Task.Run(() => UpdateListBox());
             StartServer();
 
 
+        }
+        private void Settings_Click (object sender, EventArgs e)
+        {
+            Settings settings = new Settings();
+            settings.ShowDialog();
         }
         private async Task UpdateListBox()
         {
@@ -84,9 +92,17 @@ namespace S6
             try
             {
                 // Указываем IP-адрес и порт, на котором будет слушать сервер
-                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
-                int port = 1111;
+                /* IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+                 int port = 1111;
+ */
+                string jsonFilePath = @"C:\Users\ASUS\source\repos\ClientS6\S6\bin\Debug\net6.0-windows\data.json";
+                string jsonContent = File.ReadAllText(jsonFilePath);
 
+                Server adress = JsonConvert.DeserializeObject<Server>(jsonContent);
+
+
+                IPAddress localAddr = IPAddress.Parse(adress.serverAddress);
+                int port = adress.port;
                 // Создаем TcpListener
                 server = new TcpListener(localAddr, port);
 
@@ -194,7 +210,7 @@ namespace S6
                 tcpClient.Close();
             }
         }
-      
+        
 
         public void DisplayDevices()
         {
