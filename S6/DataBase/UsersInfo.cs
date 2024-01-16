@@ -23,8 +23,6 @@ namespace S6.DataBase
             this.operatingSystem = operatingSystem;
             this.serialNumberOfTheOS = serialNumberOfTheOS;
             this.SID = SID;
-
-
         }
         public override string ToString()
         {

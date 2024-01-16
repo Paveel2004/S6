@@ -83,19 +83,5 @@ namespace S6.DataBase
                    $"•Тип оперативной памяти: {this.typeOfRAM}\n" +
                    $"•Имя пользователя: {this.userName}\n";
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 }

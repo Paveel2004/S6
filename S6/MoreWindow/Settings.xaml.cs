@@ -14,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
 namespace S6.MoreWindow
 {
     /// <summary>
@@ -34,7 +33,6 @@ namespace S6.MoreWindow
 
             }
         }
-
         private void Save_Button_Click(object sender, RoutedEventArgs e)
         {
             var data = new

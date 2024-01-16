@@ -60,21 +60,6 @@ namespace ClientS6
             
             }
 
-
-            /* // Создаем TcpClient и подключаемся к серверу
-             using TcpClient client = new TcpClient(serverAddress, port);
-
-             using NetworkStream stream = client.GetStream();
-
-             string message = "Привет, сервер!";
-             byte[] data = Encoding.UTF8.GetBytes(message);
-             stream.Write(data, 0, data.Length);
-
-             //Ответ от сервера
-             data = new byte[256];
-             int bytesRead = stream.Read(data, 0, data.Length);
-             string response = Encoding.UTF8.GetString(data, 0, bytesRead);
-         } */
             catch (Exception ex)
             { 
                 MessageBox.Show(ex.Message);

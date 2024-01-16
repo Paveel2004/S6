@@ -91,10 +91,6 @@ namespace S6
             TcpListener server = null;
             try
             {
-                // Указываем IP-адрес и порт, на котором будет слушать сервер
-                /* IPAddress localAddr = IPAddress.Parse("127.0.0.1");
-                 int port = 1111;
- */
                 string jsonFilePath = @"C:\Users\ASUS\source\repos\ClientS6\S6\bin\Debug\net6.0-windows\data.json";
                 string jsonContent = File.ReadAllText(jsonFilePath);
 
@@ -134,19 +130,12 @@ namespace S6
         {
             using (SQLiteConnection connection = new SQLiteConnection(connecrionString))
             {
-               // try
-               // {
                     connection.Open();
                     using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
                     {
                         cmd.ExecuteNonQuery();
                     }
                     connection.Close();
-                //}
-             /*   catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }*/
             }
         }
         static async void HandleClient(TcpClient tcpClient)
