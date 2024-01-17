@@ -26,7 +26,12 @@ using S6.MoreWindow;
 using Newtonsoft.Json;
 using System.Security.AccessControl;
 using System.IO;
-
+using OxyPlot.Wpf;
+using OxyPlot;
+using OxyPlot.Series;
+using System.Data;
+using OxyPlot.Axes;
+using System.Globalization;
 
 namespace S6
 {
@@ -35,6 +40,7 @@ namespace S6
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool isAnalytigsVisible = false;
         private bool isMenuVisible = true;
         private delegate void UpdateListBoxDelegate();
 
@@ -48,7 +54,7 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Пользователи", ClickHandler = Users_Click });
             Menu.Items.Add(new MenuItem { Text = "Операционная система", ClickHandler = OS_Click });
             Menu.Items.Add(new MenuItem { Text = "Дисковое пространство", ClickHandler = Disk_Click });
-            Menu.Items.Add(new MenuItem { Text = "Аналитика и графики" });
+            Menu.Items.Add(new MenuItem { Text = "Аналитика и графики",  ClickHandler= Analytics_Click});
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
 
             Task.Run(() => UpdateListBox());
@@ -56,6 +62,22 @@ namespace S6
 
 
         }
+        private void HiddenAnalytics()
+        {
+            Analytics_and_graphs.Visibility = Visibility.Hidden;
+            isAnalytigsVisible = false;
+        }
+        private void Analytics_Click(object sender, EventArgs e)
+        {
+            isAnalytigsVisible = !isAnalytigsVisible;
+            if (isAnalytigsVisible ) 
+                Analytics_and_graphs.Visibility = Visibility.Visible;
+            else
+                Analytics_and_graphs.Visibility = Visibility.Hidden;
+            DisplayUserName();
+            CreatePlot();
+        }
+
         private void Settings_Click (object sender, EventArgs e)
         {
             Settings settings = new Settings();
@@ -74,16 +96,15 @@ namespace S6
         }
         private void Disk_Click(object sender, RoutedEventArgs e)
         {
-
+            HiddenAnalytics();
             updateListBoxDelegate = new (DisplayDisk);
         }
         private void OS_Click(object sender, RoutedEventArgs e)
         {
-
+            HiddenAnalytics();
             updateListBoxDelegate = new (DisplayOS);
 
         }
-
 
         //private ConcurrentQueue<string> messagesQueue = new ConcurrentQueue<string>();
         static async Task StartServer()
@@ -200,7 +221,33 @@ namespace S6
             }
         }
         
-
+        public void DisplayUserName()
+        {
+            Analytics_Users_ListBox_CPU.Items.Clear();
+            using(SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using(SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM UserName",connection))
+                    {
+                        using(SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Analytics_Users_ListBox_CPU.Items.Add(reader["Имя пользователя"].ToString());
+                                Analytics_Users_ListBox_RAM.Items.Add(reader["Имя пользователя"].ToString());
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
         public void DisplayDevices()
         {
             Information_ListBox.Items.Clear();
@@ -244,6 +291,108 @@ namespace S6
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+        private void CreatePlot()
+        {
+            var RAM = new List<DataPoint>();
+
+            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM RAM_History", connection))
+                    {
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                double load = Convert.ToDouble(reader["Загруженность"]);
+                                string dateTimeString = reader["Дата и время"].ToString();
+                                DateTime dateTime = DateTime.ParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss", null);
+                                RAM.Add(new DataPoint(DateTimeAxis.ToDouble(dateTime), load));
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            var plotModeRAM = new PlotModel { Title = "Оперативная память" };
+            var lineRAM = new LineSeries
+            {
+                Title = "Нагрузка",
+                ItemsSource = RAM
+
+            };
+            plotModeRAM.Axes.Add(new DateTimeAxis
+            {
+                Position = AxisPosition.Bottom,
+                StringFormat = "HH:mm:ss",
+
+            });
+            plotModeRAM.Series.Add(lineRAM);
+            OxyRAM.Model = plotModeRAM;
+
+
+
+
+
+            var dataPointsUsage = new List<DataPoint>();
+            var dataPointsTemp = new List<DataPoint>();
+            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM CPU_History",connection))
+                    {
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                double temp = Convert.ToDouble(reader["Температура"]);
+                                double load = Convert.ToDouble(reader["Загруженность"]);
+                                string dateTimeString = reader["Дата и время"].ToString();
+                                DateTime dateTime = DateTime.ParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss", null);
+                                dataPointsUsage.Add(new DataPoint(DateTimeAxis.ToDouble(dateTime), load));
+                                dataPointsTemp.Add(new DataPoint(DateTimeAxis.ToDouble(dateTime), temp));
+                            }
+                        }
+                    }
+                    connection.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            var lineSeries = new LineSeries
+            {
+                Title = "Нагрузка",
+                ItemsSource = dataPointsUsage
+
+            };
+            var lineTemps = new LineSeries
+            {
+                Title = "Температура",
+                ItemsSource = dataPointsTemp
+
+            };
+
+            var plotModel = new PlotModel{ Title = "Процессор" };
+            plotModel.Axes.Add(new DateTimeAxis
+            {
+                Position = AxisPosition.Bottom,
+                StringFormat = "HH:mm:ss",
+                
+            });
+            plotModel.Series.Add(lineSeries);
+            plotModel.Series.Add(lineTemps);
+            OxyCPU.Model = plotModel;
         }
         public void DisplayDisk()
         {
@@ -345,12 +494,12 @@ namespace S6
         private void Devices_Click(object sender, RoutedEventArgs e)
         {
             // Обработчик события для первой кнопки
-
+            HiddenAnalytics();
             updateListBoxDelegate = new (DisplayDevices);
         }
         private void Users_Click(object sender, RoutedEventArgs e)
         {
-
+            HiddenAnalytics();
             updateListBoxDelegate = new (DisplayUsers);
 
         }
@@ -385,6 +534,11 @@ namespace S6
             {
                 ToggeleMenuVisibility();
             }
+        }
+
+        private void Analytics_Users_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            MessageBox.Show(Analytics_Users_ListBox_CPU.SelectedValue.ToString());
         }
     }
 
