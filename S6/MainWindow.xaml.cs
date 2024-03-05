@@ -58,7 +58,6 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
 
             Task.Run(() => UpdateListBox());
-            StartServer();
 
 
         }
@@ -107,46 +106,7 @@ namespace S6
         }
 
         //private ConcurrentQueue<string> messagesQueue = new ConcurrentQueue<string>();
-        static async Task StartServer()
-        {
-            TcpListener server = null;
-            try
-            {
-                string jsonFilePath = @"C:\Users\ASUS\source\repos\ClientS6\S6\bin\Debug\net6.0-windows\data.json";
-                string jsonContent = File.ReadAllText(jsonFilePath);
-
-                Server adress = JsonConvert.DeserializeObject<Server>(jsonContent);
-
-
-                IPAddress localAddr = IPAddress.Parse(adress.serverAddress);
-                int port = adress.port;
-                // Создаем TcpListener
-                server = new TcpListener(localAddr, port);
-
-                // Начинаем прослушивание клиентов
-                server.Start();
-
-
-                while (true)
-                {
-                    // Ожидаем входящее подключение
-                    TcpClient client = await server.AcceptTcpClientAsync();
-                    //MessageBox.Show("Подключен клиент!");
-                    
-                    // Обрабатываем подключенного клиента в отдельном потоке
-                    Task.Run(() => HandleClient(client));
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-            finally
-            {
-                // Завершаем прослушивание клиентов при выходе из цикла
-                server?.Stop();
-            }
-        }
+       
         static void Query(string query, string connecrionString)
         {
             using (SQLiteConnection connection = new SQLiteConnection(connecrionString))
@@ -159,67 +119,7 @@ namespace S6
                     connection.Close();
             }
         }
-        static async void HandleClient(TcpClient tcpClient)
-        {
-            try
-            {
-      
-                using NetworkStream stream = tcpClient.GetStream();
-
-                byte[] data = new byte[5000];
-                int bytesRead;
-
-                // Читаем данные из потока
-                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
-                {
-                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-
-                    SystemInfo systemInfo = JsonConvert.DeserializeObject<SystemInfo>(message);
-                    Query($"INSERT OR REPLACE INTO Процессор ([Серийный номер], Модель, Загруженность, [Количество ядер], Архитектура, Температура) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.CPU.Name}',{systemInfo.CPU.CpuUsage},{systemInfo.CPU.CoreCount},'{systemInfo.CPU.Architecture}',{systemInfo.CPU.Temperature})", DataBaseHelper.connectionString);
-                    Query($"INSERT OR REPLACE INTO Система ([Операционная система], Разрядность, [Серийный номер], [Количество пользователей], Состояние, [Версия ОС], [Текущий пользователь]) " +
-            $"VALUES ('{systemInfo.OS.OS}',{systemInfo.OS.Architecture},'{systemInfo.OS.SerialNumber}',{systemInfo.OS.NumberOfUsers},'{systemInfo.OS.SystemState}','{systemInfo.OS.VersionOS}','{systemInfo.USER.UserName}')", DataBaseHelper.connectionString);
-
-                    Query($"INSERT OR REPLACE INTO  Пользователи (SID, [Имя пользователя], Статус, [Серийный номер системы]) VALUES ('{systemInfo.USER.UserSID}','{systemInfo.USER.UserName}','{systemInfo.USER.UserState}','{systemInfo.OS.SerialNumber}')",DataBaseHelper.connectionString);
-                    Query($"INSERT OR REPLACE INTO Сеть (IP,MAC,[Ethernet speed]) VALUES ('{systemInfo.NETWORK.IP}','{systemInfo.NETWORK.MAC}',{systemInfo.NETWORK.EthernetSpeed})", DataBaseHelper.connectionString);
-                    Query($"INSERT OR REPLACE INTO [Оперативная память] ([Тип памяти], Загруженность, Объём, BIOS) VALUES ('{systemInfo.RAM.RamType}',{systemInfo.RAM.RamUsage},{systemInfo.RAM.TotalPhisicalMemory},'{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString); 
-                    Query($"INSERT OR REPLACE INTO BIOS ([Версия BIOS],[Серийный номер]) VALUES ('{systemInfo.BIOS.BiosVeesion}','{systemInfo.BIOS.SerialNumber}')",DataBaseHelper.connectionString);
-                    Query($"INSERT OR REPLACE INTO Устройство (Процессор, [Оперативная память], BIOS, Система, [MAC Адрес]) VALUES ('{systemInfo.CPU.SerialNumber}','{systemInfo.BIOS.SerialNumber}','{systemInfo.BIOS.SerialNumber}','{systemInfo.OS.SerialNumber}','{systemInfo.NETWORK.MAC}')", DataBaseHelper.connectionString);
-                    for (int i = 0; i < systemInfo.DISK.Count; i++)
-                    {
-                       
-                        var disk = systemInfo.DISK[i];
-
-                        try
-                        {
-                            Query($"INSERT OR REPLACE INTO Диски ([Имя диска], [Объём диска], [Свободное место], [Серийный номер системы]) " +
-                                    $"VALUES ('{disk.DeviceID}', {disk.Size}, {disk.FreeSpace}, '{systemInfo.OS.SerialNumber}')", DataBaseHelper.connectionString);
-                        }
-                        catch (Exception ex)
-                        {
-
-                            Query($"UPDATE Диски\r\nSET [Объём диска] = {disk.Size}, [Свободное место] = {disk.FreeSpace}\r\n" +
-                                    $"WHERE [Имя диска] = '{disk.DeviceID}' AND [Серийный номер системы] = '{systemInfo.OS.SerialNumber}';\r\n",
-                                    DataBaseHelper.connectionString);
-                           
-                        }
-                    }
-
-                    // Отправляем подтверждение клиенту 
-                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
-                    stream.Write(response, 0, response.Length);
-                }
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                // Закрываем соединение при завершении работы с клиентом
-                tcpClient.Close();
-            }
-        }
+        
         
         public void DisplayUserName()
         {
