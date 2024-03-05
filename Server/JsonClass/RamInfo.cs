@@ -12,6 +12,8 @@ namespace Server
        public string  RamType { get; set; }
        public string RamUsage { get; set; }
        public string TotalPhisicalMemory {  get; set; }
+       public int ConfiguredClockSpeed { get; set; }
+       public int Type {  get; set; }
 
 
     }

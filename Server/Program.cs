@@ -59,7 +59,7 @@ namespace Server
                     SystemInfo systemInfo = JsonConvert.DeserializeObject<SystemInfo>(message);
                     
                     DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
-                    DataBaseHelper.Query($"\r\nEXECUTE ДобавитьУстройство @BIOS='{systemInfo.BIOS.SerialNumber}', @МодельПроцессора = '{systemInfo.CPU.Name}', @АрхитектураПроцессора = '{systemInfo.CPU.Architecture}', @ТипОЗУ='{systemInfo.RAM.RamType}', @ЧастотаОЗУ='#', @ОбъёмОЗУ='{systemInfo.RAM.TotalPhisicalMemory}', @ОперационнаСистема='{systemInfo.OS.OS}', \r\n@РазрядностьОперационнойСистемы='{systemInfo.OS.Architecture}', @ВерсияОперационнойСистепмы = '{systemInfo.OS.VersionOS}', @МодельВидеокарты = '#', @ФизическийMAC = '' ");
+                    DataBaseHelper.Query($"\r\nEXECUTE ДобавитьУстройство @BIOS='{systemInfo.BIOS.SerialNumber}', @МодельПроцессора = '{systemInfo.CPU.Name}', @АрхитектураПроцессора = '{systemInfo.CPU.Architecture}', @ТипОЗУ='{systemInfo.RAM.RamType}', @ЧастотаОЗУ='{systemInfo.RAM.ConfiguredClockSpeed}', @ОбъёмОЗУ='{systemInfo.RAM.TotalPhisicalMemory}', @ОперационнаСистема='{systemInfo.OS.OS}', \r\n@РазрядностьОперационнойСистемы='{systemInfo.OS.Architecture}', @ВерсияОперационнойСистепмы = '{systemInfo.OS.VersionOS}', @МодельВидеокарты = '{systemInfo.VideoCard.Model}', @ФизическийMAC = '' ");
                     // Отправляем подтверждение клиенту
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Server.JsonClass;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -16,6 +17,7 @@ namespace Server
         public NetworkInfo NETWORK { get; set; }
         public RamInfo RAM { get; set; }
         public List<DiskInfo> DISK { get; set; }
+        public VideoCardInfo VideoCard { get; set; }
 
     }
 }

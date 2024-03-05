@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ClientS6"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="ClientS6" Height="251" Width="300">
+        Title="Подключение к серверу" Height="193" Width="297">
     <Grid>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -15,11 +15,12 @@
                 <GradientStop Color="Black" Offset="0.072"/>
             </LinearGradientBrush>
         </Grid.Background>
-        <TextBox Name="IP" FontSize="14"  HorizontalAlignment="Left" Height="25" Margin="73,83,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
-        <Label Content="IP" FontSize="20" Foreground="White" HorizontalAlignment="Left" Height="40" Margin="38,76,0,0" VerticalAlignment="Top" Width="30"/>
-        <TextBox x:Name="PORT" FontSize="14" HorizontalAlignment="Left" Height="25" Margin="73,43,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
-        <Label Content="PORT" FontSize="20" Foreground="White" HorizontalAlignment="Left" Height="40" Margin="9,36,0,0" VerticalAlignment="Top" Width="59"/>
-        <Button Name="Connection_Button"  Background="White" FontSize="15" Content="Подключить" HorizontalAlignment="Center" Height="35" Margin="0,142,0,0" VerticalAlignment="Top" Width="97" Click="Connection_Button_Click"/>
+
+        <TextBox Name="IP" FontSize="14"  HorizontalAlignment="Left" Height="25" Margin="73,59,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
+        <Label Content="IP" FontSize="20" Foreground="White" HorizontalAlignment="Left" Height="40" Margin="38,52,0,0" VerticalAlignment="Top" Width="30"/>
+        <TextBox x:Name="PORT" FontSize="14" HorizontalAlignment="Left" Height="25" Margin="73,19,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
+        <Label Content="PORT" FontSize="20" Foreground="White" HorizontalAlignment="Left" Height="40" Margin="9,12,0,0" VerticalAlignment="Top" Width="59"/>
+        <Button Name="Connection_Button"  Background="White" FontSize="15" Content="Подключить" HorizontalAlignment="Center" Height="35" VerticalAlignment="Top" Width="96" Click="Connection_Button_Click" Margin="0,106,0,0"/>
 
     </Grid>
 </Window>

@@ -52,9 +52,8 @@ namespace S6
             InitializeComponent();
             Menu.Items.Add(new MenuItem { Text = "Устройства в сети", ClickHandler = Devices_Click });
             Menu.Items.Add(new MenuItem { Text = "Пользователи", ClickHandler = Users_Click });
-            Menu.Items.Add(new MenuItem { Text = "Операционная система", ClickHandler = OS_Click });
-            Menu.Items.Add(new MenuItem { Text = "Дисковое пространство", ClickHandler = Disk_Click });
             Menu.Items.Add(new MenuItem { Text = "Аналитика и графики",  ClickHandler= Analytics_Click});
+            Menu.Items.Add(new MenuItem { Text = "Отчёты"});
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
 
             Task.Run(() => UpdateListBox());
