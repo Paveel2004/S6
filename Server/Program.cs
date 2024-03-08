@@ -62,14 +62,14 @@ namespace Server
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
                     DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
-                    var networkData =  JsonHelper.DeserializeJsonToList<NetworkInterfaceData>(message);
-                   
+                    
+                    DeviceData<NetworkInterfaceData> networkData = JsonHelper.DeserializeDeviceData<NetworkInterfaceData>(message);
 
-                    foreach (NetworkInterfaceData ni in networkData)
+                    foreach (NetworkInterfaceData ni in networkData.Data)
                     {
                         Console.WriteLine($"{ ni.Name}\n { ni.Type}\n{ ni.MACAdress}");
 
-                        DataBaseHelper.Query($"EXECUTE ДобавитьСетевойИнтерфейс @BIOS = 'NCNRCX04Y472504', @ФизическийMAC = '{ni.MACAdress}', @Имя = '{ni.Name}', @Тип = '{ni.Type}'");
+                        DataBaseHelper.Query($"EXECUTE ДобавитьСетевойИнтерфейс @BIOS = '{networkData.SerialNumberBIOS}', @ФизическийMAC = '{ni.MACAdress}', @Имя = '{ni.Name}', @Тип = '{ni.Type}'");
                     }
 
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
