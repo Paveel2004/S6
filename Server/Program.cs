@@ -3,6 +3,12 @@ using System.Net;
 using System.Text;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
+using System.Globalization;
+using Data_collection;
+using System.Net.Mail;
+using GlobalClass;
+using System.Net.NetworkInformation;
+
 namespace Server
 {
     internal class Program
@@ -55,14 +61,20 @@ namespace Server
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-
-                    SystemInfo systemInfo = JsonConvert.DeserializeObject<SystemInfo>(message);
-                    
                     DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
-                    DataBaseHelper.Query($"\r\nEXECUTE ДобавитьУстройство @BIOS='{systemInfo.BIOS.SerialNumber}', @МодельПроцессора = '{systemInfo.CPU.Name}', @АрхитектураПроцессора = '{systemInfo.CPU.Architecture}', @ТипОЗУ='{systemInfo.RAM.RamType}', @ЧастотаОЗУ='{systemInfo.RAM.ConfiguredClockSpeed}', @ОбъёмОЗУ='{systemInfo.RAM.TotalPhisicalMemory}', @ОперационнаСистема='{systemInfo.OS.OS}', \r\n@РазрядностьОперационнойСистемы='{systemInfo.OS.Architecture}', @ВерсияОперационнойСистепмы = '{systemInfo.OS.VersionOS}', @МодельВидеокарты = '{systemInfo.VideoCard.Model}', @ФизическийMAC = '' ");
-                    // Отправляем подтверждение клиенту
+                    var networkData =  JsonHelper.DeserializeJsonToList<NetworkInterfaceData>(message);
+                   
+
+                    foreach (NetworkInterfaceData ni in networkData)
+                    {
+                        Console.WriteLine($"{ ni.Name}\n { ni.Type}\n{ ni.MACAdress}");
+
+                        DataBaseHelper.Query($"EXECUTE ДобавитьСетевойИнтерфейс @BIOS = 'NCNRCX04Y472504', @ФизическийMAC = '{ni.MACAdress}', @Имя = '{ni.Name}', @Тип = '{ni.Type}'");
+                    }
+
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);
+                    
                 }
             }
             catch (Exception ex)

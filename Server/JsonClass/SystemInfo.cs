@@ -17,7 +17,7 @@ namespace Server
         public NetworkInfo NETWORK { get; set; }
         public RamInfo RAM { get; set; }
         public List<DiskInfo> DISK { get; set; }
-        public VideoCardInfo VideoCard { get; set; }
+        public VideoCardInfo GPU { get; set; }
 
     }
 }
