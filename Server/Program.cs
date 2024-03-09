@@ -17,8 +17,41 @@ namespace Server
         {
             Task.Run(() => StartServer(9993, HendleClientNetwork));
             Console.ReadLine();
-        }   
+        }
+        static void HendleClientCPU(TcpClient tcpClient)
+        {
+            try
+            {
+                using NetworkStream stream = tcpClient.GetStream();
 
+                byte[] data = new byte[5000];
+                int bytesRead;
+
+                // Читаем данные из потока
+                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                {
+                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
+                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
+
+                    DeviceData<NetworkInterfaceData> networkData = JsonHelper.DeserializeDeviceData<NetworkInterfaceData>(message);
+                    DataBaseHelper.Query($"EXECUTE ");
+                    
+
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+                    stream.Write(response, 0, response.Length);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Закрываем соединение при завершении работы с клиентом
+                tcpClient.Close();
+            }
+        }
         static void HendleClientNetwork(TcpClient tcpClient)
         {
             try
@@ -33,17 +66,13 @@ namespace Server
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
                     DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
-                    
                     DeviceData<NetworkInterfaceData> networkData = JsonHelper.DeserializeDeviceData<NetworkInterfaceData>(message);
-
                     foreach (NetworkInterfaceData ni in networkData.Data)
                     {
-                        Console.WriteLine($"{ ni.Name}\n { ni.Type}\n{ ni.MACAdress}");
-
                         DataBaseHelper.Query($"EXECUTE ДобавитьСетевойИнтерфейс @BIOS = '{networkData.SerialNumberBIOS}', @ФизическийMAC = '{ni.MACAdress}', @Имя = '{ni.Name}', @Тип = '{ni.Type}'");
                     }
-
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+                   
                     stream.Write(response, 0, response.Length);
                     
                 }
