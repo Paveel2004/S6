@@ -87,6 +87,43 @@ namespace Server
                 tcpClient.Close();
             }
         }
+        static async void StartServer(int port, Action<TcpClient> handleClient)
+        {
+            TcpListener server = null;
+            try
+            {
+                // Указываем IP-адрес и порт, на котором будет слушать сервер
+                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+
+                // Создаем TcpListener
+                server = new TcpListener(localAddr, port);
+
+                // Начинаем прослушивание клиентов
+                server.Start();
+
+                Console.WriteLine($"Сервер запущен на порту {port}. Ожидание подключений...");
+
+                while (true)
+                {
+                    // Ожидаем входящее подключение
+                    TcpClient client = await server.AcceptTcpClientAsync();
+                    Console.WriteLine("Подключен клиент!");
+
+                    // Обрабатываем подключенного клиента в отдельном потоке
+                    Task.Run(() => handleClient(client));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            finally
+            {
+                // Завершаем прослушивание клиентов при выходе из цикла
+                server?.Stop();
+            }
+        }
+
 
     }
 }
