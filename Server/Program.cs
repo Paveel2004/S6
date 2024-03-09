@@ -15,40 +15,11 @@ namespace Server
     {
         static async Task Main()
         {
-            TcpListener server = null;
-            try
-            {
-                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
-                int port = 1111;
-
-                server = new TcpListener(localAddr, port);
-
-                server.Start();
-
-                Console.WriteLine("Сервер запущен. Ожидание подключений...");
-
-                while (true)
-                {
-                    // Ожидаем входящее подключение
-                    TcpClient client = await server.AcceptTcpClientAsync();
-                    Console.WriteLine("Подключен клиент!");
-
-                    // Обрабатываем подключенного клиента в отдельном потоке
-                    Task.Run(() => HandleClient(client));
-                }
-            }
-
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            finally
-            {
-                server?.Stop();
-            }
+            Task.Run(() => StartServer(9993, HendleClientNetwork));
+            Console.ReadLine();
         }   
 
-        static void HandleClient(TcpClient tcpClient)
+        static void HendleClientNetwork(TcpClient tcpClient)
         {
             try
             {
@@ -108,7 +79,6 @@ namespace Server
                     // Ожидаем входящее подключение
                     TcpClient client = await server.AcceptTcpClientAsync();
                     Console.WriteLine("Подключен клиент!");
-
                     // Обрабатываем подключенного клиента в отдельном потоке
                     Task.Run(() => handleClient(client));
                 }
