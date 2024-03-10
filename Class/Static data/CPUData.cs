@@ -11,10 +11,13 @@ namespace GlobalClass.Static_data
     {
         public string Model { get; set;}
         public string Architecture { get; set;}
-        public CPUData(string Model, string Architecture)
+        public int NumberOfCores { get; set;}
+        public CPUData(string Model, string Architecture, int NumberOfCores)
         {
             this.Model = Model;
             this.Architecture = Architecture;
+            this.NumberOfCores = NumberOfCores;
+          
         }
     }
 }

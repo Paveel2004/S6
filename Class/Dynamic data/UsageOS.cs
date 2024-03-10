@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 
 namespace GlobalClass.Dynamic_data
 {
-    internal class UsageOS
+    public class UsageOS
     {
         public string CurrentUser { get; set; }
         public string Status { get; set; }
-        private DateTime DateTime { get; }
-        public UsageOS(string CurrentUser, string Status) { 
+        public DateTime DateTime { get; }
+        public string SerialNumberBIOS { get; set; }
+        public UsageOS(string CurrentUser, string Status, string SerialNumberBIOS) { 
             DateTime = DateTime.Now;
             this.CurrentUser = CurrentUser;
             this.Status = Status;
+            this.SerialNumberBIOS = SerialNumberBIOS;
         }
     }
 }
