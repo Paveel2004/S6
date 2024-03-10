@@ -6,8 +6,9 @@ using Newtonsoft.Json;
 using System.Globalization;
 using Data_collection;
 using System.Net.Mail;
-using GlobalClass;
 using System.Net.NetworkInformation;
+using GlobalClass.Static_data;
+using GlobalClass;
 
 namespace Server
 {
@@ -16,6 +17,7 @@ namespace Server
         static async Task Main()
         {
             Task.Run(() => StartServer(9993, HendleClientNetwork));
+            Task.Run(() => StartServer(9986, HendleClientCPU));
             Console.ReadLine();
         }
         static void HendleClientCPU(TcpClient tcpClient)
@@ -33,9 +35,11 @@ namespace Server
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
                     DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
 
-                    DeviceData<NetworkInterfaceData> networkData = JsonHelper.DeserializeDeviceData<NetworkInterfaceData>(message);
-                    DataBaseHelper.Query($"EXECUTE ");
-                    
+                    DeviceData<CPUData> cpuData = JsonHelper.DeserializeDeviceData<CPUData>(message);
+                    foreach (CPUData i in cpuData.Data) 
+                    {
+                        DataBaseHelper.Query($"EXECUTE ДобавитьПроцессор @BIOS = '{cpuData.SerialNumberBIOS}', @Модель = '{i.Model}', @Архитектура = '{i.Architecture}';");
+                    }             
 
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);
