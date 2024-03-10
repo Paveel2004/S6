@@ -18,7 +18,44 @@ namespace Server
         {
             Task.Run(() => StartServer(9993, HendleClientNetwork));
             Task.Run(() => StartServer(9986, HendleClientCPU));
+            Task.Run(() => StartServer(1111, HendleClientRAM));
             Console.ReadLine();
+        }
+        static void HendleClientRAM(TcpClient tcpClient)
+        {
+            try
+            {
+                using NetworkStream stream = tcpClient.GetStream();
+
+                byte[] data = new byte[5000];
+                int bytesRead;
+
+                // Читаем данные из потока
+                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                {
+                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
+                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
+
+                    DeviceData<RAMData> ramData = JsonHelper.DeserializeDeviceData<RAMData>(message);
+                    foreach (RAMData i in ramData.Data)
+                    {
+                        DataBaseHelper.Query($"EXECUTE ДобавитьОЗУ @BIOS = '{ramData.SerialNumberBIOS}', @Объём = '{i.Volume}', @Частота = '{i.Speed}', @Тип = '{i.Type}';");
+                    }
+
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+                    stream.Write(response, 0, response.Length);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Закрываем соединение при завершении работы с клиентом
+                tcpClient.Close();
+            }
         }
         static void HendleClientCPU(TcpClient tcpClient)
         {

@@ -13,7 +13,7 @@ namespace GlobalClass.Static_data
         public string MACAdress { get; set; }
         public NetworkInterfaceData(string Name, string  Type, string MACAdress){ 
             this.Type = Type;
-            this.MACAdress = MACAdress; 
+            this.MACAdress = MACAdress;
             this.Name = Name;
         }
     }
