@@ -18,10 +18,10 @@ namespace Server
     {
         static async Task Main()
         {
-            Task.Run(() => StartServer(9993, HendleClientNetwork));
-            Task.Run(() => StartServer(9986, HendleClientCPU));
-            Task.Run(() => StartServer(1111, HendleClientRAM));
-            Task.Run(() => StartServer(2222, HendleClientUsageRAM));
+            Task.Run(() => StartServer(9930, HendleClientNetwork));
+            Task.Run(() => StartServer(9860, HendleClientCPU));
+            Task.Run(() => StartServer(9790, HendleClientRAM));
+            Task.Run(() => StartServer(9720, HendleClientUsageRAM));
             Console.ReadLine();
         }
         static void HendleClientUsageRAM(TcpClient tcpClient)
