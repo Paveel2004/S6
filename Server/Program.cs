@@ -9,6 +9,8 @@ using System.Net.Mail;
 using System.Net.NetworkInformation;
 using GlobalClass.Static_data;
 using GlobalClass;
+using System;
+using GlobalClass.Dynamic_data;
 
 namespace Server
 {
@@ -19,7 +21,42 @@ namespace Server
             Task.Run(() => StartServer(9993, HendleClientNetwork));
             Task.Run(() => StartServer(9986, HendleClientCPU));
             Task.Run(() => StartServer(1111, HendleClientRAM));
+            Task.Run(() => StartServer(2222, HendleClientUsageRAM));
             Console.ReadLine();
+        }
+        static void HendleClientUsageRAM(TcpClient tcpClient)
+        {
+            try
+            {
+                using NetworkStream stream = tcpClient.GetStream();
+
+                byte[] data = new byte[5000];
+                int bytesRead;
+
+                // Читаем данные из потока
+                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                {
+                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
+                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
+
+                    var ram = JsonConvert.DeserializeObject<UsageRAM>(message);
+
+                        DataBaseHelper.Query($"EXECUTE ДобавитьИспользование @ТипХарактеристики = 'ОЗУ', @Характеристика = 'Загруженность', @СерийныйНомерBIOS = '{ram.SerialNumberBIOS}', @Значение = '{ram.Workload}', @ДатаВремя = '{ram.DateTime}'");
+
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+                    stream.Write(response, 0, response.Length);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Закрываем соединение при завершении работы с клиентом
+                tcpClient.Close();
+            }
         }
         static void HendleClientRAM(TcpClient tcpClient)
         {
