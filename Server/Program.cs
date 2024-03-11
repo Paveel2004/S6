@@ -12,13 +12,17 @@ using GlobalClass;
 using System;
 using GlobalClass.Dynamic_data;
 using System.Runtime.Intrinsics.Arm;
+using System.Threading.Tasks;
 
 namespace Server
 {
     internal class Program
-    {
+    {  
         static async Task Main()
         {
+            DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
+
+            Task.Run(() => StartServer (9440, HendleClientDeviceInitialization));
             Task.Run(() => StartServer(9930, HendleClientNetwork));
             Task.Run(() => StartServer(9860, HendleClientCPU));
             Task.Run(() => StartServer(9790, HendleClientRAM));
@@ -26,8 +30,40 @@ namespace Server
             Task.Run(() => StartServer(9650, HendleClientUsageOS));
             Task.Run(() => StartServer(9580, HendleClientUsageCPU));
             Task.Run(() => StartServer(9510, HendleClientUsageEthernet));
-
+       
             Console.ReadLine();
+        }
+        static void HendleClientDeviceInitialization(TcpClient tcpClient)
+        {
+            try
+            {
+                using NetworkStream stream = tcpClient.GetStream();
+
+                byte[] data = new byte[5000];
+                int bytesRead;
+
+                // Читаем данные из потока
+                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                {
+                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);  
+
+                    var deviceInitialization = JsonConvert.DeserializeObject<DeviceInitialization>(message);
+                    DataBaseHelper.Query($"INSERT INTO Устройтво VALUES ('{deviceInitialization.SerialNumberBIOS}','{deviceInitialization.ComputerName}')");
+
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+                    stream.Write(response, 0, response.Length);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Закрываем соединение при завершении работы с клиентом
+                tcpClient.Close();
+            }
         }
         static void HendleClientUsageEthernet(TcpClient tcpClient)
         {
@@ -42,8 +78,6 @@ namespace Server
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
-
                     var ethernetUsage = JsonConvert.DeserializeObject<UsageEthernet>(message);
                     DataBaseHelper.Query($"EXECUTE ДобавитьИспользование @ТипХарактеристики = 'Ethernet', @Характеристика = 'Скорость', @СерийныйНомерBIOS = '{ethernetUsage.SerialNumberBIOS}', @Значение = '{ethernetUsage.Speed}', @ДатаВремя = '{ethernetUsage.DateTime}'");
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
@@ -74,7 +108,6 @@ namespace Server
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
 
                     var cpu = JsonConvert.DeserializeObject<UsageCPU>(message);
 
@@ -108,7 +141,6 @@ namespace Server
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
 
                     var os = JsonConvert.DeserializeObject<UsageOS>(message);
 
@@ -142,7 +174,6 @@ namespace Server
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
 
                     var ram = JsonConvert.DeserializeObject<UsageRAM>(message);
 
@@ -176,7 +207,6 @@ namespace Server
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
 
                     DeviceData<RAMData> ramData = JsonHelper.DeserializeDeviceData<RAMData>(message);
                     foreach (RAMData i in ramData.Data)
@@ -204,15 +234,12 @@ namespace Server
             try
             {
                 using NetworkStream stream = tcpClient.GetStream();
-
                 byte[] data = new byte[5000];
                 int bytesRead;
-
                 // Читаем данные из потока
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
 
                     DeviceData<CPUData> cpuData = JsonHelper.DeserializeDeviceData<CPUData>(message);
                     foreach (CPUData i in cpuData.Data) 
@@ -220,10 +247,8 @@ namespace Server
                         DataBaseHelper.Query($"EXECUTE ДобавитьПроцессор @BIOS = '{cpuData.SerialNumberBIOS}', @Модель = '{i.Model}', @Архитектура = '{i.Architecture}', @КоличествоЯдер = '{i.NumberOfCores}' ");
 
                     }
-
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);
-
                 }
             }
             catch (Exception ex)
@@ -249,7 +274,6 @@ namespace Server
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
                     DeviceData<NetworkInterfaceData> networkData = JsonHelper.DeserializeDeviceData<NetworkInterfaceData>(message);
                     foreach (NetworkInterfaceData ni in networkData.Data)
                     {
