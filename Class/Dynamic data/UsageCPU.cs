@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 
 namespace GlobalClass.Dynamic_data
 {
-    internal class UsageCPU
+    public class UsageCPU
     {
+        public string SerialNumberBIOS { get; set; }
         public double Temperature { get; set; }
         public double Workload { get; set; }
-        private DateTime DateTime { get; }
-        public UsageCPU(int Temperature, int Workload)
+        public DateTime DateTime { get; }
+        public UsageCPU(double Temperature, double Workload, string serialNumberBIOS)
         {
             this.Temperature = Temperature;
             this.Workload = Workload;
             DateTime = DateTime.Now;
+            SerialNumberBIOS = serialNumberBIOS;
         }
     }
 }

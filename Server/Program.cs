@@ -23,7 +23,42 @@ namespace Server
             Task.Run(() => StartServer(9790, HendleClientRAM));
             Task.Run(() => StartServer(9720, HendleClientUsageRAM));
             Task.Run(() => StartServer(9650, HendleClientUsageOS));
+            Task.Run(() => StartServer(9580, HendleClientUsageCPU));
             Console.ReadLine();
+        }
+        static void HendleClientUsageCPU(TcpClient tcpClient)
+        {
+            try
+            {
+                using NetworkStream stream = tcpClient.GetStream();
+
+                byte[] data = new byte[5000];
+                int bytesRead;
+
+                // Читаем данные из потока
+                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                {
+                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
+                    DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
+
+                    var cpu = JsonConvert.DeserializeObject<UsageCPU>(message);
+
+                    DataBaseHelper.Query($"EXECUTE ДобавитьИспользованиеПроцессора @BIOS = '{cpu.SerialNumberBIOS}', @Температура = '{cpu.Temperature}', @Загруженность = '{cpu.Workload}', @ДатаВремя = '{cpu.DateTime}'");
+
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+                    stream.Write(response, 0, response.Length);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Закрываем соединение при завершении работы с клиентом
+                tcpClient.Close();
+            }
         }
         static void HendleClientUsageOS(TcpClient tcpClient)
         {
