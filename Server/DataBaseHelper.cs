@@ -8,7 +8,7 @@ using Microsoft.Data.SqlClient;
 namespace Server
 {
    
-    internal class DataBaseHelper
+    public class DataBaseHelper
     {
         public static string connectionString { get; set; }
         public static void Query(string query, string connectionString)

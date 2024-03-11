@@ -32,7 +32,7 @@ using OxyPlot.Series;
 using System.Data;
 using OxyPlot.Axes;
 using System.Globalization;
-
+using Server;
 namespace S6
 {
     /// <summary>
@@ -122,7 +122,8 @@ namespace S6
         
         public void DisplayUserName()
         {
-            Analytics_Users_ListBox_CPU.Items.Clear();
+            
+           /* Analytics_Users_ListBox_CPU.Items.Clear();
             using(SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
                 try
@@ -145,12 +146,12 @@ namespace S6
                 {
                     MessageBox.Show(ex.Message);
                 }
-            }
+            }*/
         }
         public void DisplayDevices()
         {
             Information_ListBox.Items.Clear();
-            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
+            /*using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
                 try
                 {
@@ -189,11 +190,11 @@ namespace S6
                 {
                     MessageBox.Show(ex.Message);
                 }
-            }
+            }*/
         }
         private void CreatePlot()
         {
-            var RAM = new List<DataPoint>();
+            /*var RAM = new List<DataPoint>();
 
             using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
@@ -291,11 +292,11 @@ namespace S6
             });
             plotModel.Series.Add(lineSeries);
             plotModel.Series.Add(lineTemps);
-            OxyCPU.Model = plotModel;
+            OxyCPU.Model = plotModel;*/
         }
         public void DisplayDisk()
         {
-            Information_ListBox.Items.Clear();
+            /*Information_ListBox.Items.Clear();
             using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
                 try
@@ -323,11 +324,11 @@ namespace S6
                 {
                     MessageBox.Show(ex.Message, "Error");
                 }
-            }
+            }*/
         }
         public void DisplayOS()
         {
-            Information_ListBox.Items.Clear();
+            /*Information_ListBox.Items.Clear();
             using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
                 try
@@ -358,12 +359,12 @@ namespace S6
                 { 
                     MessageBox.Show(ex.Message, "Error");   
                 }
-            }
+            }*/
         }
 
         public void DisplayUsers()
         {
-            Information_ListBox.Items.Clear();
+            /*Information_ListBox.Items.Clear();
             // Обработчик события для второй кнопки
             using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
             {
@@ -388,7 +389,7 @@ namespace S6
                 {
                     MessageBox.Show(ex.Message);
                 }
-            }
+            }*/
         }
         private void Devices_Click(object sender, RoutedEventArgs e)
         {

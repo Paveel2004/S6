@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Server\Server.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="icons8-компьютер-64.png" />
     <Resource Include="icons8-компьютер-96.png" />
   </ItemGroup>
