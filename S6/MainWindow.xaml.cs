@@ -19,7 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Collections.Concurrent;
-using System.Data.SQLite;
+using Microsoft.Data.SqlClient;
 using S6.DataBase;
 using S6.JsonClass;
 using S6.MoreWindow;
@@ -33,6 +33,9 @@ using System.Data;
 using OxyPlot.Axes;
 using System.Globalization;
 using Server;
+using Microsoft.Data.SqlClient;
+using System.Text.Json;
+using System.Windows.Shapes;
 namespace S6
 {
     /// <summary>
@@ -57,6 +60,9 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
 
             Task.Run(() => UpdateListBox());
+            DataBaseHelper.connectionString = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
+
+
 
 
         }
@@ -106,18 +112,7 @@ namespace S6
 
         //private ConcurrentQueue<string> messagesQueue = new ConcurrentQueue<string>();
        
-        static void Query(string query, string connecrionString)
-        {
-            using (SQLiteConnection connection = new SQLiteConnection(connecrionString))
-            {
-                    connection.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                    connection.Close();
-            }
-        }
+
         
         
         public void DisplayUserName()
@@ -148,210 +143,53 @@ namespace S6
                 }
             }*/
         }
+        public List<string> ExecuteQuery(string query, string connectionString)
+        {
+            var results = new List<string>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    // Замените "ColumnName" на имя столбца, который вы хотите прочитать
+                    results.Add(reader["ColumnName"].ToString());
+                }
+
+                reader.Close();
+            }
+
+            return results;
+        }
+
         public void DisplayDevices()
         {
             Information_ListBox.Items.Clear();
+            //для начала получить список устройств
             //Вывести в лист бокс несколько представлений
 
         }
         private void CreatePlot()
         {
-            /*var RAM = new List<DataPoint>();
+     
 
-            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM RAM_History", connection))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                double load = Convert.ToDouble(reader["Загруженность"]);
-                                string dateTimeString = reader["Дата и время"].ToString();
-                                DateTime dateTime = DateTime.ParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss", null);
-                                RAM.Add(new DataPoint(DateTimeAxis.ToDouble(dateTime), load));
-                            }
-                        }
-                    }
-                    connection.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            var plotModeRAM = new PlotModel { Title = "Оперативная память" };
-            var lineRAM = new LineSeries
-            {
-                Title = "Нагрузка",
-                ItemsSource = RAM
-
-            };
-            plotModeRAM.Axes.Add(new DateTimeAxis
-            {
-                Position = AxisPosition.Bottom,
-                StringFormat = "HH:mm:ss",
-
-            });
-            plotModeRAM.Series.Add(lineRAM);
-            OxyRAM.Model = plotModeRAM;
-
-
-
-
-
-            var dataPointsUsage = new List<DataPoint>();
-            var dataPointsTemp = new List<DataPoint>();
-            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM CPU_History",connection))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                double temp = Convert.ToDouble(reader["Температура"]);
-                                double load = Convert.ToDouble(reader["Загруженность"]);
-                                string dateTimeString = reader["Дата и время"].ToString();
-                                DateTime dateTime = DateTime.ParseExact(dateTimeString, "yyyy-MM-dd HH:mm:ss", null);
-                                dataPointsUsage.Add(new DataPoint(DateTimeAxis.ToDouble(dateTime), load));
-                                dataPointsTemp.Add(new DataPoint(DateTimeAxis.ToDouble(dateTime), temp));
-                            }
-                        }
-                    }
-                    connection.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            var lineSeries = new LineSeries
-            {
-                Title = "Нагрузка",
-                ItemsSource = dataPointsUsage
-
-            };
-            var lineTemps = new LineSeries
-            {
-                Title = "Температура",
-                ItemsSource = dataPointsTemp
-
-            };
-
-            var plotModel = new PlotModel{ Title = "Процессор" };
-            plotModel.Axes.Add(new DateTimeAxis
-            {
-                Position = AxisPosition.Bottom,
-                StringFormat = "HH:mm:ss",
-                
-            });
-            plotModel.Series.Add(lineSeries);
-            plotModel.Series.Add(lineTemps);
-            OxyCPU.Model = plotModel;*/
         }
         public void DisplayDisk()
         {
-            /*Information_ListBox.Items.Clear();
-            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM DiskIndo", connection)) 
-                    { 
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                DiskInfoDisplay disk = new(
-                                    reader["Имя диска"].ToString(),
-                                    ulong.Parse(reader["Объём диска"].ToString()),
-                                    ulong.Parse(reader["Свободное место"].ToString()),
-                                    reader["Текущий пользователь"].ToString(),
-                                    reader["Операционная система"].ToString());
-                                Information_ListBox.Items.Add(disk);
-                            }
-                        }
-                    }
-                    connection.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error");
-                }
-            }*/
+            
         }
         public void DisplayOS()
         {
-            /*Information_ListBox.Items.Clear();
-            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM Система", connection))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while(reader.Read())
-                            {
-                                InfoDisplayOS os = new (
-                                      reader["Операционная система"].ToString(),
-                                      int.Parse(reader["Разрядность"].ToString()),
-                                      reader["Серийный номер"].ToString(),
-                                      int.Parse(reader["Количество пользователей"].ToString()),
-                                      reader["Состояние"].ToString(),
-                                      reader["Версия ОС"].ToString(),
-                                      reader["Текущий пользователь"].ToString()
-                                      );
-                                Information_ListBox.Items.Add(os);
-                            }
-                        }
-                    }
-                    connection.Close();
-                }
-                catch (Exception ex)
-                { 
-                    MessageBox.Show(ex.Message, "Error");   
-                }
-            }*/
+            
         }
 
         public void DisplayUsers()
         {
-            /*Information_ListBox.Items.Clear();
-            // Обработчик события для второй кнопки
-            using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM USERS", connection))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                UsersInfo users = new UsersInfo(reader["SID"].ToString(), reader["Имя пользователя"].ToString(), reader["Статус"].ToString(), reader["Операционная система"].ToString(), reader["Серийный номер ОС"].ToString());
-                                Information_ListBox.Items.Add(users);
-                            }
-                        }
-                    }
-                    connection.Close();
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }*/
+            
         }
         private void Devices_Click(object sender, RoutedEventArgs e)
         {
@@ -402,6 +240,77 @@ namespace S6
         {
             MessageBox.Show(Analytics_Users_ListBox_CPU.SelectedValue.ToString());
         }
+        static T DeserializeFromJsonFile<T>(string filePath)
+        {
+            using (FileStream fs = File.OpenRead(filePath))
+            {
+                return System.Text.Json.JsonSerializer.DeserializeAsync<T>(fs).Result;
+            }
+        }
+
+        private void ComputerName_DropDownOpened(object sender, EventArgs e)
+        {
+            ComputerName.Items.Clear();
+            using (SqlConnection connection = new SqlConnection("Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True "))
+            {
+                connection.Open();
+                string sqlQuery = "SELECT Имя FROM Устройтво"; // Замените на ваш SQL-запрос
+                SqlCommand cmd = new SqlCommand(sqlQuery, connection);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string name = reader["Имя"].ToString();
+                       
+                        ComputerName.Items.Add(name);
+                    }
+                }
+            }
+        }
+
+        private void Type_DropDownOpened(object sender, EventArgs e)
+        {
+            Type.Items.Clear();
+            using (SqlConnection connection = new SqlConnection("Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True "))
+            {
+                connection.Open();
+                string sqlQuery = "SELECT [Тип характеристики] FROM [Типы характеристики]"; // Замените на ваш SQL-запрос
+                SqlCommand cmd = new SqlCommand(sqlQuery, connection);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string type = reader["Тип характеристики"].ToString();
+
+                        Type.Items.Add(type);
+                    }
+                }
+            }
+        }
+
+        private void Character_DropDownOpened(object sender, EventArgs e)
+        {
+            Character.Items.Clear();
+            using (SqlConnection connection = new SqlConnection("Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True "))
+            {
+                connection.Open();
+                string sqlQuery = $"EXECUTE ХарактерисикиТипа @Тип = '{Type.Text}'"; // Замените на ваш SQL-запрос
+                SqlCommand cmd = new SqlCommand(sqlQuery, connection);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string type = reader["Название"].ToString();
+
+                        Character.Items.Add(type);
+                    }
+                }
+            }
+        }
     }
+
 
 }
