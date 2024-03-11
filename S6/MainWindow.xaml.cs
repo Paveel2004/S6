@@ -50,8 +50,8 @@ namespace S6
         {
 
             InitializeComponent();
-            Menu.Items.Add(new MenuItem { Text = "Устройства в сети", ClickHandler = Devices_Click });
-            Menu.Items.Add(new MenuItem { Text = "Пользователи", ClickHandler = Users_Click });
+            Menu.Items.Add(new MenuItem { Text = "Сборки устройств", ClickHandler = Devices_Click });
+            Menu.Items.Add(new MenuItem { Text = "Использование устройств", ClickHandler = Users_Click });
             Menu.Items.Add(new MenuItem { Text = "Аналитика и графики",  ClickHandler= Analytics_Click});
             Menu.Items.Add(new MenuItem { Text = "Отчёты"});
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
@@ -151,46 +151,8 @@ namespace S6
         public void DisplayDevices()
         {
             Information_ListBox.Items.Clear();
-            /*using (SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using (SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM MainInfo",connection))
-                    {
-                        using (SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                DevicesInfo devices = new DevicesInfo(
-                                    reader["Модель процессора"].ToString(),
-                                    double.Parse(reader["Температура процессора"].ToString()), // Преобразование в double
-                                    double.Parse(reader["Загруженность процессора"].ToString()), // Преобразование в double
-                                    int.Parse(reader["Количество ядер в процессоре"].ToString()), // Преобразование в int
-                                    int.Parse(reader["Архитектура процессора"].ToString()), // Преобразование в int
-                                    reader["IP Адрес"].ToString(),
-                                    reader["MAC Адрес"].ToString(),
-                                    double.Parse(reader["Скорость Ethernet"].ToString()), // Преобразование в double
-                                    reader["Операционная система"].ToString(),
-                                    int.Parse(reader["Разрядность системы"].ToString()), // Преобразование в int
-                                    reader["Состояние системы"].ToString(),
-                                    reader["Версия BIOS"].ToString(),
-                                    reader["Загруженность оперативной памяти"].ToString(),
-                                    reader["Объём оперативной памяти"].ToString(), // Преобразование в string
-                                    reader["Тип оперативной памяти"].ToString(), // Преобразование в string
-                                    reader["Текущий пользователь"].ToString());
-                                Information_ListBox.Items.Add(devices);
-                            }
-                            
-                        }
-                    }
-                    connection.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }*/
+            //Вывести в лист бокс несколько представлений
+
         }
         private void CreatePlot()
         {
@@ -394,7 +356,7 @@ namespace S6
         private void Devices_Click(object sender, RoutedEventArgs e)
         {
             // Обработчик события для первой кнопки
-            HiddenAnalytics();
+            //HiddenAnalytics();
             updateListBoxDelegate = new (DisplayDevices);
         }
         private void Users_Click(object sender, RoutedEventArgs e)
