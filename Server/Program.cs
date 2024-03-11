@@ -31,7 +31,37 @@ namespace Server
             Task.Run(() => StartServer(9580, HendleClientUsageCPU));
             Task.Run(() => StartServer(9510, HendleClientUsageEthernet));
             Task.Run(() => StartServer(9370, HendleClientVideoCard));
+            Task.Run(() => StartServer(9300, HendleClientUsageDisk));
             Console.ReadLine();
+        }
+        static void HendleClientUsageDisk(TcpClient tcpClient)
+        {
+            try
+            {
+                using NetworkStream stream = tcpClient.GetStream();
+
+                byte[] data = new byte[5000];
+                int bytesRead;
+
+                // Читаем данные из потока
+                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                {
+                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
+                    var usageDisk = JsonConvert.DeserializeObject<UsageDisk>(message);
+                    DataBaseHelper.Query($"EXECUTE ДобавитьИспользование @ТипХарактеристики = 'Диск', @Характеристика = 'Свободное место', @СерийныйНомерBIOS = '{usageDisk.SerialNumberBIOS}', @Значение = '{usageDisk.FreeSpace}', @ДатаВремя = '{usageDisk.DateTime}'");
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+                    stream.Write(response, 0, response.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Закрываем соединение при завершении работы с клиентом
+                tcpClient.Close();
+            }
         }
         static void HendleClientVideoCard(TcpClient tcpClient)
         {
