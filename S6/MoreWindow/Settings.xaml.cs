@@ -24,24 +24,48 @@ namespace S6.MoreWindow
         public Settings()
         {
             InitializeComponent();
+            try
+            {
+                ConnectionString.Text = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
+                IP.Text = DeserializeFromJsonFile<DataSettings>("data.json").serverAddress.ToString();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при чтении файла конфигурации: " + ex.Message);
+            }
         }
         static void SerializeToJsonFile<T>(T obj, string filePath)
         {
             using (FileStream fs = File.Create(filePath))
             {
                 JsonSerializer.SerializeAsync(fs, obj, new JsonSerializerOptions { WriteIndented = true }).Wait();
+            }
+        }
 
+        static T DeserializeFromJsonFile<T>(string filePath)
+        {
+            using (FileStream fs = File.OpenRead(filePath))
+            {
+                return JsonSerializer.DeserializeAsync<T>(fs).Result;
             }
         }
         private void Save_Button_Click(object sender, RoutedEventArgs e)
         {
-            var data = new
+
+            DataSettings data = new DataSettings
             {
-                port = int.Parse(PORT.Text),
-                serverAddress = IP.Text
+                serverAddress = IP.Text ?? " ",
+                connectionString = ConnectionString.Text ?? " ",
             };
 
-            SerializeToJsonFile(data, "data.json");
+            try
+            {
+                SerializeToJsonFile(data, "data.json");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при сохранении файла конфигурации: " + ex.Message);
+            }
         }
     }
 }
