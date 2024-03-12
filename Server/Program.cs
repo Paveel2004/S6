@@ -34,8 +34,45 @@ namespace Server
             Task.Run(() => StartServer(9300, HendleClientUsageDisk));
             Task.Run(() => StartServer(9230, HendleClientDisk));
             Task.Run(() => StartServer(9160, HendleClientOS));
-            while(true) { } 
+            Task.Run(() => StartServer(9090, HendleClientUsageWindow));
+            while (true) { } 
            
+        }
+        static void HendleClientUsageWindow(TcpClient tcpClient)
+        {
+
+            try
+            {
+                using NetworkStream stream = tcpClient.GetStream();
+
+
+                byte[] data = new byte[5000];
+                int bytesRead;
+
+                // Читаем данные из потока
+                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                {
+                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
+
+                    DeviceData<WindowData> windowData = JsonHelper.DeserializeDeviceData<WindowData>(message);
+                    foreach (WindowData i in windowData.Data)
+                    {
+                        DataBaseHelper.Query($"EXECUTE ДобавитьИспользование @ТипХарактеристики = 'ОС', @Характеристика = 'Окно', @СерийныйНомерBIOS = '{windowData.SerialNumberBIOS}', @Значение = '{i.Title}', @ДатаВремя = '{i.DateTime}'");
+                    }
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+                    stream.Write(response, 0, response.Length);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                // Закрываем соединение при завершении работы с клиентом
+                tcpClient.Close();
+            }
         }
         static void HendleClientOS(TcpClient tcpClient)
         {
@@ -427,7 +464,7 @@ namespace Server
             try
             {
                 // Указываем IP-адрес и порт, на котором будет слушать сервер
-                IPAddress localAddr = IPAddress.Parse("192.168.138.240");
+                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
 
                 // Создаем TcpListener
                 server = new TcpListener(localAddr, port);
