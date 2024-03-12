@@ -36,6 +36,8 @@ using Server;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
 using System.Windows.Shapes;
+using System.Data.Common;
+
 namespace S6
 {
     /// <summary>
@@ -93,6 +95,7 @@ namespace S6
             prosmotr.Visibility = Visibility.Visible;
             pokazat.Visibility = Visibility.Hidden;
             delete.Visibility = Visibility.Visible;
+            listBox.Visibility = Visibility.Hidden;
 
 
 
@@ -107,6 +110,7 @@ namespace S6
             prosmotr.Visibility = Visibility.Hidden;
             pokazat.Visibility = Visibility.Visible;
             delete.Visibility = Visibility.Hidden;
+            listBox.Visibility = Visibility.Visible;
 
 
         }
@@ -143,10 +147,7 @@ namespace S6
             }
         }
 
-        private void Analytics_Users_ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            MessageBox.Show(Analytics_Users_ListBox_CPU.SelectedValue.ToString());
-        }
+
         static T DeserializeFromJsonFile<T>(string filePath)
         {
             using (FileStream fs = File.OpenRead(filePath))
@@ -218,29 +219,44 @@ namespace S6
             }
         }
 
+        /*        private void pokazat_Click(object sender, RoutedEventArgs e)
+                {
+                    string query = $"SELECT [Дата/Время], [Тип характеристики], Значение\r\n\tFROM ИспользованиеУстройстваВЦелом\r\n\tWHERE [Тип характеристики] = 'Процессор' AND ([Дата/Время] BETWEEN '2023-03-10 00:00:00' AND '2024-03-10 00:00:00') AND [Имя компьютера] = 'DESKTOP-LVEJL0B' AND Название = 'Температура';";
+
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+                        DataTable dataTable = new DataTable();
+                        dataAdapter.Fill(dataTable);
+                        DataTable reversedTable = dataTable.Clone();
+
+                        for (int i = dataTable.Rows.Count - 1; i >= 0; i--)
+                        {
+                            reversedTable.ImportRow(dataTable.Rows[i]);
+                        }
+
+                        dataGrid.ItemsSource = reversedTable.DefaultView;
+                    }
+                }*/
         private void pokazat_Click(object sender, RoutedEventArgs e)
         {
-
-            string query = $"EXECUTE ИспользованиеПредставление @ТипХарактеристики = '{Type.Text}', @Характеристика = '{Character.Text}', @ИмяКомпьютера = '{ComputerName.Text}', @НачальнаяДата = '{StartData.SelectedDate}', @КонечнаДата = '{EndData.SelectedDate}'";
+            string query = $"EXECUTE ИспользованиеПредставление @ТипХарактеристики = '{Type.Text}', @Характеристика = '{ Character.Text}', @ИмяКомпьютера = '{ComputerName.Text}', @НачальнаяДата = '{StartData.SelectedDate}', @КонечнаДата = '{EndData.SelectedDate}'";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
                 DataTable dataTable = new DataTable();
                 dataAdapter.Fill(dataTable);
-                DataTable reversedTable = dataTable.Clone();
 
-                for (int i = dataTable.Rows.Count - 1; i >= 0; i--)
+                listBox.Items.Clear();
+                foreach (DataRow row in dataTable.Rows)
                 {
-                    reversedTable.ImportRow(dataTable.Rows[i]);
+                    listBox.Items.Add($"{row["Дата/Время"]}  —  {row["Значение"]}");
                 }
-
-                // Устанавливаем новую таблицу в качестве источника данных
-                dataGrid.ItemsSource = reversedTable.DefaultView;
             }
-
-
         }
+
+
 
         private void prosmotr_Click(object sender, RoutedEventArgs e)
         {   
@@ -248,9 +264,12 @@ namespace S6
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
+               
+
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
                 DataTable dataTable = new DataTable();
                 dataAdapter.Fill(dataTable);
+                
                 dataGrid.ItemsSource = dataTable.DefaultView;
 
             }

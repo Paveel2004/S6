@@ -34,8 +34,8 @@ namespace Server
             Task.Run(() => StartServer(9300, HendleClientUsageDisk));
             Task.Run(() => StartServer(9230, HendleClientDisk));
             Task.Run(() => StartServer(9160, HendleClientOS));
-
-            Console.ReadLine();
+            while(true) { } 
+           
         }
         static void HendleClientOS(TcpClient tcpClient)
         {
@@ -427,7 +427,7 @@ namespace Server
             try
             {
                 // Указываем IP-адрес и порт, на котором будет слушать сервер
-                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+                IPAddress localAddr = IPAddress.Parse("192.168.138.240");
 
                 // Создаем TcpListener
                 server = new TcpListener(localAddr, port);

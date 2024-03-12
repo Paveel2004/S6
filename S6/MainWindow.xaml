@@ -24,33 +24,15 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <ListBox x:Name="Information_ListBox" Margin="220,30,30,40" />
+       
 
-        <TabControl x:Name="Analytics_and_graphs" Margin="220,30,30,30" Visibility="Hidden" >
-            <TabItem Header="Процессор">
-                <Grid Background="White">
-                    <ListBox x:Name="Analytics_Users_ListBox_CPU" SelectionChanged="Analytics_Users_ListBox_SelectionChanged" HorizontalAlignment="Left" Width="200" d:ItemsSource="{d:SampleData ItemCount=5}"/>
-                    <oxy:PlotView Name="OxyCPU" HorizontalAlignment="Left" Width="324" Margin="220,0,0,0"/>
-
-
-
-                </Grid>
-            </TabItem>
-            <TabItem Header="Оперативная память">
-
-                <Grid Background="White">
-                    <ListBox x:Name="Analytics_Users_ListBox_RAM"  HorizontalAlignment="Left" Width="200" />
-                    <oxy:PlotView Name="OxyRAM" HorizontalAlignment="Left" Width="324" Margin="220,0,0,0"/>
-                </Grid>
-            </TabItem>
-        </TabControl>
         
         <ComboBox Visibility="Hidden" DropDownOpened="Type_DropDownOpened"  Name="Type" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="586,1,0,0"/>
         <ComboBox Visibility="Hidden" DropDownOpened="Character_DropDownOpened"  Name="Character" HorizontalAlignment="Left" Margin="813,0,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="1.478,0.521"/>
         <Button Visibility="Hidden" Name = "pokazat" Content="Показать" Background="White" HorizontalAlignment="Left" Margin="948,2,0,0" VerticalAlignment="Top" Width="57" Click="pokazat_Click"/>
         <Label Name="Text1" Visibility="Hidden" Content="Тип характеристики" Foreground="White" HorizontalAlignment="Left" Margin="452,-1,0,0" VerticalAlignment="Top"/>
         <Label Name="Text2" Visibility="Hidden" Content="Характеристика" Foreground="White" HorizontalAlignment="Left" Margin="711,-2,0,0" VerticalAlignment="Top"/>
-        <DataGrid  AutoGenerateColumns="True" Name="dataGrid" Margin="220,30,30,40"/>
+        <DataGrid AutoGenerateColumns="True" Name="dataGrid" Margin="220,30,30,40"/>
         <ComboBox DropDownOpened="ComputerName_DropDownOpened" Name="ComputerName" HorizontalAlignment="Left" Margin="327,1,0,0" VerticalAlignment="Top" Width="120"/>
         <Label Content="Имя компьютера" Foreground="White" HorizontalAlignment="Left" Margin="217,-2,0,0" VerticalAlignment="Top"/>
 
@@ -63,17 +45,6 @@
         </StackPanel>
         <Button Name="prosmotr" Click="prosmotr_Click" Content="Просмотр" Background="White"  HorizontalAlignment="Left" Height="20" Margin="454,2,0,0" VerticalAlignment="Top"  Width="72"/>
         <Button x:Name="delete" Click="delete_Click" Content="Удалить" Background="White"  HorizontalAlignment="Left" Height="20" Margin="948,5,0,0" VerticalAlignment="Top"  Width="72"/>
-
-
-
-
-
-
-
-
-
-
-
-
+        <ListBox Visibility="Hidden" Name="listBox" Margin="220,30,30,40"/>
     </Grid>
 </Window>
