@@ -92,6 +92,7 @@ namespace S6
             Date.Visibility = Visibility.Hidden;
             prosmotr.Visibility = Visibility.Visible;
             pokazat.Visibility = Visibility.Hidden;
+            delete.Visibility = Visibility.Visible;
 
 
 
@@ -105,6 +106,7 @@ namespace S6
             Date.Visibility = Visibility.Visible;
             prosmotr.Visibility = Visibility.Hidden;
             pokazat.Visibility = Visibility.Visible;
+            delete.Visibility = Visibility.Hidden;
 
 
         }
@@ -252,6 +254,11 @@ namespace S6
                 dataGrid.ItemsSource = dataTable.DefaultView;
 
             }
+        }
+
+        private void delete_Click(object sender, RoutedEventArgs e)
+        {
+            DataBaseHelper.Query($"DELETE FROM Устройтво WHERE Имя = '{ComputerName.Text}'", connectionString);
         }
     }
 

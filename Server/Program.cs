@@ -142,7 +142,7 @@ namespace Server
                     DeviceData<VideoСardData> videoCard = JsonHelper.DeserializeDeviceData<VideoСardData>(message);
                     foreach (VideoСardData i in videoCard.Data)
                     {
-                        DataBaseHelper.Query($"\tEXECUTE ДобавитьВСборку @ТипХарактеристики = 'Видеокарта', @Характеристика = 'Модель', @СерийныйНомерBIOS = '{videoCard.SerialNumberBIOS}', @Значение =  '{i.Model}'");
+                        DataBaseHelper.Query($"\tEXECUTE ДобавитьВСборку @ТипХарактеристики = 'Графический процессор', @Характеристика = 'Модель', @СерийныйНомерBIOS = '{videoCard.SerialNumberBIOS}', @Значение =  '{i.Model}'");
                     }
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);
