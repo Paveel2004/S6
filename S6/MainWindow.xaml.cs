@@ -58,28 +58,10 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Использование устройств", ClickHandler = Usage_Click });
             Menu.Items.Add(new MenuItem { Text = "Отчёты"});
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
-                        string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
+            string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
             Task.Run(() => UpdateListBox());
             DataBaseHelper.connectionString = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
 
-
-
-
-        }
-        private void HiddenAnalytics()
-        {
-            Analytics_and_graphs.Visibility = Visibility.Hidden;
-            isAnalytigsVisible = false;
-        }
-        private void Analytics_Click(object sender, EventArgs e)
-        {
-            isAnalytigsVisible = !isAnalytigsVisible;
-            if (isAnalytigsVisible ) 
-                Analytics_and_graphs.Visibility = Visibility.Visible;
-            else
-                Analytics_and_graphs.Visibility = Visibility.Hidden;
-            DisplayUserName();
-            CreatePlot();
         }
 
         private void Settings_Click (object sender, EventArgs e)
@@ -97,78 +79,6 @@ namespace S6
                 }
                 await Task.Delay(100);
             }
-        }
-        private void Disk_Click(object sender, RoutedEventArgs e)
-        {
-            HiddenAnalytics();
-            updateListBoxDelegate = new (DisplayDisk);
-        }
-        private void OS_Click(object sender, RoutedEventArgs e)
-        {
-            HiddenAnalytics();
-            updateListBoxDelegate = new (DisplayOS);
-
-        }
-
-        //private ConcurrentQueue<string> messagesQueue = new ConcurrentQueue<string>();
-       
-
-        
-        
-        public void DisplayUserName()
-        {
-            
-           /* Analytics_Users_ListBox_CPU.Items.Clear();
-            using(SQLiteConnection connection = new SQLiteConnection(DataBaseHelper.connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    using(SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM UserName",connection))
-                    {
-                        using(SQLiteDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                Analytics_Users_ListBox_CPU.Items.Add(reader["Имя пользователя"].ToString());
-                                Analytics_Users_ListBox_RAM.Items.Add(reader["Имя пользователя"].ToString());
-                            }
-                        }
-                    }
-                    connection.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }*/
-        }
-
-
-        public void DisplayDevices()
-        {
-            Information_ListBox.Items.Clear();
-            //для начала получить список устройств
-            //Вывести в лист бокс несколько представлений
-
-        }
-        private void CreatePlot()
-        {
-     
-
-        }
-        public void DisplayDisk()
-        {
-            
-        }
-        public void DisplayOS()
-        {
-            
-        }
-
-        public void DisplayUsers()
-        {
-            
         }
         private void Devices_Click(object sender, RoutedEventArgs e)
         {
@@ -249,7 +159,7 @@ namespace S6
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sqlQuery = "SELECT Имя FROM Устройтво"; // Замените на ваш SQL-запрос
+                string sqlQuery = "SELECT Имя FROM Устройтво";
                 SqlCommand cmd = new SqlCommand(sqlQuery, connection);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -270,7 +180,7 @@ namespace S6
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sqlQuery = "SELECT [Тип характеристики] FROM [Типы характеристики]"; // Замените на ваш SQL-запрос
+                string sqlQuery = "SELECT [Тип характеристики] FROM [Типы характеристики]";
                 SqlCommand cmd = new SqlCommand(sqlQuery, connection);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -291,7 +201,7 @@ namespace S6
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sqlQuery = $"EXECUTE ХарактерисикиТипа @Тип = '{Type.Text}'"; // Замените на ваш SQL-запрос
+                string sqlQuery = $"EXECUTE ХарактерисикиТипа @Тип = '{Type.Text}'"; 
                 SqlCommand cmd = new SqlCommand(sqlQuery, connection);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -316,12 +226,17 @@ namespace S6
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
                 DataTable dataTable = new DataTable();
                 dataAdapter.Fill(dataTable);
+                DataTable reversedTable = dataTable.Clone();
 
-                // Преобразование формата времени для каждой строки в DataTable
+                for (int i = dataTable.Rows.Count - 1; i >= 0; i--)
+                {
+                    reversedTable.ImportRow(dataTable.Rows[i]);
+                }
 
-
-                dataGrid.ItemsSource = dataTable.DefaultView;
+                // Устанавливаем новую таблицу в качестве источника данных
+                dataGrid.ItemsSource = reversedTable.DefaultView;
             }
+
 
         }
 
@@ -334,11 +249,8 @@ namespace S6
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
                 DataTable dataTable = new DataTable();
                 dataAdapter.Fill(dataTable);
-
-                // Преобразование формата времени для каждой строки в DataTable
-
-
                 dataGrid.ItemsSource = dataTable.DefaultView;
+
             }
         }
     }
