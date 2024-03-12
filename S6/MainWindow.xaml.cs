@@ -49,16 +49,16 @@ namespace S6
 
         private UpdateListBoxDelegate updateListBoxDelegate;
         private object lockObject = new object();
+        string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
         public MainWindow()
         {
 
             InitializeComponent();
             Menu.Items.Add(new MenuItem { Text = "Сборки устройств", ClickHandler = Devices_Click });
-            Menu.Items.Add(new MenuItem { Text = "Использование устройств", ClickHandler = Users_Click });
-            Menu.Items.Add(new MenuItem { Text = "Аналитика и графики",  ClickHandler= Analytics_Click});
+            Menu.Items.Add(new MenuItem { Text = "Использование устройств", ClickHandler = Usage_Click });
             Menu.Items.Add(new MenuItem { Text = "Отчёты"});
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
-
+                        string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
             Task.Run(() => UpdateListBox());
             DataBaseHelper.connectionString = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
 
@@ -143,28 +143,7 @@ namespace S6
                 }
             }*/
         }
-        public List<string> ExecuteQuery(string query, string connectionString)
-        {
-            var results = new List<string>();
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                SqlCommand command = new SqlCommand(query, connection);
-                connection.Open();
-
-                SqlDataReader reader = command.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    // Замените "ColumnName" на имя столбца, который вы хотите прочитать
-                    results.Add(reader["ColumnName"].ToString());
-                }
-
-                reader.Close();
-            }
-
-            return results;
-        }
 
         public void DisplayDevices()
         {
@@ -195,12 +174,28 @@ namespace S6
         {
             // Обработчик события для первой кнопки
             //HiddenAnalytics();
-            updateListBoxDelegate = new (DisplayDevices);
+            //updateListBoxDelegate = new (DisplayDevices);
+            Type.Visibility = Visibility.Hidden;
+            Character.Visibility = Visibility.Hidden;
+            Text1.Visibility = Visibility.Hidden;
+            Text2.Visibility = Visibility.Hidden;
+            Date.Visibility = Visibility.Hidden;
+            prosmotr.Visibility = Visibility.Visible;
+            pokazat.Visibility = Visibility.Hidden;
+
+
+
         }
-        private void Users_Click(object sender, RoutedEventArgs e)
+        private void Usage_Click(object sender, RoutedEventArgs e)
         {
-            HiddenAnalytics();
-            updateListBoxDelegate = new (DisplayUsers);
+            Type.Visibility = Visibility.Visible;
+            Character.Visibility = Visibility.Visible;
+            Text1.Visibility = Visibility.Visible;
+            Text2.Visibility = Visibility.Visible;
+            Date.Visibility = Visibility.Visible;
+            prosmotr.Visibility = Visibility.Hidden;
+            pokazat.Visibility = Visibility.Visible;
+
 
         }
 
@@ -251,7 +246,7 @@ namespace S6
         private void ComputerName_DropDownOpened(object sender, EventArgs e)
         {
             ComputerName.Items.Clear();
-            using (SqlConnection connection = new SqlConnection("Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True "))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
                 string sqlQuery = "SELECT Имя FROM Устройтво"; // Замените на ваш SQL-запрос
@@ -272,7 +267,7 @@ namespace S6
         private void Type_DropDownOpened(object sender, EventArgs e)
         {
             Type.Items.Clear();
-            using (SqlConnection connection = new SqlConnection("Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True "))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
                 string sqlQuery = "SELECT [Тип характеристики] FROM [Типы характеристики]"; // Замените на ваш SQL-запрос
@@ -293,7 +288,7 @@ namespace S6
         private void Character_DropDownOpened(object sender, EventArgs e)
         {
             Character.Items.Clear();
-            using (SqlConnection connection = new SqlConnection("Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True "))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
                 string sqlQuery = $"EXECUTE ХарактерисикиТипа @Тип = '{Type.Text}'"; // Замените на ваш SQL-запрос
@@ -308,6 +303,42 @@ namespace S6
                         Character.Items.Add(type);
                     }
                 }
+            }
+        }
+
+        private void pokazat_Click(object sender, RoutedEventArgs e)
+        {
+
+            string query = $"EXECUTE ИспользованиеПредставление @ТипХарактеристики = '{Type.Text}', @Характеристика = '{Character.Text}', @ИмяКомпьютера = '{ComputerName.Text}', @НачальнаяДата = '{StartData.SelectedDate}', @КонечнаДата = '{EndData.SelectedDate}'";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+                DataTable dataTable = new DataTable();
+                dataAdapter.Fill(dataTable);
+
+                // Преобразование формата времени для каждой строки в DataTable
+
+
+                dataGrid.ItemsSource = dataTable.DefaultView;
+            }
+
+        }
+
+        private void prosmotr_Click(object sender, RoutedEventArgs e)
+        {   
+            string query = $" EXECUTE ДанныеОУстройстве @Имя = '{ComputerName.Text}'";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+                DataTable dataTable = new DataTable();
+                dataAdapter.Fill(dataTable);
+
+                // Преобразование формата времени для каждой строки в DataTable
+
+
+                dataGrid.ItemsSource = dataTable.DefaultView;
             }
         }
     }
