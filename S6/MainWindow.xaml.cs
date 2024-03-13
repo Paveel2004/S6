@@ -125,27 +125,25 @@ namespace S6
             delete.Visibility = Visibility.Visible;
             dataGrid.Visibility = Visibility.Visible;
         }
-        private void Devices_Click(object sender, RoutedEventArgs e)
-        {
-            HiddenAllInterfaseItems();
-            VisibilityDevices();   
-
-
-
-        }
-        private void Usage_Click(object sender, RoutedEventArgs e)
+        public void VisibilityUsage()
         {
             Type.Visibility = Visibility.Visible;
             Character.Visibility = Visibility.Visible;
             Text1.Visibility = Visibility.Visible;
             Text2.Visibility = Visibility.Visible;
             Date.Visibility = Visibility.Visible;
-            prosmotr.Visibility = Visibility.Hidden;
             pokazat.Visibility = Visibility.Visible;
-            delete.Visibility = Visibility.Hidden;
             listBox.Visibility = Visibility.Visible;
-
-
+        }
+        private void Devices_Click(object sender, RoutedEventArgs e)
+        {
+            HiddenAllInterfaseItems();
+            VisibilityDevices();
+        }
+        private void Usage_Click(object sender, RoutedEventArgs e)
+        {
+            HiddenAllInterfaseItems();
+            VisibilityUsage();
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
