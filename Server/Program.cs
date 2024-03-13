@@ -54,11 +54,10 @@ namespace Server
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
 
-                    DeviceData<WindowData> windowData = JsonHelper.DeserializeDeviceData<WindowData>(message);
-                    foreach (WindowData i in windowData.Data)
-                    {
-                        DataBaseHelper.Query($"EXECUTE ДобавитьИспользование @ТипХарактеристики = 'ОС', @Характеристика = 'Окно', @СерийныйНомерBIOS = '{windowData.SerialNumberBIOS}', @Значение = '{i.Title}', @ДатаВремя = '{i.DateTime}'");
-                    }
+                    WindowData windowData = JsonConvert.DeserializeObject<WindowData>(message);
+
+                        DataBaseHelper.Query($"EXECUTE ДобавитьИспользование @ТипХарактеристики = 'ОС', @Характеристика = 'Окно', @СерийныйНомерBIOS = '{windowData.SerialNumberBIOS}', @Значение = '{windowData.Title}', @ДатаВремя = '{windowData.DateTime}'");
+                    
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
                     stream.Write(response, 0, response.Length);
 
@@ -464,7 +463,7 @@ namespace Server
             try
             {
                 // Указываем IP-адрес и порт, на котором будет слушать сервер
-                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+                IPAddress localAddr = IPAddress.Parse("192.168.169.240");
 
                 // Создаем TcpListener
                 server = new TcpListener(localAddr, port);

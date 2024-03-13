@@ -58,7 +58,8 @@ namespace S6
             InitializeComponent();
             Menu.Items.Add(new MenuItem { Text = "Сборки устройств", ClickHandler = Devices_Click });
             Menu.Items.Add(new MenuItem { Text = "Использование устройств", ClickHandler = Usage_Click });
-            Menu.Items.Add(new MenuItem { Text = "Отчёты"});
+            Menu.Items.Add(new MenuItem { Text = "Окна", ClickHandler = Window_Click });
+            Menu.Items.Add(new MenuItem { Text = "Сейчас", ClickHandler = Now });
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
             string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
             Task.Run(() => UpdateListBox());
@@ -66,6 +67,27 @@ namespace S6
 
         }
 
+        private void Window_Click(object sender, EventArgs e)
+        {
+            string query = $"SELECT Использование.[Серийный номер BIOS], Значение, " +
+                $"[Дата/Время], Название, [Тип характеристики], Устройтво.Имя AS \"Имя компьютера\"" +
+                $" FROM [Использование]\r\nJOIN [Динамические характеристики] ON [ID Характеристики " +
+                $"динамической] = [Динамические характеристики].ID \r\nJOIN [Типы характеристики] ON [ID Тип" +
+                $"а зарактеристики] = [Типы характеристики].ID\r\nJOIN Устройтво ON Устройтво.[Серийный номер BIOS" +
+                $"] = Использование.[Серийный номер BIOS] WHERE [ID Характеристики динамической] = 1008 AND Имя = '{ComputerName.Text}' " +
+                $"AND [Дата/Время] = '{DateTime.Now}'";
+
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connectionString);
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
+
+            listBox.Items.Clear();
+            foreach (DataRow row in dataTable.Rows)
+            {
+                listBox.Items.Add($"{row["Значение"]}");
+            }
+            listBox.Visibility = Visibility.Visible;
+        }
         private void Settings_Click (object sender, EventArgs e)
         {
             Settings settings = new Settings();
@@ -82,7 +104,19 @@ namespace S6
                 await Task.Delay(100);
             }
         }
-        private void Devices_Click(object sender, RoutedEventArgs e)
+        private void Now(object sender, RoutedEventArgs e)
+        {
+            Type.Visibility = Visibility.Hidden;
+            listBox.Visibility = Visibility.Hidden;
+            pokazat.Visibility = Visibility.Hidden;
+            Type.Visibility = Visibility.Hidden;
+            Text1.Visibility = Visibility.Hidden;
+            Text2.Visibility = Visibility.Hidden;
+            delete.Visibility = Visibility.Hidden;
+            dataGrid.Visibility = Visibility.Hidden;
+
+        }
+            private void Devices_Click(object sender, RoutedEventArgs e)
         {
             // Обработчик события для первой кнопки
             //HiddenAnalytics();
