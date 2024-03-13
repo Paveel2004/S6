@@ -45,10 +45,10 @@ namespace S6
     /// </summary>
     public partial class MainWindow : Window
     {
+        Settings settings = new Settings();
         private bool isAnalytigsVisible = false;
         private bool isMenuVisible = true;
         private delegate void UpdateListBoxDelegate();
-
         private UpdateListBoxDelegate updateListBoxDelegate;
         private object lockObject = new object();
         string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
@@ -62,7 +62,7 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Сейчас", ClickHandler = Now });
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
             string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
-            Task.Run(() => UpdateListBox());
+            //Task.Run(() => UpdateListBox());
             DataBaseHelper.connectionString = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
 
         }
@@ -88,10 +88,20 @@ namespace S6
             }
             listBox.Visibility = Visibility.Visible;
         }
-        private void Settings_Click (object sender, EventArgs e)
+        private void Settings_Click(object sender, EventArgs e) => settings.ShowDialog();
+        private void HiddenAllInterfaseItems()
         {
-            Settings settings = new Settings();
-            settings.ShowDialog();
+            Type.Visibility = Visibility.Hidden;
+            listBox.Visibility = Visibility.Hidden;
+            pokazat.Visibility = Visibility.Hidden;
+            Text1.Visibility = Visibility.Hidden;
+            Text2.Visibility = Visibility.Hidden;
+            delete.Visibility = Visibility.Hidden;
+            dataGrid.Visibility = Visibility.Hidden;
+            Character.Visibility = Visibility.Hidden;
+            Date.Visibility = Visibility.Hidden;
+            prosmotr.Visibility = Visibility.Hidden;
+
         }
         private async Task UpdateListBox()
         {
@@ -106,30 +116,19 @@ namespace S6
         }
         private void Now(object sender, RoutedEventArgs e)
         {
-            Type.Visibility = Visibility.Hidden;
-            listBox.Visibility = Visibility.Hidden;
-            pokazat.Visibility = Visibility.Hidden;
-            Type.Visibility = Visibility.Hidden;
-            Text1.Visibility = Visibility.Hidden;
-            Text2.Visibility = Visibility.Hidden;
-            delete.Visibility = Visibility.Hidden;
-            dataGrid.Visibility = Visibility.Hidden;
+            HiddenAllInterfaseItems();
 
         }
-            private void Devices_Click(object sender, RoutedEventArgs e)
+        public void VisibilityDevices()
         {
-            // Обработчик события для первой кнопки
-            //HiddenAnalytics();
-            //updateListBoxDelegate = new (DisplayDevices);
-            Type.Visibility = Visibility.Hidden;
-            Character.Visibility = Visibility.Hidden;
-            Text1.Visibility = Visibility.Hidden;
-            Text2.Visibility = Visibility.Hidden;
-            Date.Visibility = Visibility.Hidden;
             prosmotr.Visibility = Visibility.Visible;
-            pokazat.Visibility = Visibility.Hidden;
             delete.Visibility = Visibility.Visible;
-            listBox.Visibility = Visibility.Hidden;
+            dataGrid.Visibility = Visibility.Visible;
+        }
+        private void Devices_Click(object sender, RoutedEventArgs e)
+        {
+            HiddenAllInterfaseItems();
+            VisibilityDevices();   
 
 
 
@@ -151,7 +150,6 @@ namespace S6
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            // Ваш обработчик события
             var menuItem = (MenuItem)((Button)sender).DataContext;
             menuItem.ClickHandler?.Invoke(sender, e);
         }
@@ -253,25 +251,6 @@ namespace S6
             }
         }
 
-        /*        private void pokazat_Click(object sender, RoutedEventArgs e)
-                {
-                    string query = $"SELECT [Дата/Время], [Тип характеристики], Значение\r\n\tFROM ИспользованиеУстройстваВЦелом\r\n\tWHERE [Тип характеристики] = 'Процессор' AND ([Дата/Время] BETWEEN '2023-03-10 00:00:00' AND '2024-03-10 00:00:00') AND [Имя компьютера] = 'DESKTOP-LVEJL0B' AND Название = 'Температура';";
-
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
-                        DataTable dataTable = new DataTable();
-                        dataAdapter.Fill(dataTable);
-                        DataTable reversedTable = dataTable.Clone();
-
-                        for (int i = dataTable.Rows.Count - 1; i >= 0; i--)
-                        {
-                            reversedTable.ImportRow(dataTable.Rows[i]);
-                        }
-
-                        dataGrid.ItemsSource = reversedTable.DefaultView;
-                    }
-                }*/
         private void pokazat_Click(object sender, RoutedEventArgs e)
         {
             string query = $"EXECUTE ИспользованиеПредставление @ТипХарактеристики = '{Type.Text}', @Характеристика = '{ Character.Text}', @ИмяКомпьютера = '{ComputerName.Text}', @НачальнаяДата = '{StartData.SelectedDate}', @КонечнаДата = '{EndData.SelectedDate}'";
