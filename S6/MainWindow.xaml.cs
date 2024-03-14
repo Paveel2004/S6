@@ -37,6 +37,7 @@ using Microsoft.Data.SqlClient;
 using System.Text.Json;
 using System.Windows.Shapes;
 using System.Data.Common;
+using System.Reflection.Metadata.Ecma335;
 
 namespace S6
 {
@@ -63,12 +64,73 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
             string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
             //Task.Run(() => UpdateListBox());
+            Thread _thread;
+            _thread = new Thread(UpdateData);
+            _thread.IsBackground = true;
+            _thread.Start();
             DataBaseHelper.connectionString = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
 
         }
+        private double Now(string Type, string Character)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
 
+                using (SqlCommand command = new SqlCommand("АктуальноеЗначение", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+
+                    command.Parameters.AddWithValue("@ТипХарактеристики", Type);
+                    command.Parameters.AddWithValue("@Характеристика", Character);
+                    command.Parameters.AddWithValue("@ИмяПК", $"{ComputerName.Text}");
+
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            // Предполагается, что у вас есть TextBox с именем textBox1
+                           return double.Parse(reader[2].ToString());
+                        }
+                    }
+
+                    reader.Close();
+                }
+
+                connection.Close();
+            }
+            return 0;
+        }
+        private void UpdateData()
+        {
+            while (true)
+            {
+                // Обновление данных
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+
+                    ValueRAM.Content = Now("ОЗУ", "Загруженность");
+                    ValueFreeSpace.Content = Now("Диск", "Свободное место");
+                    ValueUsageCPU.Content = Now("Процессор", "Загруженность");
+                    ValueTemperatureCPU.Content = Now("Процессор", "Температура");
+            });
+
+                // Задержка перед следующим обновлением
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+        }
+        private void VisibilityWindow()
+        {
+            listBox.Visibility = Visibility.Visible;
+            ComputerName.Visibility = Visibility.Visible;
+        }
         private void Window_Click(object sender, EventArgs e)
         {
+            HiddenAllInterfaseItems();
+            VisibilityWindow();
             string query = $"SELECT Использование.[Серийный номер BIOS], Значение, " +
                 $"[Дата/Время], Название, [Тип характеристики], Устройтво.Имя AS \"Имя компьютера\"" +
                 $" FROM [Использование]\r\nJOIN [Динамические характеристики] ON [ID Характеристики " +
@@ -101,8 +163,17 @@ namespace S6
             Character.Visibility = Visibility.Hidden;
             Date.Visibility = Visibility.Hidden;
             prosmotr.Visibility = Visibility.Hidden;
+            TextNow1.Visibility = Visibility.Hidden;
+            TextNow2.Visibility = Visibility.Hidden;
+            TextNow3.Visibility = Visibility.Hidden;
+            TextNow4.Visibility = Visibility.Hidden;
+            ValueRAM.Visibility = Visibility.Hidden;
+            ValueUsageCPU.Visibility = Visibility.Hidden;
+            ValueTemperatureCPU.Visibility = Visibility.Hidden;
+            ValueFreeSpace.Visibility = Visibility.Hidden;
 
         }
+        
         private async Task UpdateListBox()
         {
             while (true)
@@ -114,10 +185,25 @@ namespace S6
                 await Task.Delay(100);
             }
         }
+
+
+
         private void Now(object sender, RoutedEventArgs e)
         {
             HiddenAllInterfaseItems();
+            VisibilityNow();
 
+        }
+        private void VisibilityNow()
+        {
+            TextNow1.Visibility = Visibility.Visible;
+            TextNow2.Visibility = Visibility.Visible;
+            TextNow3.Visibility = Visibility.Visible;
+            TextNow4.Visibility = Visibility.Visible;
+            ValueRAM.Visibility = Visibility.Visible;
+            ValueUsageCPU.Visibility = Visibility.Visible;
+            ValueTemperatureCPU.Visibility = Visibility.Visible;
+            ValueFreeSpace.Visibility = Visibility.Visible;
         }
         public void VisibilityDevices()
         {
@@ -200,7 +286,7 @@ namespace S6
                     while (reader.Read())
                     {
                         string name = reader["Имя"].ToString();
-                       
+
                         ComputerName.Items.Add(name);
                     }
                 }
@@ -234,7 +320,7 @@ namespace S6
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string sqlQuery = $"EXECUTE ХарактерисикиТипа @Тип = '{Type.Text}'"; 
+                string sqlQuery = $"EXECUTE ХарактерисикиТипа @Тип = '{Type.Text}'";
                 SqlCommand cmd = new SqlCommand(sqlQuery, connection);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -251,7 +337,7 @@ namespace S6
 
         private void pokazat_Click(object sender, RoutedEventArgs e)
         {
-            string query = $"EXECUTE ИспользованиеПредставление @ТипХарактеристики = '{Type.Text}', @Характеристика = '{ Character.Text}', @ИмяКомпьютера = '{ComputerName.Text}', @НачальнаяДата = '{StartData.SelectedDate}', @КонечнаДата = '{EndData.SelectedDate}'";
+            string query = $"EXECUTE ИспользованиеПредставление @ТипХарактеристики = '{Type.Text}', @Характеристика = '{Character.Text}', @ИмяКомпьютера = '{ComputerName.Text}', @НачальнаяДата = '{StartData.SelectedDate}', @КонечнаДата = '{EndData.SelectedDate}'";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -270,17 +356,17 @@ namespace S6
 
 
         private void prosmotr_Click(object sender, RoutedEventArgs e)
-        {   
+        {
             string query = $" EXECUTE ДанныеОУстройстве @Имя = '{ComputerName.Text}'";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-               
+
 
                 SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
                 DataTable dataTable = new DataTable();
                 dataAdapter.Fill(dataTable);
-                
+
                 dataGrid.ItemsSource = dataTable.DefaultView;
 
             }
