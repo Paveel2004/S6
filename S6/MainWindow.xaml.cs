@@ -77,7 +77,7 @@ namespace S6
         }
         public void ShowDataOnGraph()
         {
-            var plotModel = new PlotModel { Title = "Скорость Ethernet" };
+            var plotModel = new PlotModel { Title = "Данные" };
 
             // Ось времени
             plotModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, StringFormat = "HH:mm:ss" });
@@ -95,7 +95,7 @@ namespace S6
             {
                 connection.Open();
 
-                using (SqlCommand command = new SqlCommand("SELECT [Дата/Время], Значение FROM ИспользованиеУстройстваВЦелом WHERE [Тип характеристики] = 'Ethernet' AND [Имя компьютера] = 'WINDEV2401EVAL' AND Название = 'Скорость' ORDER BY [Дата/Время] DESC;", connection))
+                using (SqlCommand command = new SqlCommand($"SELECT [Дата/Время], Значение FROM ИспользованиеУстройстваВЦелом WHERE [Тип характеристики] = '{Type.Text}' AND [Имя компьютера] = '{ComputerName.Text}' AND Название = '{Character.Text}' ORDER BY [Дата/Время] DESC;", connection))
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -295,6 +295,13 @@ namespace S6
             ValueTemperatureCPU.Visibility = Visibility.Visible;
             ValueFreeSpace.Visibility = Visibility.Visible;
             ValueEthernrtSpeed.Visibility = Visibility.Visible;
+
+            Type.Visibility = Visibility.Visible;
+            Character.Visibility = Visibility.Visible;
+            Text1.Visibility = Visibility.Visible;
+            Text2.Visibility = Visibility.Visible;
+            Date.Visibility = Visibility.Visible;
+
         }
         public void VisibilityDevices()
         {
