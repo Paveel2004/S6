@@ -496,7 +496,7 @@ namespace Server
             try
             {
                 // Указываем IP-адрес и порт, на котором будет слушать сервер
-                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+                IPAddress localAddr = IPAddress.Parse("192.168.169.240");
 
                 // Создаем TcpListener
                 server = new TcpListener(localAddr, port);

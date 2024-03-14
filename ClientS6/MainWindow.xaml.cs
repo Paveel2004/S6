@@ -44,8 +44,8 @@ namespace ClientS6
             try
             {
                 
-                string jsonFilePath = @".\Users\ASUS\source\repos\ClientS6\ClientS6\bin\Debug\net6.0-windows\data.json",
-                    exeDataCollectionPath = @".\Users\ASUS\source\repos\Data collection\Data collection\bin\Debug\net6.0\Data collection.exe";
+                string jsonFilePath = @"C:\Users\ASUS\source\repos\ClientS6\ClientS6\bin\Debug\net6.0-windows\data.json",
+                    exeDataCollectionPath = @"C:\Users\ASUS\source\repos\Data collection\Data collection\bin\Debug\net6.0\Data collection.exe";
                 Process process = new Process();
 
                 var data = new
