@@ -38,6 +38,8 @@ using System.Text.Json;
 using System.Windows.Shapes;
 using System.Data.Common;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.Win32;
+using System.Windows.Media.Converters;
 
 namespace S6
 {
@@ -61,6 +63,7 @@ namespace S6
             Menu.Items.Add(new MenuItem { Text = "Использование устройств", ClickHandler = Usage_Click });
             Menu.Items.Add(new MenuItem { Text = "Окна", ClickHandler = Window_Click });
             Menu.Items.Add(new MenuItem { Text = "Сейчас", ClickHandler = Now });
+            Menu.Items.Add(new MenuItem { Text = "Выгрузить данные", ClickHandler = DataExport });
             Menu.Items.Add(new MenuItem { Text = "Настройки", ClickHandler = Settings_Click });
             string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
             //Task.Run(() => UpdateListBox());
@@ -69,8 +72,87 @@ namespace S6
             _thread.IsBackground = true;
             _thread.Start();
             DataBaseHelper.connectionString = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
+            ShowDataOnGraph();
 
         }
+        public void ShowDataOnGraph()
+        {
+            var plotModel = new PlotModel { Title = "Скорость Ethernet" };
+
+            // Ось времени
+            plotModel.Axes.Add(new DateTimeAxis { Position = AxisPosition.Bottom, StringFormat = "HH:mm:ss" });
+
+            // Ось данных
+            plotModel.Axes.Add(new LinearAxis { Position = AxisPosition.Left });
+
+            // Серия данных
+            var series = new LineSeries();
+            plotModel.Series.Add(series);
+
+            string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand command = new SqlCommand("SELECT [Дата/Время], Значение FROM ИспользованиеУстройстваВЦелом WHERE [Тип характеристики] = 'Ethernet' AND [Имя компьютера] = 'WINDEV2401EVAL' AND Название = 'Скорость' ORDER BY [Дата/Время] DESC;", connection))
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DateTime dateTime = reader.GetDateTime(0);
+                         double value = double.Parse(reader.GetString(1));
+
+                        // Добавляем точку на график
+                        series.Points.Add(new DataPoint(DateTimeAxis.ToDouble(dateTime), value));
+                    }
+                }
+            }
+
+            this.Ethernet.Model = plotModel;
+        }
+
+        public void DataExport(object sender, RoutedEventArgs e)
+        {
+            // Создаем диалог выбора файла
+           SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Текстовый файл (*.txt)|*.txt";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                string fileName = saveFileDialog.FileName;
+
+                // Выгрузка данных
+
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand($"SELECT [Дата/Время], [Тип характеристики], Значение\r\n\tFROM ИспользованиеУстройстваВЦелом\r\n\tWHERE [Тип характеристики] = 'Клавиатура' AND [Имя компьютера] = '{ComputerName.Text}' AND Название = 'Символ' ORDER BY [Дата/Время] DESC;", connection))
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        using (StreamWriter writer = new StreamWriter(fileName))
+                        {
+                            while (reader.Read())
+                            {
+                                for (int i = 0; i < reader.FieldCount; i++)
+                                {
+                                    writer.Write(reader.GetValue(i));
+
+                                    if (i < reader.FieldCount - 1)
+                                        writer.Write("\t");
+                                }
+
+                                writer.WriteLine();
+                            }
+                        }
+                    }
+                }
+
+                MessageBox.Show("Данные успешно экспортированы в файл " + fileName);
+            }
+        }
+
         private double Now(string Type, string Character)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -116,6 +198,9 @@ namespace S6
                     ValueFreeSpace.Content = Now("Диск", "Свободное место");
                     ValueUsageCPU.Content = Now("Процессор", "Загруженность");
                     ValueTemperatureCPU.Content = Now("Процессор", "Температура");
+                    ValueEthernrtSpeed.Content = Now("Ethernet", "Скорость");
+                    ShowDataOnGraph();
+
             });
 
                 // Задержка перед следующим обновлением
@@ -167,10 +252,13 @@ namespace S6
             TextNow2.Visibility = Visibility.Hidden;
             TextNow3.Visibility = Visibility.Hidden;
             TextNow4.Visibility = Visibility.Hidden;
-            ValueRAM.Visibility = Visibility.Hidden;
+            TextNow5.Visibility = Visibility.Hidden;
+            ValueRAM.Visibility = Visibility.Hidden;            
             ValueUsageCPU.Visibility = Visibility.Hidden;
             ValueTemperatureCPU.Visibility = Visibility.Hidden;
             ValueFreeSpace.Visibility = Visibility.Hidden;
+            ValueEthernrtSpeed.Visibility = Visibility.Hidden;
+            Ethernet.Visibility = Visibility.Hidden;
 
         }
         
@@ -192,6 +280,7 @@ namespace S6
         {
             HiddenAllInterfaseItems();
             VisibilityNow();
+            Ethernet.Visibility = Visibility.Visible;
 
         }
         private void VisibilityNow()
@@ -200,10 +289,12 @@ namespace S6
             TextNow2.Visibility = Visibility.Visible;
             TextNow3.Visibility = Visibility.Visible;
             TextNow4.Visibility = Visibility.Visible;
+            TextNow5.Visibility = Visibility.Visible;
             ValueRAM.Visibility = Visibility.Visible;
             ValueUsageCPU.Visibility = Visibility.Visible;
             ValueTemperatureCPU.Visibility = Visibility.Visible;
             ValueFreeSpace.Visibility = Visibility.Visible;
+            ValueEthernrtSpeed.Visibility = Visibility.Visible;
         }
         public void VisibilityDevices()
         {

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:S6"
         xmlns:oxy="http://oxyplot.org/wpf" x:Class="S6.MainWindow"
         mc:Ignorable="d"
-        Title="S6" Height="450" Width="1052" Icon="/icons8-компьютер-96.png" KeyDown="Menu_KeyDown">
+        Title="S6" Height="573" Width="1052" Icon="/icons8-компьютер-96.png" KeyDown="Menu_KeyDown">
 
     <Grid>
 
@@ -32,7 +32,7 @@
         <Button Visibility="Hidden" Name = "pokazat" Content="Показать" Background="White" HorizontalAlignment="Left" Margin="948,2,0,0" VerticalAlignment="Top" Width="57" Click="pokazat_Click"/>
         <Label Name="Text1" Visibility="Hidden" Content="Тип характеристики" Foreground="White" HorizontalAlignment="Left" Margin="452,-1,0,0" VerticalAlignment="Top"/>
         <Label Name="Text2" Visibility="Hidden" Content="Характеристика" Foreground="White" HorizontalAlignment="Left" Margin="711,-2,0,0" VerticalAlignment="Top"/>
-        <DataGrid AutoGenerateColumns="True" Name="dataGrid" Margin="220,30,30,40"/>
+        <DataGrid Visibility="Hidden" AutoGenerateColumns="True" Name="dataGrid" Margin="220,30,30,40"/>
         <ComboBox DropDownOpened="ComputerName_DropDownOpened" Name="ComputerName" HorizontalAlignment="Left" Margin="327,1,0,0" VerticalAlignment="Top" Width="120"/>
         <Label Content="Имя компьютера" Foreground="White" HorizontalAlignment="Left" Margin="217,-2,0,0" VerticalAlignment="Top"/>
 
@@ -46,14 +46,18 @@
         <Button Name="prosmotr" Click="prosmotr_Click" Content="Просмотр" Background="White"  HorizontalAlignment="Left" Height="20" Margin="454,2,0,0" VerticalAlignment="Top"  Width="72"/>
         <Button x:Name="delete" Click="delete_Click" Content="Удалить" Background="White"  HorizontalAlignment="Left" Height="20" Margin="948,5,0,0" VerticalAlignment="Top"  Width="72"/>
         <ListBox Visibility="Hidden" Name="listBox" Margin="220,30,30,40"/>
-        <Label Name="TextNow1" Visibility="Hidden" Content="Загруженность ОЗУ" Foreground="White" HorizontalAlignment="Left" Margin="220,52,0,0" VerticalAlignment="Top"/>
-        <Label  Name="TextNow2" Visibility="Hidden"  Content="Загруженность ЦП" Foreground="White" HorizontalAlignment="Left" Margin="220,83,0,0" VerticalAlignment="Top"/>
-        <Label  Name="TextNow3" Visibility="Hidden" Content="Температура ЦП" Foreground="White" HorizontalAlignment="Left" Margin="220,109,0,0" VerticalAlignment="Top"/>
-        <Label  Name="TextNow4" Visibility="Hidden" Content="Свободное мето на диске" Foreground="White" HorizontalAlignment="Left" Margin="220,135,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="ValueRAM"  Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="343,52,0,0" VerticalAlignment="Top" Width="206"/>
-        <Label x:Name="ValueUsageCPU" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="343,83,0,0" VerticalAlignment="Top" Width="206"/>
-        <Label x:Name="ValueTemperatureCPU" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="343,109,0,0" VerticalAlignment="Top" Width="206"/>
-        <Label x:Name="ValueFreeSpace" Visibility="Hidden"  Content="0" Foreground="White" HorizontalAlignment="Left" Margin="377,135,0,0" VerticalAlignment="Top" Width="206"/>
+        <Label Name="TextNow1" Visibility="Hidden" Content="Загруженность ОЗУ" Foreground="White" HorizontalAlignment="Left" Margin="222,30,0,0" VerticalAlignment="Top"/>
+        <Label  Name="TextNow2" Visibility="Hidden"  Content="Загруженность ЦП" Foreground="White" HorizontalAlignment="Left" Margin="365,30,0,0" VerticalAlignment="Top"/>
+        <Label  Name="TextNow3" Visibility="Hidden" Content="Температура ЦП" Foreground="White" HorizontalAlignment="Left" Margin="518,30,0,0" VerticalAlignment="Top"/>
+        <Label  Name="TextNow4" Visibility="Hidden" Content="Свободное мето на диске" Foreground="White" HorizontalAlignment="Left" Margin="224,59,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="ValueRAM"  Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="339,30,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="ValueUsageCPU" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="482,30,0,0" VerticalAlignment="Top" Width="30"/>
+        <Label x:Name="ValueTemperatureCPU" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="627,30,0,0" VerticalAlignment="Top" Width="34"/>
+        <Label x:Name="ValueFreeSpace" Visibility="Hidden"  Content="0" Foreground="White" HorizontalAlignment="Left" Margin="381,59,0,0" VerticalAlignment="Top" Width="206"/>
+        <Label  x:Name="TextNow5" Visibility="Hidden" Content="Скорость Ethernet" Foreground="White" HorizontalAlignment="Left" Margin="226,85,0,0" VerticalAlignment="Top" Width="114"/>
+        <Label x:Name="ValueEthernrtSpeed" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="350,85,0,0" VerticalAlignment="Top" Width="206"/>
+        <oxy:PlotView Visibility="Hidden" Name="Ethernet" HorizontalAlignment="Left" Height="401" Margin="220,116,0,0" VerticalAlignment="Top" Width="800"/>
+        
 
     </Grid>
 </Window>
