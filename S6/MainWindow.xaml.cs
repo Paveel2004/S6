@@ -72,7 +72,7 @@ namespace S6
             _thread.IsBackground = true;
             _thread.Start();
             DataBaseHelper.connectionString = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
-            ShowDataOnGraph();
+            //ShowDataOnGraph();
 
         }
         public void ShowDataOnGraph()
@@ -199,7 +199,7 @@ namespace S6
                     ValueUsageCPU.Content = Now("Процессор", "Загруженность");
                     ValueTemperatureCPU.Content = Now("Процессор", "Температура");
                     ValueEthernrtSpeed.Content = Now("Ethernet", "Скорость");
-                    ShowDataOnGraph();
+                    //ShowDataOnGraph();
 
             });
 

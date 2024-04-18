@@ -20,22 +20,23 @@ namespace Server
     {  
         static async Task Main()
         {
+            IPAddress localAddr = IPAddress.Parse("127.0.0.1");
             DataBaseHelper.connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
 
-            Task.Run(() => StartServer (9440, HendleClientDeviceInitialization));
-            Task.Run(() => StartServer(9930, HendleClientNetwork));
-            Task.Run(() => StartServer(9860, HendleClientCPU));
-            Task.Run(() => StartServer(9790, HendleClientRAM));
-            Task.Run(() => StartServer(9720, HendleClientUsageRAM));
-            Task.Run(() => StartServer(9650, HendleClientUsageOS));
-            Task.Run(() => StartServer(9580, HendleClientUsageCPU));
-            Task.Run(() => StartServer(9510, HendleClientUsageEthernet));
-            Task.Run(() => StartServer(9370, HendleClientVideoCard));
-            Task.Run(() => StartServer(9300, HendleClientUsageDisk));
-            Task.Run(() => StartServer(9230, HendleClientDisk));
-            Task.Run(() => StartServer(9160, HendleClientOS));
-            Task.Run(() => StartServer(9090, HendleClientUsageWindow));
-            Task.Run(() => StartServer(9830, HendleClientKey));
+            Task.Run(() => StartServer (9440, HendleClientDeviceInitialization, localAddr));
+            Task.Run(() => StartServer(9930, HendleClientNetwork, localAddr));
+            Task.Run(() => StartServer(9860, HendleClientCPU, localAddr));
+            Task.Run(() => StartServer(9790, HendleClientRAM, localAddr));
+            Task.Run(() => StartServer(9720, HendleClientUsageRAM, localAddr));
+            Task.Run(() => StartServer(9650, HendleClientUsageOS, localAddr));
+            Task.Run(() => StartServer(9580, HendleClientUsageCPU, localAddr));
+            Task.Run(() => StartServer(9510, HendleClientUsageEthernet, localAddr));
+            Task.Run(() => StartServer(9370, HendleClientVideoCard, localAddr));
+            Task.Run(() => StartServer(9300, HendleClientUsageDisk, localAddr));
+            Task.Run(() => StartServer(9230, HendleClientDisk, localAddr));
+            Task.Run(() => StartServer(9160, HendleClientOS, localAddr));
+            Task.Run(() => StartServer(9090, HendleClientUsageWindow, localAddr));
+            Task.Run(() => StartServer(9830, HendleClientKey, localAddr));
             while (true) { } 
            
         }
@@ -88,7 +89,6 @@ namespace Server
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
 
                     WindowData windowData = JsonConvert.DeserializeObject<WindowData>(message);
-
                         DataBaseHelper.Query($"EXECUTE ДобавитьИспользование @ТипХарактеристики = 'ОС', @Характеристика = 'Окно', @СерийныйНомерBIOS = '{windowData.SerialNumberBIOS}', @Значение = '{windowData.Title}', @ДатаВремя = '{windowData.DateTime}'");
                     
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
@@ -111,11 +111,8 @@ namespace Server
             try
             {
                 using NetworkStream stream = tcpClient.GetStream();
-
                 byte[] data = new byte[5000];
                 int bytesRead;
-
-                // Читаем данные из потока
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
@@ -490,28 +487,18 @@ namespace Server
                 tcpClient.Close();
             }
         }
-        static async void StartServer(int port, Action<TcpClient> handleClient)
+        static async void StartServer(int port, Action<TcpClient> handleClient, IPAddress localAddr)
         {
             TcpListener server = null;
             try
             {
-                // Указываем IP-адрес и порт, на котором будет слушать сервер
-                IPAddress localAddr = IPAddress.Parse("192.168.169.240");
-
-                // Создаем TcpListener
                 server = new TcpListener(localAddr, port);
-
-                // Начинаем прослушивание клиентов
                 server.Start();
-
                 Console.WriteLine($"Сервер запущен на порту {port}. Ожидание подключений...");
-
                 while (true)
                 {
-                    // Ожидаем входящее подключение
                     TcpClient client = await server.AcceptTcpClientAsync();
                     Console.WriteLine("Подключен клиент!");
-                    // Обрабатываем подключенного клиента в отдельном потоке
                     Task.Run(() => handleClient(client));
                 }
             }
@@ -521,7 +508,6 @@ namespace Server
             }
             finally
             {
-                // Завершаем прослушивание клиентов при выходе из цикла
                 server?.Stop();
             }
         }
