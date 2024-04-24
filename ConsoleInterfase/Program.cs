@@ -33,26 +33,19 @@ namespace ConsoleInterfase
                 Console.WriteLine(ex.Message);
             }
         }
-        public static void BroadcastMessage(string message)
+        public static async void BroadcastMessage(string message, string address, int port)
         {
-            UdpClient udpClient = new UdpClient();
-            udpClient.EnableBroadcast = true;
+            var brodcastAddress = IPAddress.Parse(address); ; // хост для отправки данных 
+            using var udpSender = new UdpClient();    
 
-            byte[] buffer = Encoding.UTF8.GetBytes(message);
-
-            try
-            {
-                udpClient.Send(buffer, buffer.Length, new IPEndPoint(IPAddress.Broadcast, 11000));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                udpClient.Close();
-            }
+            byte[] data = Encoding.UTF8.GetBytes(message);
+            await udpSender.SendAsync(data, new IPEndPoint(brodcastAddress, port));
+            await Task.Delay(1000);
+            
         }
+        
+            
+        
         static async void StartServer(int port, Action<TcpClient> handleClient, IPAddress localAddr)
         {
             TcpListener server = null;
@@ -83,7 +76,7 @@ namespace ConsoleInterfase
             {
                 using NetworkStream stream = tcpClient.GetStream();
 
-                byte[] data = new byte[50];
+                byte[] data = new byte[5000];
                 int bytesRead;
 
                 // Читаем данные из потока
@@ -91,15 +84,7 @@ namespace ConsoleInterfase
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
 
-                    byte[] response;
-                    if (message == "Привет!")
-                    {
-                        response = Encoding.UTF8.GetBytes("Покаы");
-                    }
-                    else
-                    {
-                        response = Encoding.UTF8.GetBytes("Неверная команда");
-                    }
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
 
                     Console.WriteLine(message);
                     stream.Write(response, 0, response.Length);
@@ -119,8 +104,10 @@ namespace ConsoleInterfase
         }
         static void Main(string[] args)
         {
-            IPAddress localAddr = IPAddress.Parse("192.168.56.1");
-            Task.Run(() => StartServer(2222, HendleClient, localAddr));
+            int port = 2222;
+            IPAddress localAddr = IPAddress.Parse("192.168.221.240");
+            Task.Run(() => StartServer(port, HendleClient, localAddr));
+            string IP;
             while (true)
             {
                 string command = Console.ReadLine();
@@ -131,10 +118,34 @@ namespace ConsoleInterfase
                     break;
                     
                     case "getAll":
-                        BroadcastMessage(command);
-                    break;
+                        BroadcastMessage(command, "224.0.0.252",11000);
+                        break;
+                    case "getNetworkInterfases":
+                        IP = Console.ReadLine();
+                        SendMessage(IP, 1111, command);
+                        break;
+                    case "getSpeedEthernet":
+                        IP = Console.ReadLine();
+                        SendMessage(IP, 1111, command);
+                        break;
+                    case "getTemperatureCPU":
+                        IP = Console.ReadLine();
+                        SendMessage(IP, 1111, command);
+                        break;
+                    case "getUsageCPU":
+                        IP = Console.ReadLine();
+                        SendMessage(IP, 1111, command);
+                        break;
+                    case "getTraffic [Network Interfase Name]":
+                        IP = Console.ReadLine();
+                        SendMessage(IP, 1111, command);
+                        break;
 
-                }                           
+
+
+
+                }
+               
             }
            
             Console.ReadKey();
