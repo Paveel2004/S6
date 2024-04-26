@@ -23,7 +23,7 @@ namespace ConsoleInterfase
                 Console.WriteLine($"Отправлено сообщение: {message}");
 
                 // Читаем ответ от сервера
-                data = new byte[256];
+                data = new byte[999999];
                 int bytesRead = stream.Read(data, 0, data.Length);
                 string response = Encoding.UTF8.GetString(data, 0, bytesRead);
                 Console.WriteLine($"Ответ от сервера: {response}");
@@ -35,16 +35,12 @@ namespace ConsoleInterfase
         }
         public static async void BroadcastMessage(string message, string address, int port)
         {
-            var brodcastAddress = IPAddress.Parse(address); ; // хост для отправки данных 
-            using var udpSender = new UdpClient();    
-
+            var brodcastAddress = IPAddress.Parse(address);
+            using var udpSender = new UdpClient();
             byte[] data = Encoding.UTF8.GetBytes(message);
             await udpSender.SendAsync(data, new IPEndPoint(brodcastAddress, port));
-            await Task.Delay(1000);
-            
-        }
-        
-            
+            await Task.Delay(1000);            
+        }                
         
         static async void StartServer(int port, Action<TcpClient> handleClient, IPAddress localAddr)
         {
@@ -53,11 +49,11 @@ namespace ConsoleInterfase
             {
                 server = new TcpListener(localAddr, port);
                 server.Start();
-                Console.WriteLine($"Сервер запущен на порту {port}. Ожидание подключений...");
+                //Console.WriteLine($"Сервер запущен на порту {port}. Ожидание подключений...");
                 while (true)
                 {
                     TcpClient client = await server.AcceptTcpClientAsync();
-                    Console.WriteLine("Подключен клмент!");
+                    //Console.WriteLine("Подключен клмент!");
                     Task.Run(() => handleClient(client));
                 }
             }
@@ -76,7 +72,7 @@ namespace ConsoleInterfase
             {
                 using NetworkStream stream = tcpClient.GetStream();
 
-                byte[] data = new byte[5000];
+                byte[] data = new byte[999999];
                 int bytesRead;
 
                 // Читаем данные из потока
@@ -105,7 +101,7 @@ namespace ConsoleInterfase
         static void Main(string[] args)
         {
             int port = 2222;
-            IPAddress localAddr = IPAddress.Parse("192.168.221.240");
+            IPAddress localAddr = IPAddress.Parse("192.168.1.52");
             Task.Run(() => StartServer(port, HendleClient, localAddr));
             string IP;
             while (true)
@@ -140,10 +136,12 @@ namespace ConsoleInterfase
                         IP = Console.ReadLine();
                         SendMessage(IP, 1111, command);
                         break;
-
-
-
-
+                    case "getApplications":
+                        IP = Console.ReadLine();
+                        SendMessage(IP, 1111, command);
+                        break;
+                    case "getProcesses":
+                        break;
                 }
                
             }

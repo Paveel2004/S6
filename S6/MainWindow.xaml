@@ -45,7 +45,7 @@
         </StackPanel>
         <Button Name="prosmotr" Click="prosmotr_Click" Content="Просмотр" Background="White"  HorizontalAlignment="Left" Height="20" Margin="454,2,0,0" VerticalAlignment="Top"  Width="72"/>
         <Button x:Name="delete" Click="delete_Click" Content="Удалить" Background="White"  HorizontalAlignment="Left" Height="20" Margin="948,5,0,0" VerticalAlignment="Top"  Width="72"/>
-        <ListBox Visibility="Hidden" Name="listBox" Margin="220,30,30,40"/>
+        <ListBox Visibility="Visible" Name="listBox" Margin="220,30,30,40"/>
         <Label Name="TextNow1" Visibility="Hidden" Content="Загруженность ОЗУ" Foreground="White" HorizontalAlignment="Left" Margin="222,30,0,0" VerticalAlignment="Top"/>
         <Label  Name="TextNow2" Visibility="Hidden"  Content="Загруженность ЦП" Foreground="White" HorizontalAlignment="Left" Margin="365,30,0,0" VerticalAlignment="Top"/>
         <Label  Name="TextNow3" Visibility="Hidden" Content="Температура ЦП" Foreground="White" HorizontalAlignment="Left" Margin="518,30,0,0" VerticalAlignment="Top"/>

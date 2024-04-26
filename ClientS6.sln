@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlobalClass", "Class\GlobalClass.csproj", "{07DD041B-3542-4D0F-9616-983AB2E079BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleInterfase", "ConsoleInterfase\ConsoleInterfase.csproj", "{4298D3B0-BB57-46B8-9C43-DC3E9720BCB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleInterfase", "ConsoleInterfase\ConsoleInterfase.csproj", "{4298D3B0-BB57-46B8-9C43-DC3E9720BCB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminInterfase", "AdminInterfase\AdminInterfase.csproj", "{CF654E28-CBE0-4A07-AB27-E29CBB2F2E42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{4298D3B0-BB57-46B8-9C43-DC3E9720BCB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4298D3B0-BB57-46B8-9C43-DC3E9720BCB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4298D3B0-BB57-46B8-9C43-DC3E9720BCB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF654E28-CBE0-4A07-AB27-E29CBB2F2E42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF654E28-CBE0-4A07-AB27-E29CBB2F2E42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF654E28-CBE0-4A07-AB27-E29CBB2F2E42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF654E28-CBE0-4A07-AB27-E29CBB2F2E42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
