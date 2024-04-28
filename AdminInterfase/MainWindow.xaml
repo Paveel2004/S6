@@ -27,7 +27,7 @@
             </ListBox>
 
 
-            <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" Visibility="Visible" Name="listBox" Margin="220,30,30,40">
+            <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" Visibility="Visible" Name="listBox" Margin="220,40,30,30">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -38,7 +38,10 @@
                             <StackPanel>
                                 <!-- Текст -->
                                 <TextBlock Text="{Binding Text}" FontSize="14" FontWeight="Light" />
-                              
+
+                                <!-- Дополнительный текст -->
+                                <TextBlock Name="AdditionalText" Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
+
                                 <!-- Кнопки -->
                                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Name="ButtonPanel" Visibility="Collapsed">
 
@@ -46,15 +49,19 @@
                                     <Button Background="AntiqueWhite" Content="Процессы" Margin="5" Click="Process_Click" />
                                     <Button Background="AntiqueWhite" Content="Трафик" Margin="5" />
                                     <Button Background="AntiqueWhite" Content="Приложения" Margin="5" Click="App_Click"/>
-                                </StackPanel>                        
+                                </StackPanel>
                                 <!-- Кнопка Подробнее -->
                                 <Button Background="AntiqueWhite" Width="100" Content="Подробнее" HorizontalAlignment="Left" Margin="5" Click="Details_Click"/>
-                            
+
                             </StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <StackPanel HorizontalAlignment="Right" Margin="0,10,30,0">
+                <TextBox HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged"  Width="250"/>
+            </StackPanel>
+            
 
 
 

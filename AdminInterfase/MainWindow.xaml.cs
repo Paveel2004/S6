@@ -39,7 +39,7 @@ namespace AdminInterfase
         public MainWindow()
         {
             InitializeComponent();
-            Menu.Items.Add(new MenuItem { Text = "Мониторинг", ClickHandler = Monitoring_Click});
+            Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Monitoring_Click});
             Menu.Items.Add(new MenuItem { Text = "Контроль"});
             Menu.Items.Add(new MenuItem { Text = "Компьютеры", ClickHandler = Computers_Click });
             Menu.Items.Add(new MenuItem { Text = "Отчёты"});
@@ -53,24 +53,44 @@ namespace AdminInterfase
             Button button = sender as Button;
 
             // Получение StackPanel, содержащего кнопки
-            // Получение StackPanel, содержащего кнопки
             StackPanel buttonPanel = button.Parent as StackPanel;
             StackPanel buttons = buttonPanel.Children.OfType<StackPanel>().First();
 
-            // Изменение видимости кнопок
+            // Получение TextBlock с дополнительным текстом
+            TextBlock additionalText = buttonPanel.Children.OfType<TextBlock>().First(t => t.Name == "AdditionalText");
+
+            var item = button.DataContext;
+
+            // Преобразуем DataContext в нужный тип
+            var myItem = item as ListBoxInfo; // замените MyItemType на тип вашего элемента
+
+            // Регулярное выражение для поиска IP-адресов
+            var regex = new Regex(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+
+            // Ищем все IP-адреса в тексте
+            var matches = regex.Matches(myItem.Text);
+
+            // Изменение видимости кнопок и дополнительного текста
             if (buttons.Visibility == Visibility.Collapsed)
             {
                 buttons.Visibility = Visibility.Visible;
+                additionalText.Visibility = Visibility.Visible;
+
+                foreach (Match match in matches)
+                {
+
+                    additionalText.Text = SendMessage(match.Value, 1111, "AdditionalInformation");
+                }
+                 // Установка значения для дополнительного текста
                 button.Content = "Скрыть";
             }
             else
             {
                 buttons.Visibility = Visibility.Collapsed;
+                additionalText.Visibility = Visibility.Collapsed;
                 button.Content = "Подробнее";
             }
         }
-
-
 
         public static string SendMessage(string serverAddress, int port, string message)
         {
@@ -116,12 +136,10 @@ namespace AdminInterfase
                 app.Show();
             }
         }
-
         private void App_Click(object sender, RoutedEventArgs e)
         {
             ShowApps(sender, "getApplications", "Приложения");
         }
-
         public void Process_Click(object sender, RoutedEventArgs e)
         {
             ShowApps(sender, "getProcesses", "Процессы");
@@ -191,17 +209,14 @@ namespace AdminInterfase
                 tcpClient.Close();
             }
         }
-
-
-
         public void GetAll()
         {
+            listBox.Items.Clear();
             BroadcastMessage("getAll", BroadcastAddress, BroadcastPort);
             
         }
         private void Monitoring_Click(object sender, RoutedEventArgs e)
-        {
-            
+        {            
             GetAll();
         }
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -235,6 +250,15 @@ namespace AdminInterfase
             Menu.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(Menu.Margin, new Thickness(animation.To.Value, 0, 0, 0), animation.Duration));
             // Используем сравнение с 0, чтобы понять, видимо ли меню
             isMenuVisible = Math.Abs(Menu.Margin.Left) < double.Epsilon;
+        }
+
+        //////////////
+        ///
+        ObservableCollection<string> items;
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var searchText = textBox.Text.ToLower();
+            listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
         }
 
     }
