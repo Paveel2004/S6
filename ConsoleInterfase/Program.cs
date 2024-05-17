@@ -101,7 +101,7 @@ namespace ConsoleInterfase
         static void Main(string[] args)
         {
             int port = 2222;
-            IPAddress localAddr = IPAddress.Parse("192.168.1.52");
+            IPAddress localAddr = IPAddress.Parse("127.0.0.1");
             Task.Run(() => StartServer(port, HendleClient, localAddr));
             string IP;
             while (true)

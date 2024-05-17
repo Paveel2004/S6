@@ -28,6 +28,16 @@
 
 
             <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" Visibility="Visible" Name="listBox" Margin="220,40,30,30">
+
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Focusable" Value="False"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+
+
+
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -45,23 +55,29 @@
                                 <!-- Кнопки -->
                                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Name="ButtonPanel" Visibility="Collapsed">
 
-                                    <Button Background="AntiqueWhite" Content="Клавиатура" Margin="5" />
-                                    <Button Background="AntiqueWhite" Content="Процессы" Margin="5" Click="Process_Click" />
-                                    <Button Background="AntiqueWhite" Content="Трафик" Margin="5" />
+                                   
+                                    <Button Background="AntiqueWhite" Content="Процессы" Margin="5" Click="Process_Click" />                               
                                     <Button Background="AntiqueWhite" Content="Приложения" Margin="5" Click="App_Click"/>
+                                    <Button Background="AntiqueWhite" Content="Трафик" Margin="5" Click="App_Click"/>
+                                    <Button Background="AntiqueWhite" Content="Клавиатура" Margin="5" Click="App_Click"/>
+                                    <Button Background="AntiqueWhite" Content="Контроль" Margin="5" Click="App_Click"/>
                                 </StackPanel>
                                 <!-- Кнопка Подробнее -->
                                 <Button Background="AntiqueWhite" Width="100" Content="Подробнее" HorizontalAlignment="Left" Margin="5" Click="Details_Click"/>
 
                             </StackPanel>
                         </StackPanel>
+          
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <StackPanel HorizontalAlignment="Right" Margin="0,10,30,0">
-                <TextBox HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged"  Width="250"/>
+            <StackPanel HorizontalAlignment="Right"  Margin="0,10,30,0">
+                <TextBox Text="Поиск 🔍" HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged"  Width="250"/>
             </StackPanel>
-            
+            <ComboBox DropDownOpened="ComputerName_DropDownOpened" Visibility="Hidden" HorizontalAlignment="Right" Height="21" Name="ComputerName" Background="AntiqueWhite" Margin="0,10,300,0" VerticalAlignment="Top" Width="182" SelectionChanged="ComboBox_SelectionChanged"/>
+            <DataGrid x:Name="dataGrid" Margin="220,40,30,30"  Background="#80FFFFFF" Visibility="Hidden" d:ItemsSource="{d:SampleData ItemCount=5}"/>
+
+
 
 
 

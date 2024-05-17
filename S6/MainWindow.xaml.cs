@@ -474,6 +474,11 @@ namespace S6
         {
             DataBaseHelper.Query($"DELETE FROM Устройтво WHERE Имя = '{ComputerName.Text}'", connectionString);
         }
+
+        private void ComputerName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 
 

@@ -33,7 +33,7 @@
         <Label Name="Text1" Visibility="Hidden" Content="Тип характеристики" Foreground="White" HorizontalAlignment="Left" Margin="452,-1,0,0" VerticalAlignment="Top"/>
         <Label Name="Text2" Visibility="Hidden" Content="Характеристика" Foreground="White" HorizontalAlignment="Left" Margin="711,-2,0,0" VerticalAlignment="Top"/>
         <DataGrid Visibility="Hidden" AutoGenerateColumns="True" Name="dataGrid" Margin="220,30,30,40"/>
-        <ComboBox DropDownOpened="ComputerName_DropDownOpened" Name="ComputerName" HorizontalAlignment="Left" Margin="327,1,0,0" VerticalAlignment="Top" Width="120"/>
+        <ComboBox DropDownOpened="ComputerName_DropDownOpened" Name="ComputerName" HorizontalAlignment="Left" Margin="327,1,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComputerName_SelectionChanged"/>
         <Label Content="Имя компьютера" Foreground="White" HorizontalAlignment="Left" Margin="217,-2,0,0" VerticalAlignment="Top"/>
 
 
@@ -43,7 +43,7 @@
             <Label Content="Конечная дата" Foreground="White" Margin="10"/>
             <DatePicker Name = "EndData"  HorizontalAlignment="Left" Height="25" Width="150" Margin="10"/>
         </StackPanel>
-        <Button Name="prosmotr" Click="prosmotr_Click" Content="Просмотр" Background="White"  HorizontalAlignment="Left" Height="20" Margin="454,2,0,0" VerticalAlignment="Top"  Width="72"/>
+        <Button Name="prosmotr" Click="prosmotr_Click" Content="Просмотр" Background="White"  HorizontalAlignment="Left" Margin="454,2,0,535"  Width="72"/>
         <Button x:Name="delete" Click="delete_Click" Content="Удалить" Background="White"  HorizontalAlignment="Left" Height="20" Margin="948,5,0,0" VerticalAlignment="Top"  Width="72"/>
         <ListBox Visibility="Visible" Name="listBox" Margin="220,30,30,40"/>
         <Label Name="TextNow1" Visibility="Hidden" Content="Загруженность ОЗУ" Foreground="White" HorizontalAlignment="Left" Margin="222,30,0,0" VerticalAlignment="Top"/>
@@ -57,7 +57,7 @@
         <Label  x:Name="TextNow5" Visibility="Hidden" Content="Скорость Ethernet" Foreground="White" HorizontalAlignment="Left" Margin="226,85,0,0" VerticalAlignment="Top" Width="114"/>
         <Label x:Name="ValueEthernrtSpeed" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="350,85,0,0" VerticalAlignment="Top" Width="206"/>
         <oxy:PlotView Visibility="Hidden" Name="Ethernet" HorizontalAlignment="Left" Height="401" Margin="220,116,0,0" VerticalAlignment="Top" Width="800"/>
-        
+
 
     </Grid>
 </Window>

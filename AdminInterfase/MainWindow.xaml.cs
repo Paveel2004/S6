@@ -21,13 +21,14 @@ using System.Text.RegularExpressions;
 using AdminInterfase.MoreWindow;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace AdminInterfase
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-
 
     public partial class MainWindow : Window
     {
@@ -36,14 +37,14 @@ namespace AdminInterfase
         private int BroadcastPort = 11000;
         private int localPort = 2222;
         private IPAddress localAddr = IPAddress.Parse("192.168.1.52");
+        string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
         public MainWindow()
         {
             InitializeComponent();
             Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Monitoring_Click});
-            Menu.Items.Add(new MenuItem { Text = "Контроль"});
+            Menu.Items.Add(new MenuItem { Text = "Контроль", ClickHandler = Control_Click});
             Menu.Items.Add(new MenuItem { Text = "Компьютеры", ClickHandler = Computers_Click });
-            Menu.Items.Add(new MenuItem { Text = "Отчёты"});
-            Menu.Items.Add(new MenuItem { Text = "Настройки"});
+            Menu.Items.Add(new MenuItem { Text = "Настройки",});
             Task.Run(() => StartServer(localPort, client => HandleClient(client, listBox), localAddr));
 
         }
@@ -78,8 +79,8 @@ namespace AdminInterfase
 
                 foreach (Match match in matches)
                 {
-
-                    additionalText.Text = SendMessage(match.Value, 1111, "AdditionalInformation");
+                    
+                    additionalText.Text = DictionaryToText(SendMessage(match.Value, 1111, "AdditionalInformation"));
                 }
                  // Установка значения для дополнительного текста
                 button.Content = "Скрыть";
@@ -146,8 +147,19 @@ namespace AdminInterfase
         }
         public void Computers_Click(object sender, RoutedEventArgs e)
         {
+            dataGrid.Visibility = Visibility.Visible;
+            ComputerName.Visibility = Visibility.Visible;
+            listBox.Items.Clear();
+        }
+        public void Control_Click(object sender, RoutedEventArgs e)
+        {
+            MoreWindow.Control control = new();
+            control.Show();
 
         }
+
+
+
         public static async void BroadcastMessage(string message, string address, int port)
         {
             var brodcastAddress = IPAddress.Parse(address);
@@ -180,7 +192,16 @@ namespace AdminInterfase
                 server?.Stop();
             }
         }
-
+        public static string DictionaryToText(string message)
+        {
+            var Information = JsonConvert.DeserializeObject<Dictionary<string, string>>(message);
+            StringBuilder TextMessage = new StringBuilder();
+            foreach (var item in Information)//оптимизировать
+            {
+                TextMessage.AppendLine($"{item.Key}: {item.Value}");
+            }
+            return TextMessage.ToString();
+        }
         static void HandleClient(TcpClient tcpClient, ListBox listBox)
         {
             
@@ -193,9 +214,9 @@ namespace AdminInterfase
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
-
+                   
                     // Обновляем listBox в UI потоке
-                    Application.Current.Dispatcher.Invoke(() => listBox.Items.Add(new ListBoxInfo { Text = message, Buttons = new ObservableCollection<string> { "Кнопка 1", "Кнопка 2", "Кнопка 3" } }));
+                    Application.Current.Dispatcher.Invoke(() => listBox.Items.Add(new ListBoxInfo { Text = DictionaryToText(message), Buttons = new ObservableCollection<string> { "Кнопка 1", "Кнопка 2", "Кнопка 3" } }));
                     
                     stream.Write(response, 0, response.Length);
                 }
@@ -213,10 +234,13 @@ namespace AdminInterfase
         {
             listBox.Items.Clear();
             BroadcastMessage("getAll", BroadcastAddress, BroadcastPort);
+
             
         }
         private void Monitoring_Click(object sender, RoutedEventArgs e)
-        {            
+        {
+            dataGrid.Visibility = Visibility.Hidden;
+            ComputerName.Visibility = Visibility.Hidden;                
             GetAll();
         }
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -238,13 +262,13 @@ namespace AdminInterfase
             if (Menu.Margin.Left >= 0) // Если Menu видимо, то анимируем его влево (скрываем)
             {
                 animation.To = -Menu.ActualWidth;
-                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(40, 30, 30, 40), TimeSpan.FromSeconds(0.3)));
+                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(40, 40, 30, 40), TimeSpan.FromSeconds(0.3)));
           
             }
             else // Иначе анимируем вправо (показываем)
             {
                 animation.To = 0;
-                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(220, 30, 30, 40), TimeSpan.FromSeconds(0.3)));
+                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(220,40, 30, 40), TimeSpan.FromSeconds(0.3)));
             }
             animation.Duration = TimeSpan.FromSeconds(0.3);
             Menu.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(Menu.Margin, new Thickness(animation.To.Value, 0, 0, 0), animation.Duration));
@@ -257,10 +281,45 @@ namespace AdminInterfase
         ObservableCollection<string> items;
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var searchText = textBox.Text.ToLower();
-            listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
+         //   var searchText = textBox.Text.ToLower();
+            //listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
         }
+               private void ComputerName_DropDownOpened(object sender, EventArgs e)
+       {
+           ComputerName.Items.Clear();
+           using (SqlConnection connection = new SqlConnection(connectionString))
+           {
+               connection.Open();
+               string sqlQuery = "SELECT Имя FROM Устройтво";
+               SqlCommand cmd = new SqlCommand(sqlQuery, connection);
 
+               using (SqlDataReader reader = cmd.ExecuteReader())
+               {
+                   while (reader.Read())
+                   {
+                       string name = reader["Имя"].ToString();
+
+                       ComputerName.Items.Add(name);
+                   }
+               }
+           }
+       }
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string query = $" EXECUTE ДанныеОУстройстве @Имя = '{ComputerName.Text}'";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+                DataTable dataTable = new DataTable();
+                dataAdapter.Fill(dataTable);
+
+                dataGrid.ItemsSource = dataTable.DefaultView;
+
+            }
+        }
     }
 
 }

@@ -13,5 +13,6 @@ namespace AdminInterfase
     /// </summary>
     public partial class App : Application
     {
+
     }
 }
