@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,28 +15,32 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Xceed.Words.NET;
+using Microsoft.Win32;
 
-namespace AdminInterfase.MoreWindow
+
+namespace AdminInterfase
 {
     /// <summary>
-    /// Логика взаимодействия для App.xaml
+    /// Логика взаимодействия для ProcessWindow.xaml
     /// </summary>
-    public partial class Apps : Window
+    public partial class ProcessWindow : Window
     {
-        static ObservableCollection<string> items;
-        public Apps(List<string> app,string name, string ip)
+        public class ThreadArgs
+        {
+            public ListBox ListBox { get; set; }
+            public string Ip { get; set; }
+        }
+        public ProcessWindow(List<string> process, string ip)
         {
             InitializeComponent();
-            SetList(app, listBox);
-            items = new ObservableCollection<string>(app);
-            if (name == "Процессы")
-            {
-                Thread thread = new Thread(new ParameterizedThreadStart(UpDate));
-                thread.IsBackground = true;
-                thread.Start(listBox);
-            }
+            SetList(process, listBox);
+            items = new ObservableCollection<string>(process);
 
+            Thread thread = new Thread(new ParameterizedThreadStart(UpDate));
+            thread.IsBackground = true;
+            thread.Start(new ThreadArgs { ListBox = listBox, Ip = ip });
         }
+        static ObservableCollection<string> items;
         public static void SetList(List<string> app, ListBox listBox)
         {
             listBox.Dispatcher.Invoke(() =>
@@ -46,24 +49,7 @@ namespace AdminInterfase.MoreWindow
                 items = new ObservableCollection<string>(app);
             });
         }
-        static void UpDate(object obj)
-        {
-          //  ListBox listBox = obj as ListBox;
-/*            while (true)
-            {
-                var app = JsonConvert.DeserializeObject<List<string>>(MessageSender.SendMessage(, 1111, "getProcesses"));
-                listBox.Dispatcher.Invoke(() =>
-                {
-                    SetList(app, listBox);
-                });
-                Thread.Sleep(1000 - 7);
-            }*/
-        }
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            var searchText = searchBox.Text.ToLower();
-            listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
-        }
+ 
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -91,10 +77,25 @@ namespace AdminInterfase.MoreWindow
                 MessageBox.Show("Документ успешно сохранен!");
             }
         }
-
-
-
-
-
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var searchText = searchBox.Text.ToLower();
+            listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
+        }
+        static void UpDate(object obj)
+        {
+            ThreadArgs args = obj as ThreadArgs;
+            ListBox listBox = args.ListBox;
+            string ip = args.Ip;
+            while (true)
+            {
+                var app = JsonConvert.DeserializeObject<List<string>>(MessageSender.SendMessage(ip, 1111, "getProcesses"));
+                listBox.Dispatcher.Invoke(() =>
+                {
+                    SetList(app, listBox);
+                });
+                Thread.Sleep(1000 - 7);
+            }
+        }
     }
 }

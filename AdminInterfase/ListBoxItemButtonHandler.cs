@@ -107,6 +107,26 @@ namespace AdminInterfase
                 yield return match.Value;
             }
         }
+        public static void ShowProcess(object sender)
+        {
+            var button = (Button)sender;
+
+            // DataContext кнопки содержит данные элемента
+            var item = button.DataContext;
+
+            // Преобразуем DataContext в нужный тип
+            var myItem = item as ListBoxInfo;
+
+            // Регулярное выражение для поиска IP-адресов
+            var ipAddresses = FindIPAddresses(myItem.Text);
+
+            foreach (string ip in ipAddresses)
+            {
+                ProcessWindow process = new(JsonConvert.DeserializeObject<List<string>>(MessageSender.SendMessage(ip, 1111, "getProcesses")), ip);
+                process.Show();
+            }
+
+        }
         public static void ShowApps(object sender, string command, string title)
         {
             // Получаем кнопку, на которую нажали
@@ -120,11 +140,11 @@ namespace AdminInterfase
 
             // Регулярное выражение для поиска IP-адресов
             var ipAddresses = FindIPAddresses(myItem.Text);
-
+            
             // Выводим все найденные IP-адреса
             foreach (string ip in ipAddresses)
             {
-                Apps app = new(JsonConvert.DeserializeObject<List<string>>(MessageSender.SendMessage(ip, 1111, command)), title);
+                Apps app = new(JsonConvert.DeserializeObject<List<string>>(MessageSender.SendMessage(ip, 1111, command)), title,ip  );
                 app.Show();
             }
         }

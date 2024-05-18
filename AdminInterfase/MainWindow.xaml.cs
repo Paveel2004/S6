@@ -63,7 +63,7 @@ namespace AdminInterfase
         }
         public void Process_Click(object sender, RoutedEventArgs e)
         {
-            ListBoxItemButtonHandler.ShowApps(sender, "getProcesses", "Процессы");
+            ListBoxItemButtonHandler.ShowProcess(sender);
         }
         public void Computers_Click(object sender, RoutedEventArgs e)
         {
