@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AdminInterfase.MoreWindow"
         mc:Ignorable="d"
-        Title="Control" Height="194" Width="341">
+        ResizeMode="NoResize" WindowStyle="SingleBorderWindow"
+        KeyDown="Window_KeyDown"
+        Title="Контроль доступа" Height="194" Width="341">
     <Grid>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -14,10 +16,9 @@
                 <GradientStop Color="#FF5829D9" Offset="0.548"/>
             </LinearGradientBrush>
         </Grid.Background>
-        <TextBox Name="site" HorizontalAlignment="Left" Height="33" Margin="32,10,0,0" FontSize="20" TextWrapping="Wrap" Background="AntiqueWhite" Text="Введите адрес сайта" VerticalAlignment="Top" Width="266" TextChanged="TextBox_TextChanged"/>
-        <TextBox HorizontalAlignment="Left" Height="33" Margin="32,56,0,0" FontSize="20" TextWrapping="Wrap" Background="AntiqueWhite" Text="Введите адрес компьютера" VerticalAlignment="Top" Width="266"/>
-        <Button Content="Заблокировать" HorizontalAlignment="Left" Height="36" Margin="32,106,0,0"  Background="PaleVioletRed" VerticalAlignment="Top" Width="124" Click="Block_Click"/>
-        <Button Content="Разблокировать" HorizontalAlignment="Left" Height="36" Margin="174,106,0,0"  Background="DarkSeaGreen" VerticalAlignment="Top" Width="124" Click="UnBlock_Click"/>
+        <TextBox Name="site" HorizontalAlignment="Center" Height="33" Margin="0,32,0,0" FontSize="20" TextWrapping="Wrap" Background="AntiqueWhite" Text="Введите адрес сайта" VerticalAlignment="Top" Width="267"/>
+        <Button Content="Заблокировать" HorizontalAlignment="Left" Height="36" Margin="37,82,0,0"  Background="PaleVioletRed" VerticalAlignment="Top" Width="124" Click="Block_Click"/>
+        <Button Content="Разблокировать" HorizontalAlignment="Left" Height="36" Margin="179,82,0,0"  Background="DarkSeaGreen" VerticalAlignment="Top" Width="125" Click="UnBlock_Click"/>
 
     </Grid>
 </Window>

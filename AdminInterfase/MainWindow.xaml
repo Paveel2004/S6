@@ -50,8 +50,9 @@
                                 <TextBlock Text="{Binding Text}" FontSize="14" FontWeight="Light" />
 
                                 <!-- Дополнительный текст -->
+                             
                                 <TextBlock Name="AdditionalText" Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
-
+                                <TextBlock Name="UsersList" Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
                                 <!-- Кнопки -->
                                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Name="ButtonPanel" Visibility="Collapsed">
 
@@ -60,7 +61,7 @@
                                     <Button Background="AntiqueWhite" Content="Приложения" Margin="5" Click="App_Click"/>
                                     <Button Background="AntiqueWhite" Content="Трафик" Margin="5" Click="App_Click"/>
                                     <Button Background="AntiqueWhite" Content="Клавиатура" Margin="5" Click="App_Click"/>
-                                    <Button Background="AntiqueWhite" Content="Контроль" Margin="5" Click="App_Click"/>
+                                    <Button Background="AntiqueWhite" Content="Контроль" Margin="5" Click="Control_Click"/>
                                 </StackPanel>
                                 <!-- Кнопка Подробнее -->
                                 <Button Background="AntiqueWhite" Width="100" Content="Подробнее" HorizontalAlignment="Left" Margin="5" Click="Details_Click"/>

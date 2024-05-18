@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,40 +21,33 @@ namespace AdminInterfase.MoreWindow
     /// </summary>
     public partial class Control : Window
     {
-        public Control()
+        private string computerAdress;
+        public Control(string computerAddress)
         {
+            this.computerAdress = computerAddress;
             InitializeComponent();
         }
         private static string path = @"C:\Windows\System32\drivers\etc\hosts";
-        public static void BlockedWebsite(StringBuilder address)
-        {
-            StringBuilder record = new("127.0.0.1 ");
-            record.Append(address.ToString());
+        
 
-            using (StreamWriter sw = File.AppendText(path))
-            {
-                sw.WriteLine(record);
-            }
-        }
-        public static void UnBlockedWebSite(string address)
-        {
-            var lines = File.ReadAllLines(path).ToList();
-            lines.RemoveAll(line => line.Contains(address));
-            File.WriteAllLines(path, lines);
-        }
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
 
-        }
-
+        
         private void Block_Click(object sender, RoutedEventArgs e)
         {
-            BlockedWebsite(new StringBuilder(site.Text));
+            MessageSender.SendMessage(computerAdress, 1111, $"blockSite [{site.Text}]");
         }
 
         private void UnBlock_Click(object sender, RoutedEventArgs e)
         {
-            UnBlockedWebSite(site.Text);
+            MessageSender.SendMessage(computerAdress, 1111, $"unBlockSite [{site.Text}]");
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                this.Close();
+            }
         }
     }
 }
