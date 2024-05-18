@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -23,13 +24,40 @@ namespace AdminInterfase.MoreWindow
     /// </summary>
     public partial class Apps : Window
     {
-        ObservableCollection<string> items;
+        static ObservableCollection<string> items;
         public Apps(List<string> app,string name)
         {
             InitializeComponent();
-            this.Title = name;
-            listBox.ItemsSource = app;
+            SetList(app, listBox);
             items = new ObservableCollection<string>(app);
+            if (name == "Процессы")
+            {
+                Thread thread = new Thread(new ParameterizedThreadStart(UpDate));
+                thread.IsBackground = true;
+                thread.Start(listBox);
+            }
+
+        }
+        public static void SetList(List<string> app, ListBox listBox)
+        {
+            listBox.Dispatcher.Invoke(() =>
+            {
+                listBox.ItemsSource = app;
+                items = new ObservableCollection<string>(app);
+            });
+        }
+        static void UpDate(object obj)
+        {
+            ListBox listBox = obj as ListBox;
+            while (true)
+            {
+                var app = JsonConvert.DeserializeObject<List<string>>(MessageSender.SendMessage(ManagerIP.GetIPAddress(), 1111, "getProcesses"));
+                listBox.Dispatcher.Invoke(() =>
+                {
+                    SetList(app, listBox);
+                });
+                Thread.Sleep(1000 - 7);
+            }
         }
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {

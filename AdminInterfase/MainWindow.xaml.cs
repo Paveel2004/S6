@@ -34,32 +34,12 @@ namespace AdminInterfase
 
     public partial class MainWindow : Window
     {
-        public static string GetIPAddress()
-        {
-            string query = "SELECT * FROM Win32_NetworkAdapterConfiguration WHERE IPEnabled = 'TRUE'";
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-            ManagementObjectCollection queryCollection = searcher.Get();
 
-            foreach (ManagementObject m in queryCollection)
-            {
-                // Получаем массив IP-адресов (может быть несколько)
-                string[] ipAddresses = m["IPAddress"] as string[];
-
-                // Выбираем первый не-null и не-пустой IP-адрес
-                if (ipAddresses != null && ipAddresses.Length > 0 && !string.IsNullOrEmpty(ipAddresses[0]))
-                {
-                    return ipAddresses[0];
-                }
-            }
-
-            // Если не удалось получить IP-адрес, возвращаем "N/A" или другое значение по вашему усмотрению
-            return "N/A";
-        }
         private bool isMenuVisible = true;
         private string BroadcastAddress = "224.0.0.252";
         private int BroadcastPort = 11000;
         private int localPort = 2222;
-        private IPAddress localAddr = IPAddress.Parse(GetIPAddress());
+        private IPAddress localAddr = IPAddress.Parse(ManagerIP.GetIPAddress());
         string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
         public MainWindow()
         {
