@@ -32,6 +32,7 @@ namespace AdminInterfase
             public ListBox ListBox { get; set; }
             public string Ip { get; set; }
             public TextBox SearchBox { get; set; }
+            public ComboBox SortOrder { get; set; }
         }
 
         public ProcessWindow(List<ProcessInfo> processInfoList, string ip)
@@ -42,7 +43,7 @@ namespace AdminInterfase
 
             Thread thread = new Thread(new ParameterizedThreadStart(UpDate));
             thread.IsBackground = true;
-            thread.Start(new ThreadArgs { ListBox = listBox, Ip = ip, SearchBox = searchBox });
+            thread.Start(new ThreadArgs { ListBox = listBox, Ip = ip, SearchBox = searchBox,  SortOrder = sortOrder });
         }
 
         static ObservableCollection<ProcessInfo> items;
@@ -76,22 +77,39 @@ namespace AdminInterfase
             // Показ всех процессов
             typeFilter = "Все";
         }
-        private static void SetTypeFilter(string type, ListBox listBox, TextBox searchBox)
+        private static void SetTypeFilter(string type, ListBox listBox, TextBox searchBox, ComboBox sortOrder)
         {
             var searchText = searchBox.Text.ToLower();
+            IEnumerable<ProcessInfo> filteredItems;
 
             switch (type)
             {
                 case "Окна":
-                    listBox.ItemsSource = items.Where(item => item.WindowTitle != "—" && (item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText)));
+                    filteredItems = items.Where(item => item.WindowTitle != "—" && (item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText)));
                     break;
                 case "Все":
-                    listBox.ItemsSource = items.Where(item => item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText));
+                    filteredItems = items.Where(item => item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText));
                     break;
                 case "Фоновые":
-                    listBox.ItemsSource = items.Where(item => item.WindowTitle == "—" && (item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText)));
+                    filteredItems = items.Where(item => item.WindowTitle == "—" && (item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText)));
+                    break;
+                default:
+                    filteredItems = items;
                     break;
             }
+
+            // Сортировка в зависимости от выбранного значения в ComboBox
+            switch (sortOrder.SelectedIndex)
+            {
+                case 0: // Сначала более затратные
+                    filteredItems = filteredItems.OrderByDescending(item => item.MemoryUsageMB);
+                    break;
+                case 1: // Сначала менее затратные
+                    filteredItems = filteredItems.OrderBy(item => item.MemoryUsageMB);
+                    break;
+            }
+
+            listBox.ItemsSource = filteredItems;
         }
 
 
@@ -132,6 +150,7 @@ namespace AdminInterfase
             ThreadArgs args = obj as ThreadArgs;
             ListBox listBox = args.ListBox;
             TextBox searchBox = args.SearchBox;
+            ComboBox sortOrder = args.SortOrder;
             string ip = args.Ip;
             while (true)
             {
@@ -140,7 +159,7 @@ namespace AdminInterfase
                 {
 
                     SetList(processInfoList, listBox);
-                    SetTypeFilter(typeFilter, listBox, searchBox);
+                    SetTypeFilter(typeFilter, listBox, searchBox, sortOrder);
 
                 });
                 Thread.Sleep(1000 - 7);
