@@ -90,11 +90,7 @@ namespace AdminInterfase
                     break;
             }
         }
-        private static void Search(TextBox searchBox, ListBox listBox, ObservableCollection<ProcessInfo> items)
-        {
-            var searchText = searchBox.Text.ToLower();
-            listBox.ItemsSource = items.Where(item => item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText));
-        }
+
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
