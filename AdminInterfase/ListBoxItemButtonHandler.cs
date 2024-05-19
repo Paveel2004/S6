@@ -32,6 +32,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Management;
+using GlobalClass;
 
 namespace AdminInterfase
 {
@@ -122,7 +123,7 @@ namespace AdminInterfase
 
             foreach (string ip in ipAddresses)
             {
-                ProcessWindow process = new(JsonConvert.DeserializeObject<List<string>>(MessageSender.SendMessage(ip, 1111, "getProcesses")), ip);
+                ProcessWindow process = new(JsonConvert.DeserializeObject<List<ProcessInfo>>(MessageSender.SendMessage(ip, 1111, "getProcesses")), ip);
                 process.Show();
             }
 

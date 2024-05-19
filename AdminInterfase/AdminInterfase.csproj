@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Class\GlobalClass.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="icons8-компьютер-96.png" />
   </ItemGroup>
 

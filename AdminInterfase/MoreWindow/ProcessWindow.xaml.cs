@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using Xceed.Words.NET;
 using Microsoft.Win32;
 using System.Runtime.Intrinsics.Arm;
+using GlobalClass;
 
 
 namespace AdminInterfase
@@ -31,26 +32,28 @@ namespace AdminInterfase
             public ListBox ListBox { get; set; }
             public string Ip { get; set; }
         }
-        public ProcessWindow(List<string> process, string ip)
+
+        public ProcessWindow(List<ProcessInfo> processInfoList, string ip)
         {
             InitializeComponent();
-            SetList(process, listBox);
-            items = new ObservableCollection<string>(process);
+            SetList(processInfoList, listBox);
+            items = new ObservableCollection<ProcessInfo>(processInfoList);
 
             Thread thread = new Thread(new ParameterizedThreadStart(UpDate));
             thread.IsBackground = true;
             thread.Start(new ThreadArgs { ListBox = listBox, Ip = ip });
         }
-        static ObservableCollection<string> items;
-        public static void SetList(List<string> app, ListBox listBox)
+
+        static ObservableCollection<ProcessInfo> items;
+
+        public static void SetList(List<ProcessInfo> processInfoList, ListBox listBox)
         {
             listBox.Dispatcher.Invoke(() =>
             {
-                listBox.ItemsSource = app;
-                items = new ObservableCollection<string>(app);
+                listBox.ItemsSource = processInfoList;
+                items = new ObservableCollection<ProcessInfo>(processInfoList);
             });
         }
- 
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -66,7 +69,7 @@ namespace AdminInterfase
                 using (var doc = DocX.Create(saveFileDialog.FileName))
                 {
                     // Добавляем данные из ListBox в документ Word
-                    foreach (var item in listBox.Items)
+                    foreach (ProcessInfo item in listBox.Items)
                     {
                         doc.InsertParagraph(item.ToString());
                     }
@@ -78,11 +81,13 @@ namespace AdminInterfase
                 MessageBox.Show("Документ успешно сохранен!");
             }
         }
+
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             var searchText = searchBox.Text.ToLower();
-            listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
+            listBox.ItemsSource = items.Where(item => item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText));
         }
+
         static void UpDate(object obj)
         {
             ThreadArgs args = obj as ThreadArgs;
@@ -90,13 +95,14 @@ namespace AdminInterfase
             string ip = args.Ip;
             while (true)
             {
-                var app = JsonConvert.DeserializeObject<List<string>>(MessageSender.SendMessage(ip, 1111, "getProcesses"));
+                var processInfoList = JsonConvert.DeserializeObject<List<ProcessInfo>>(MessageSender.SendMessage(ip, 1111, "getProcesses"));
                 listBox.Dispatcher.Invoke(() =>
                 {
-                    SetList(app, listBox);
+                    SetList(processInfoList, listBox);
                 });
                 Thread.Sleep(1000 - 7);
             }
         }
     }
+
 }
