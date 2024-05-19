@@ -21,7 +21,7 @@
             <ListBox x:Name="Menu" Background="#80FFFFFF" HorizontalAlignment="Left" Width="190">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Button Opacity="0.9"  Content="{Binding Text}" Height="30" FontSize="14" FontFamily="Bahnschrift SemiBold"  Width="176" Click="MenuItem_Click" Background="AntiqueWhite"/>
+                        <Button Opacity="0.9"  Content="{Binding Text}" Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Click="MenuItem_Click" Background="AntiqueWhite"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -47,24 +47,25 @@
                             <!-- Вертикальный StackPanel для текста и кнопок -->
                             <StackPanel>
                                 <!-- Текст -->
-                                <TextBlock Text="{Binding Text}" FontSize="14" FontWeight="Light" />
-
+                                <TextBlock Text="{Binding Text}" FontFamily="Bahnschrift SemiLight" FontSize="14" FontWeight="Light" />
+                                    
                                 <!-- Дополнительный текст -->
-                             
-                                <TextBlock Name="AdditionalText" Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
-                                <TextBlock Name="UsersList" Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
+                                <Separator Visibility="Collapsed" Background="Black" Margin="0,0"  />
+                                <TextBlock Name="AdditionalText" FontStyle="Italic" FontFamily="Verdana" Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
+                                <Separator Visibility="Collapsed" Background="Black" Margin="0,0" />
+                                <TextBlock FontStyle="Italic" Name="UsersList" FontFamily="Verdana"  Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
                                 <!-- Кнопки -->
                                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Name="ButtonPanel" Visibility="Collapsed">
 
-                                   
-                                    <Button Background="AntiqueWhite" Content="Процессы" Margin="5" Click="Process_Click" />                               
-                                    <Button Background="AntiqueWhite" Content="Приложения" Margin="5" Click="App_Click"/>
-                                    <Button Background="AntiqueWhite" Content="Трафик" Margin="5" Click="App_Click"/>
-                                    <Button Background="AntiqueWhite" Content="Клавиатура" Margin="5" Click="App_Click"/>
-                                    <Button Background="AntiqueWhite" Content="Контроль" Margin="5" Click="Control_Click"/>
+
+                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Процессы" Margin="5" Click="Process_Click" />
+                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Приложения" Margin="5" Click="App_Click"/>
+                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Трафик" Margin="5" Click="App_Click"/>
+                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Клавиатура" Margin="5" Click="App_Click"/>
+                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Контроль" Margin="5" Click="Control_Click"/>
                                 </StackPanel>
                                 <!-- Кнопка Подробнее -->
-                                <Button Background="AntiqueWhite" Width="100" Content="Подробнее" HorizontalAlignment="Left" Margin="5" Click="Details_Click"/>
+                                <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Width="100" Content="Подробнее" HorizontalAlignment="Left" Margin="5" Click="Details_Click"/>
 
                             </StackPanel>
                         </StackPanel>

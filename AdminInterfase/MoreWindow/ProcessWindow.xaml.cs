@@ -27,7 +27,7 @@ namespace AdminInterfase
     /// </summary>
     public partial class ProcessWindow : Window
     {
-        public class ThreadArgs
+        private class ThreadArgs
         {
             public ListBox ListBox { get; set; }
             public string Ip { get; set; }
@@ -46,6 +46,7 @@ namespace AdminInterfase
 
         static ObservableCollection<ProcessInfo> items;
 
+
         public static void SetList(List<ProcessInfo> processInfoList, ListBox listBox)
         {
             listBox.Dispatcher.Invoke(() =>
@@ -53,6 +54,46 @@ namespace AdminInterfase
                 listBox.ItemsSource = processInfoList;
                 items = new ObservableCollection<ProcessInfo>(processInfoList);
             });
+            SetTypeFilter(typeFilter, listBox);
+        }
+        // Обработчик событий для кнопки "Окна"
+        private void WindowsRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            // Фильтрация списка процессов, где title != "—"
+            typeFilter = "Окна";
+        }
+
+        // Обработчик событий для кнопки "Фоновые"
+        private void BackgroundRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            typeFilter = "Фоновые";
+        }
+        private static string typeFilter = "Все";
+        // Обработчик событий для кнопки "Все"
+        private void AllRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            // Показ всех процессов
+            typeFilter = "Все";
+        }
+        private static void SetTypeFilter(string type, ListBox listBox)
+        {
+            switch (type)
+            {
+                case "Окна":
+                    listBox.ItemsSource = items.Where(item => item.WindowTitle != "—");
+                    break;
+                case "Все":
+                    listBox.ItemsSource = items;
+                    break;
+                case "Фоновые":
+                    listBox.ItemsSource = items.Where(item => item.WindowTitle == "—");
+                    break;
+            }
+        }
+        private static void Search(TextBox searchBox, ListBox listBox, ObservableCollection<ProcessInfo> items)
+        {
+            var searchText = searchBox.Text.ToLower();
+            listBox.ItemsSource = items.Where(item => item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText));
         }
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
@@ -99,6 +140,7 @@ namespace AdminInterfase
                 listBox.Dispatcher.Invoke(() =>
                 {
                     SetList(processInfoList, listBox);
+                   
                 });
                 Thread.Sleep(1000 - 7);
             }

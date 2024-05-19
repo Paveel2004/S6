@@ -50,21 +50,27 @@ namespace AdminInterfase
             StackPanel buttons = buttonPanel.Children.OfType<StackPanel>().First();
 
             // Получение TextBlock с дополнительным текстом
-
             TextBlock additionalText = buttonPanel.Children.OfType<TextBlock>().First(t => t.Name == "AdditionalText");
             TextBlock usersList = buttonPanel.Children.OfType<TextBlock>().First(t => t.Name == "UsersList");
+
+            // Получение Separator
+            List<Separator> separators = buttonPanel.Children.OfType<Separator>().ToList();
 
             var item = button.DataContext;
 
             // Преобразуем DataContext в нужный тип
             var myItem = item as ListBoxInfo; // замените MyItemType на тип вашего элемента
 
-            // Изменение видимости кнопок и дополнительного текста
+            // Изменение видимости кнопок, дополнительного текста и Separator
             if (buttons.Visibility == Visibility.Collapsed)
             {
                 buttons.Visibility = Visibility.Visible;
                 additionalText.Visibility = Visibility.Visible;
                 usersList.Visibility = Visibility.Visible;
+                foreach (var separator in separators)
+                {
+                    separator.Visibility = Visibility.Visible;
+                }
 
                 foreach (string ip in FindIPAddresses(myItem.Text))
                 {
@@ -80,9 +86,14 @@ namespace AdminInterfase
                 buttons.Visibility = Visibility.Collapsed;
                 additionalText.Visibility = Visibility.Collapsed;
                 usersList.Visibility = Visibility.Collapsed;
+                foreach (var separator in separators)
+                {
+                    separator.Visibility = Visibility.Collapsed;
+                }
                 button.Content = "Подробнее";
             }
         }
+
         public static void OpenControlWindow(object sender)
         {
             var button = (Button)sender;

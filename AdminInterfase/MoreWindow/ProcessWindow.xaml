@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AdminInterfase"
         mc:Ignorable="d"
-        Title="ProcessWindow" Height="450" Width="800">
+        Title="Процессы" Height="450" Width="800">
     <Grid>
         <Grid.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -21,9 +21,9 @@
             <TextBox Background="AntiqueWhite" Height="21" TextChanged="SearchBox_TextChanged" Name="searchBox" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="194" Margin="30,10,10,0"/>
             <Button Background="AntiqueWhite" FontSize="15" FontFamily="Bahnschrift Condensed" Content="Поиск" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="0,10,10,0"/>
 
-            <RadioButton Content="Окна" FontSize="15" Background="AntiqueWhite"  VerticalAlignment="Top" Margin="10,14,10,0" HorizontalAlignment="Left" FontFamily="Bahnschrift Condensed" Foreground="#FFFF9999"/>
-            <RadioButton Content="Все" FontSize="15" Background="AntiqueWhite" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Bahnschrift Condensed" Margin="0,14,10,0" Foreground="#FFFF9999"/>
-            <RadioButton Content="Фоновые" FontSize="15" Background="AntiqueWhite" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Bahnschrift Condensed" Margin="0,14,10,0" Foreground="#FFFF9999"/>
+            <RadioButton Checked="WindowsRadioButton_Checked" Content="Окна" FontSize="15" GroupName="FilterTypeProcess" Background="AntiqueWhite"  VerticalAlignment="Top" Margin="10,14,10,0" HorizontalAlignment="Left" FontFamily="Bahnschrift Condensed" Foreground="#FFFF9999"/>
+            <RadioButton Checked="AllRadioButton_Checked" Content="Все" FontSize="15"  GroupName="FilterTypeProcess" Background="AntiqueWhite" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Bahnschrift Condensed" Margin="0,14,10,0" Foreground="#FFFF9999"/>
+            <RadioButton Checked="BackgroundRadioButton_Checked"  Content="Фоновые" FontSize="15"  GroupName="FilterTypeProcess" Background="AntiqueWhite" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Bahnschrift Condensed" Margin="0,14,10,0" Foreground="#FFFF9999"/>
             <Button Content="Экспорт" FontSize="15" FontFamily="Bahnschrift Condensed" Background="AntiqueWhite" HorizontalAlignment="Right"  VerticalAlignment="Top" Click="ExportButton_Click"  Margin="10,10,0,0"/>
         </StackPanel>
 
