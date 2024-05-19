@@ -31,6 +31,7 @@ namespace AdminInterfase
         {
             public ListBox ListBox { get; set; }
             public string Ip { get; set; }
+            public TextBox SearchBox { get; set; }
         }
 
         public ProcessWindow(List<ProcessInfo> processInfoList, string ip)
@@ -41,7 +42,7 @@ namespace AdminInterfase
 
             Thread thread = new Thread(new ParameterizedThreadStart(UpDate));
             thread.IsBackground = true;
-            thread.Start(new ThreadArgs { ListBox = listBox, Ip = ip });
+            thread.Start(new ThreadArgs { ListBox = listBox, Ip = ip, SearchBox = searchBox });
         }
 
         static ObservableCollection<ProcessInfo> items;
@@ -54,7 +55,7 @@ namespace AdminInterfase
                 listBox.ItemsSource = processInfoList;
                 items = new ObservableCollection<ProcessInfo>(processInfoList);
             });
-            SetTypeFilter(typeFilter, listBox);
+            
         }
         // Обработчик событий для кнопки "Окна"
         private void WindowsRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -75,18 +76,20 @@ namespace AdminInterfase
             // Показ всех процессов
             typeFilter = "Все";
         }
-        private static void SetTypeFilter(string type, ListBox listBox)
+        private static void SetTypeFilter(string type, ListBox listBox, TextBox searchBox)
         {
+            var searchText = searchBox.Text.ToLower();
+
             switch (type)
             {
                 case "Окна":
-                    listBox.ItemsSource = items.Where(item => item.WindowTitle != "—");
+                    listBox.ItemsSource = items.Where(item => item.WindowTitle != "—" && (item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText)));
                     break;
                 case "Все":
-                    listBox.ItemsSource = items;
+                    listBox.ItemsSource = items.Where(item => item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText));
                     break;
                 case "Фоновые":
-                    listBox.ItemsSource = items.Where(item => item.WindowTitle == "—");
+                    listBox.ItemsSource = items.Where(item => item.WindowTitle == "—" && (item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText)));
                     break;
             }
         }
@@ -121,22 +124,24 @@ namespace AdminInterfase
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var searchText = searchBox.Text.ToLower();
-            listBox.ItemsSource = items.Where(item => item.ProcessName.ToLower().Contains(searchText) || item.WindowTitle.ToLower().Contains(searchText));
+          
         }
 
         static void UpDate(object obj)
         {
             ThreadArgs args = obj as ThreadArgs;
             ListBox listBox = args.ListBox;
+            TextBox searchBox = args.SearchBox;
             string ip = args.Ip;
             while (true)
             {
                 var processInfoList = JsonConvert.DeserializeObject<List<ProcessInfo>>(MessageSender.SendMessage(ip, 1111, "getProcesses"));
                 listBox.Dispatcher.Invoke(() =>
                 {
+
                     SetList(processInfoList, listBox);
-                   
+                    SetTypeFilter(typeFilter, listBox, searchBox);
+
                 });
                 Thread.Sleep(1000 - 7);
             }
