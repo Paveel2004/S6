@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Xceed.Words.NET;
 using Microsoft.Win32;
+using System.Runtime.Intrinsics.Arm;
 
 
 namespace AdminInterfase
