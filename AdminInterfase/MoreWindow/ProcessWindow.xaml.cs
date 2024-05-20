@@ -168,15 +168,23 @@ namespace AdminInterfase
                     // Добавляем информацию о компьютере, пользователе, IP-адресе и времени создания отчёта
                     ws.Cells["A1"].Value = "Имя компьютера:";
                     ws.Cells["B1"].Value = computerName;
-
                     ws.Cells["A2"].Value = "Имя пользователя:";
                     ws.Cells["B2"].Value = userName;
-
                     ws.Cells["A3"].Value = "IP адрес:";
                     ws.Cells["B3"].Value = ip;
-
                     ws.Cells["A4"].Value = "Время создания отчёта:";
                     ws.Cells["B4"].Value = DateTime.Now.ToString();
+
+                    // Применение стиля к новым ячейкам
+                    using (var range = ws.Cells["A1:B4"])
+                    {
+                        range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.FromArgb(217, 225, 242)); // Нежно-голубой цвет
+                        range.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    }
 
                     // Добавляем заголовки
                     ws.Cells[6, 1].Value = "Процесс";
@@ -190,6 +198,10 @@ namespace AdminInterfase
                         range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                         range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Blue);
                         range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                        range.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        range.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
                     }
 
                     // Добавляем данные из ListBox в документ Excel
@@ -225,6 +237,15 @@ namespace AdminInterfase
                         }
 
                         row++;
+
+                        // Применяем границы к новой строке
+                        using (var range = ws.Cells[row, 1, row, 3])
+                        {
+                            range.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                            range.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                            range.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                            range.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                        }
                     }
 
                     // Авторазмер колонок
@@ -245,6 +266,8 @@ namespace AdminInterfase
                 MessageBox.Show("Документ Excel успешно сохранен!");
             }
         }
+
+
 
 
 
