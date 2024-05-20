@@ -18,7 +18,8 @@ using Xceed.Words.NET;
 using Microsoft.Win32;
 using System.Runtime.Intrinsics.Arm;
 using GlobalClass;
-
+using OfficeOpenXml;
+using System.IO;
 
 namespace AdminInterfase
 {
@@ -27,6 +28,10 @@ namespace AdminInterfase
     /// </summary>
     public partial class ProcessWindow : Window
     {
+        private double totalRAM;
+        private string userName;
+        private string computerName;
+        private string ip;
         private class ThreadArgs
         {
             public ListBox ListBox { get; set; }
@@ -34,7 +39,7 @@ namespace AdminInterfase
             public TextBox SearchBox { get; set; }
             public ComboBox SortOrder { get; set; }
         }
-
+        
         public ProcessWindow(List<ProcessInfo> processInfoList, string ip)
         {
             InitializeComponent();
@@ -44,6 +49,11 @@ namespace AdminInterfase
             Thread thread = new Thread(new ParameterizedThreadStart(UpDate));
             thread.IsBackground = true;
             thread.Start(new ThreadArgs { ListBox = listBox, Ip = ip, SearchBox = searchBox,  SortOrder = sortOrder });
+
+            this.totalRAM = double.Parse(MessageSender.SendMessage(ip, 1111, "getTotalRAM"));
+            this.userName = MessageSender.SendMessage(ip, 1111, "getUserName");
+            this.computerName = MessageSender.SendMessage(ip, 1111, "getComputerName");
+            this.ip = ip;
         }
 
         static ObservableCollection<ProcessInfo> items;
@@ -113,7 +123,7 @@ namespace AdminInterfase
         }
 
 
-        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        /*private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
             // Создаем диалоговое окно для сохранения файла
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -139,6 +149,107 @@ namespace AdminInterfase
                 MessageBox.Show("Документ успешно сохранен!");
             }
         }
+*/
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Создаем диалоговое окно для сохранения файла
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Excel Workbook|*.xlsx";
+            saveFileDialog.Title = "Сохранить документ Excel";
+
+            // Если пользователь выбрал файл для сохранения
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                // Создаем новый документ Excel
+                using (var pck = new ExcelPackage())
+                {
+                    var ws = pck.Workbook.Worksheets.Add("Процессы");
+
+                    // Добавляем информацию о компьютере, пользователе, IP-адресе и времени создания отчёта
+                    ws.Cells["A1"].Value = "Имя компьютера:";
+                    ws.Cells["B1"].Value = computerName;
+
+                    ws.Cells["A2"].Value = "Имя пользователя:";
+                    ws.Cells["B2"].Value = userName;
+
+                    ws.Cells["A3"].Value = "IP адрес:";
+                    ws.Cells["B3"].Value = ip;
+
+                    ws.Cells["A4"].Value = "Время создания отчёта:";
+                    ws.Cells["B4"].Value = DateTime.Now.ToString();
+
+                    // Добавляем заголовки
+                    ws.Cells[6, 1].Value = "Процесс";
+                    ws.Cells[6, 2].Value = "Название окна";
+                    ws.Cells[6, 3].Value = "Оперативная память (MB)";
+
+                    // Форматируем заголовки
+                    using (var range = ws.Cells[6, 1, 6, 3])
+                    {
+                        range.Style.Font.Bold = true;
+                        range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Blue);
+                        range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                    }
+
+                    // Добавляем данные из ListBox в документ Excel
+                    int row = 7;
+                    foreach (ProcessInfo item in listBox.Items)
+                    {
+                        ws.Cells[row, 1].Value = item.ProcessName;
+                        ws.Cells[row, 2].Value = item.WindowTitle;
+                        ws.Cells[row, 3].Value = item.MemoryUsageMB;
+
+                        // Определение цвета ячейки в зависимости от использования оперативной памяти
+                        double memoryUsagePercentage = (item.MemoryUsageMB / totalRAM) * 100;
+
+                        if (memoryUsagePercentage <= 1.5)
+                        {
+                            ws.Cells[row, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            ws.Cells[row, 3].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Green);
+                        }
+                        else if (memoryUsagePercentage <= 6.25)
+                        {
+                            ws.Cells[row, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            ws.Cells[row, 3].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                        }
+                        else if (memoryUsagePercentage <= 15)
+                        {
+                            ws.Cells[row, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            ws.Cells[row, 3].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Orange);
+                        }
+                        else
+                        {
+                            ws.Cells[row, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                            ws.Cells[row, 3].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Red);
+                        }
+
+                        row++;
+                    }
+
+                    // Авторазмер колонок
+                    ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                    // Установка рамки для всего диапазона данных
+                    var dataRange = ws.Cells[6, 1, row - 1, 3];
+                    dataRange.Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    dataRange.Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    dataRange.Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                    dataRange.Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+
+                    // Сохраняем документ
+                    var fileInfo = new FileInfo(saveFileDialog.FileName);
+                    pck.SaveAs(fileInfo);
+                }
+
+                MessageBox.Show("Документ Excel успешно сохранен!");
+            }
+        }
+
+
+
+
+
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {

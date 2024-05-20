@@ -132,6 +132,8 @@ namespace AdminInterfase
             // Регулярное выражение для поиска IP-адресов
             var ipAddresses = FindIPAddresses(myItem.Text);
 
+
+
             foreach (string ip in ipAddresses)
             {
                 ProcessWindow process = new(JsonConvert.DeserializeObject<List<ProcessInfo>>(MessageSender.SendMessage(ip, 1111, "getProcesses")), ip);
