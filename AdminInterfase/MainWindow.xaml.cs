@@ -25,6 +25,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Runtime.CompilerServices;
 using System.Management;
+using DocumentFormat.OpenXml.AdditionalCharacteristics;
 
 namespace AdminInterfase
 {
@@ -51,12 +52,13 @@ namespace AdminInterfase
             Task.Run(() => StartServer(localPort, client => HandleClient(client, listBox), localAddr));
 
         }
-
+       
         private void Details_Click(object sender, RoutedEventArgs e)
         {
             ListBoxItemButtonHandler.Show_Details(sender);
         }
       
+
         private void App_Click(object sender, RoutedEventArgs e)
         {
             ListBoxItemButtonHandler.ShowApps(sender, "getApplications", "Приложения");
@@ -69,8 +71,126 @@ namespace AdminInterfase
         {
 
             listBox.Items.Clear();
+            LoadData();
         }
-   
+        public class DeviceCharacteristics
+        {
+            public string ProcessorModel { get; set; }
+            public string ProcessorArchitecture { get; set; }
+            public string ProcessorCores { get; set; }
+            public string RAMSize { get; set; }
+            public string RAMFrequency { get; set; }
+            public string RAMType { get; set; }
+            public string GPUModel { get; set; }
+            public string OS { get; set; }
+        }
+        private List<string> GetBiosSerialNumbers()
+        {
+            List<string> serialNumbers = new List<string>();
+
+            string query = "SELECT [Серийный номер BIOS] FROM [Устройтво]";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand command = new SqlCommand(query, connection);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        string serialNumber = reader["Серийный номер BIOS"].ToString();
+                        serialNumbers.Add(serialNumber);
+                    }
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при получении серийных номеров BIOS: " + ex.Message);
+                }
+            }
+
+            return serialNumbers;
+        }
+
+        private void LoadData()
+        {
+            string query = "ПолучитьЗначениеХарактеристики";
+            List<DeviceCharacteristics> devices = new List<DeviceCharacteristics>();
+
+            // Получение списка всех устройств из таблицы "Устройство"
+            List<string> biosSerialNumbers = GetBiosSerialNumbers();
+
+            if (biosSerialNumbers.Count == 0)
+            {
+                MessageBox.Show("Нет доступных устройств.");
+                return;
+            }
+
+            // Для каждого устройства извлекаем данные характеристик и добавляем их в список
+            foreach (string biosSerialNumber in biosSerialNumbers)
+            {
+                DeviceCharacteristics deviceCharacteristics = new DeviceCharacteristics();
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    var parameters = new List<(string Type, string Attribute, Action<string> Setter)>
+            {
+                ("Процессор", "Модель", value => deviceCharacteristics.ProcessorModel = value),
+                ("Процессор", "Архитектура", value => deviceCharacteristics.ProcessorArchitecture = value),
+                ("Процессор", "К-во ядер", value => deviceCharacteristics.ProcessorCores = value),
+                ("ОЗУ", "Объём", value => deviceCharacteristics.RAMSize = value),
+                ("ОЗУ", "Частота", value => deviceCharacteristics.RAMFrequency = value),
+                ("ОЗУ", "Тип", value => deviceCharacteristics.RAMType = value),
+                ("Графический процессор", "Модель", value => deviceCharacteristics.GPUModel = value),
+                ("ОС", "Операционная система", value => deviceCharacteristics.OS = value)
+            };
+
+                    foreach (var param in parameters)
+                    {
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@ТипХарактеристики", param.Type);
+                            command.Parameters.AddWithValue("@Характеристика", param.Attribute);
+                            command.Parameters.AddWithValue("@BIOS", biosSerialNumber);
+
+                            try
+                            {
+                                SqlDataReader reader = command.ExecuteReader();
+                                if (reader.Read())
+                                {
+                                    param.Setter(reader["Значение"].ToString());
+                                }
+                                reader.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Ошибка при загрузке данных: " + ex.Message);
+                            }
+                        }
+                    }
+                }
+
+                devices.Add(deviceCharacteristics);
+            }
+
+            // Устанавливаем список устройств в качестве источника данных для ListBox
+            listBox2.ItemsSource = devices;
+        }
+
+
+
+        public class Characteristic
+        {
+            public string Type { get; set; }
+            public string Attribute { get; set; }
+            public string Value { get; set; }
+        }
+
         public void Control_Click(object sender, RoutedEventArgs e)
         {
             ListBoxItemButtonHandler.OpenControlWindow(sender);

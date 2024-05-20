@@ -27,7 +27,36 @@
             </ListBox>
 
 
-            <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" Visibility="Visible" Name="listBox" Margin="220,40,30,30">
+            <ListBox x:Name="listBox2" Foreground="Black" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" Visibility="Visible" Margin="220,40,30,30">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="Процессор:" FontWeight="Bold"/>
+                            <TextBlock Text="Модель:" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding ProcessorModel}"/>
+                            <TextBlock Text="Архитектура:" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding ProcessorArchitecture}"/>
+                            <TextBlock Text="К-во ядер:" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding ProcessorCores}"/>
+                            <TextBlock Text="ОЗУ:" FontWeight="Bold"/>
+                            <TextBlock Text="Объём:" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding RAMSize}"/>
+                            <TextBlock Text="Частота:" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding RAMFrequency}"/>
+                            <TextBlock Text="Тип:" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding RAMType}"/>
+                            <TextBlock Text="Графический процессор:" FontWeight="Bold"/>
+                            <TextBlock Text="Модель:" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding GPUModel}"/>
+                            <TextBlock Text="ОС:" FontWeight="Bold"/>
+                            <TextBlock Text="Операционная система:" FontStyle="Italic"/>
+                            <TextBlock Text="{Binding OS}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" Visibility="Hidden" Name="listBox" Margin="220,40,30,30">
 
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
