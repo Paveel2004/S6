@@ -67,8 +67,7 @@ namespace AdminInterfase
         }
         public void Computers_Click(object sender, RoutedEventArgs e)
         {
-            dataGrid.Visibility = Visibility.Visible;
-            ComputerName.Visibility = Visibility.Visible;
+
             listBox.Items.Clear();
         }
    
@@ -140,8 +139,7 @@ namespace AdminInterfase
         }
         private void Monitoring_Click(object sender, RoutedEventArgs e)
         {
-            dataGrid.Visibility = Visibility.Hidden;
-            ComputerName.Visibility = Visibility.Hidden;                
+                       
             GetAll();
         }
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -185,42 +183,7 @@ namespace AdminInterfase
          //   var searchText = textBox.Text.ToLower();
             //listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
         }
-               private void ComputerName_DropDownOpened(object sender, EventArgs e)
-       {
-           ComputerName.Items.Clear();
-           using (SqlConnection connection = new SqlConnection(connectionString))
-           {
-               connection.Open();
-               string sqlQuery = "SELECT Имя FROM Устройтво";
-               SqlCommand cmd = new SqlCommand(sqlQuery, connection);
-
-               using (SqlDataReader reader = cmd.ExecuteReader())
-               {
-                   while (reader.Read())
-                   {
-                       string name = reader["Имя"].ToString();
-
-                       ComputerName.Items.Add(name);
-                   }
-               }
-           }
-       }
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            string query = $" EXECUTE ДанныеОУстройстве @Имя = '{ComputerName.Text}'";
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-
-
-                SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
-                DataTable dataTable = new DataTable();
-                dataAdapter.Fill(dataTable);
-
-                dataGrid.ItemsSource = dataTable.DefaultView;
-
-            }
-        }
+                
 
     }
 
