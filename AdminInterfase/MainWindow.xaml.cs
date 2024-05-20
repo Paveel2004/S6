@@ -83,6 +83,9 @@ namespace AdminInterfase
             public string RAMType { get; set; }
             public string GPUModel { get; set; }
             public string OS { get; set; }
+            public string OSVersion { get; set; }
+            public string OSArchitecture { get; set; }
+            public string TotalSpaceDisk { get; set; }
         }
         private List<string> GetBiosSerialNumbers()
         {
@@ -146,7 +149,10 @@ namespace AdminInterfase
                 ("ОЗУ", "Частота", value => deviceCharacteristics.RAMFrequency = value),
                 ("ОЗУ", "Тип", value => deviceCharacteristics.RAMType = value),
                 ("Графический процессор", "Модель", value => deviceCharacteristics.GPUModel = value),
-                ("ОС", "Операционная система", value => deviceCharacteristics.OS = value)
+                ("ОС", "Операционная система", value => deviceCharacteristics.OS = value),
+                ("ОС", "Версия", value => deviceCharacteristics.OSVersion = value),
+                ("ОС", "Разрядность", value => deviceCharacteristics.OSArchitecture = value),
+                ("Диск", "Объём", value => deviceCharacteristics.TotalSpaceDisk = value),
             };
 
                     foreach (var param in parameters)
@@ -223,8 +229,7 @@ namespace AdminInterfase
         }
 
         static void HandleClient(TcpClient tcpClient, ListBox listBox)
-        {
-            
+        {            
             try
             {
                 using NetworkStream stream = tcpClient.GetStream();

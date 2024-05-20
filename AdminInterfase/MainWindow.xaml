@@ -31,27 +31,58 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Text="Процессор:" FontWeight="Bold"/>
-                            <TextBlock Text="Модель:" FontStyle="Italic"/>
-                            <TextBlock Text="{Binding ProcessorModel}"/>
-                            <TextBlock Text="Архитектура:" FontStyle="Italic"/>
-                            <TextBlock Text="{Binding ProcessorArchitecture}"/>
-                            <TextBlock Text="К-во ядер:" FontStyle="Italic"/>
-                            <TextBlock Text="{Binding ProcessorCores}"/>
-                            <TextBlock Text="ОЗУ:" FontWeight="Bold"/>
-                            <TextBlock Text="Объём:" FontStyle="Italic"/>
-                            <TextBlock Text="{Binding RAMSize}"/>
-                            <TextBlock Text="Частота:" FontStyle="Italic"/>
-                            <TextBlock Text="{Binding RAMFrequency}"/>
-                            <TextBlock Text="Тип:" FontStyle="Italic"/>
-                            <TextBlock Text="{Binding RAMType}"/>
-                            <TextBlock Text="Графический процессор:" FontWeight="Bold"/>
-                            <TextBlock Text="Модель:" FontStyle="Italic"/>
-                            <TextBlock Text="{Binding GPUModel}"/>
-                            <TextBlock Text="ОС:" FontWeight="Bold"/>
-                            <TextBlock Text="Операционная система:" FontStyle="Italic"/>
-                            <TextBlock Text="{Binding OS}"/>
+                            <TextBlock FontWeight="Bold" Text="Процессор:"/>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Модель: "/>
+        <Run FontStyle="Italic" Text="{Binding ProcessorModel}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Архитектура: "/>
+        <Run FontStyle="Italic" Text="{Binding ProcessorArchitecture}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="К-во ядер: "/>
+        <Run FontStyle="Italic" Text="{Binding ProcessorCores}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Bold" Text="ОЗУ:"/>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Объём: "/>
+        <Run FontStyle="Italic" Text="{Binding RAMSize}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Частота: "/>
+        <Run FontStyle="Italic" Text="{Binding RAMFrequency}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Тип: "/>
+        <Run FontStyle="Italic" Text="{Binding RAMType}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Bold" Text="Графический процессор:"/>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Модель: "/>
+        <Run FontStyle="Italic" Text="{Binding GPUModel}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Bold" Text="ОС:"/>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Операционная система: "/>
+        <Run FontStyle="Italic" Text="{Binding OS}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Версия: "/>
+        <Run FontStyle="Italic" Text="{Binding OSVersion}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Разрядность: "/>
+        <Run FontStyle="Italic" Text="{Binding OSArchitecture}"/>
+                            </TextBlock>
+                            <TextBlock FontWeight="Bold" Text="Диск:"/>
+                            <TextBlock FontWeight="Normal">
+        <Run Text="Объём: "/>
+        <Run FontStyle="Italic" Text="{Binding TotalSpaceDisk}"/>
+                            </TextBlock>
                         </StackPanel>
+
+
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
