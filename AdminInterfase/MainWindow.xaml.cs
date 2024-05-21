@@ -45,11 +45,11 @@ namespace AdminInterfase
         public MainWindow()
         {
             InitializeComponent();
-            Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Monitoring_Click});
+            Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Online_Click});
             Menu.Items.Add(new MenuItem { Text = "Контроль"});
             Menu.Items.Add(new MenuItem { Text = "Компьютеры", ClickHandler = Computers_Click });
             Menu.Items.Add(new MenuItem { Text = "Настройки",});
-            Task.Run(() => StartServer(localPort, client => HandleClient(client, listBox), localAddr));
+            Task.Run(() => StartServer(localPort, client => HandleClient(client, onlineComputersListBox), localAddr));
 
         }
        
@@ -67,10 +67,20 @@ namespace AdminInterfase
         {
             ListBoxItemButtonHandler.ShowProcess(sender);
         }
+        private void SetComputersVisibility()
+        {
+            onlineComputersListBox.Visibility = Visibility.Hidden;
+            allComputersListBox.Visibility = Visibility.Visible;
+        }
+        private void SetOnlineVisibility()
+        {
+            onlineComputersListBox.Visibility = Visibility.Visible;
+            allComputersListBox.Visibility = Visibility.Hidden;
+        }
         public void Computers_Click(object sender, RoutedEventArgs e)
         {
-
-            listBox.Items.Clear();
+            SetComputersVisibility();
+            onlineComputersListBox.Items.Clear();
             LoadData();
         }
         public class DeviceCharacteristics
@@ -217,10 +227,8 @@ namespace AdminInterfase
             }
 
             // Устанавливаем список устройств в качестве источника данных для ListBox
-            listBox2.ItemsSource = devices;
+            allComputersListBox.ItemsSource = devices;
         }
-
-
 
         public class Characteristic
         {
@@ -289,14 +297,14 @@ namespace AdminInterfase
         }
         public void GetAll()
         {
-            listBox.Items.Clear();
+            onlineComputersListBox.Items.Clear();
             MessageSender.BroadcastMessage("getAll", BroadcastAddress, BroadcastPort);
 
             
         }
-        private void Monitoring_Click(object sender, RoutedEventArgs e)
+        private void Online_Click(object sender, RoutedEventArgs e)
         {
-                       
+            SetOnlineVisibility();
             GetAll();
         }
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -309,22 +317,23 @@ namespace AdminInterfase
         {
             if (e.Key == Key.Escape)
             {
-                ToggleMenuVisibility();
+                ToggleMenuVisibility(onlineComputersListBox);
+                ToggleMenuVisibility(allComputersListBox);
             }
         }
-        private void ToggleMenuVisibility()
+        private void ToggleMenuVisibility(ListBox listBox)
         {
             DoubleAnimation animation = new DoubleAnimation();
             if (Menu.Margin.Left >= 0) // Если Menu видимо, то анимируем его влево (скрываем)
             {
                 animation.To = -Menu.ActualWidth;
-                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(40, 40, 30, 40), TimeSpan.FromSeconds(0.3)));
+                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(40, 40, 30, 30), TimeSpan.FromSeconds(0.3)));
           
             }
             else // Иначе анимируем вправо (показываем)
             {
                 animation.To = 0;
-                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(220,40, 30, 40), TimeSpan.FromSeconds(0.3)));
+                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(220, 40, 30, 30), TimeSpan.FromSeconds(0.3)));
             }
             animation.Duration = TimeSpan.FromSeconds(0.3);
             Menu.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(Menu.Margin, new Thickness(animation.To.Value, 0, 0, 0), animation.Duration));
@@ -337,7 +346,7 @@ namespace AdminInterfase
         ObservableCollection<string> items;
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-         //   var searchText = textBox.Text.ToLower();
+            //var searchText = textBox.Text.ToLower();
             //listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
         }
                 

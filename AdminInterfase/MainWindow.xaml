@@ -25,9 +25,10 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            
+            
 
-
-            <ListBox x:Name="listBox2" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="220,40,30,30">
+            <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="220,40,30,30">
                 <ListBox.Background>
                     <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                 </ListBox.Background>
@@ -109,14 +110,18 @@
             </ListBox>
 
 
-            <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" Visibility="Hidden" Name="listBox" Margin="220,40,30,30">
+            <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Name="onlineComputersListBox" Margin="220,40,30,30">
 
+                <ListBox.Background>
+                    <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                </ListBox.Background>
+                
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Focusable" Value="False"/>
                     </Style>
                 </ListBox.ItemContainerStyle>
-
+              
 
 
 
