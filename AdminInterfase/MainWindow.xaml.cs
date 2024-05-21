@@ -75,6 +75,7 @@ namespace AdminInterfase
         }
         public class DeviceCharacteristics
         {
+            public string ComputerName { get; set; }
             public string ProcessorModel { get; set; }
             public string ProcessorArchitecture { get; set; }
             public string ProcessorCores { get; set; }
@@ -116,6 +117,37 @@ namespace AdminInterfase
 
             return serialNumbers;
         }
+        private string GetComputerName(string serialNumberBIOS)
+        {
+            string computerName = string.Empty;
+
+            // Строка запроса, которую не нужно менять
+            string query = $"SELECT Имя FROM Устройтво WHERE [Серийный номер BIOS] = '{serialNumberBIOS}'";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    try
+                    {
+                        connection.Open();
+                        object result = command.ExecuteScalar();
+
+                        if (result != null)
+                        {
+                            computerName = result.ToString();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Ошибка при получении имени компьютера: " + ex.Message);
+                    }
+                }
+            }
+
+            return computerName;
+        }
+
 
         private void LoadData()
         {
@@ -180,7 +212,7 @@ namespace AdminInterfase
                         }
                     }
                 }
-
+                deviceCharacteristics.ComputerName = GetComputerName(biosSerialNumber);
                 devices.Add(deviceCharacteristics);
             }
 
