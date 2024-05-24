@@ -268,13 +268,12 @@ namespace AdminInterfase
                     {
                         while (reader.Read())
                         {
-                            var app = new ApplicationData
+                            userApplications.Add(new ApplicationData
                             {
-                                Weight = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                InstallDate = reader.GetDateTime(2)
-                            };
-                            userApplications.Add(app);
+                                Name = reader.GetString(reader.GetOrdinal("Название")),
+                                Weight = reader.GetInt32(reader.GetOrdinal("Вес")),
+                                InstallDate = reader.GetDateTime(reader.GetOrdinal("Дата установки"))
+                            });
                         }
                     }
                 }
