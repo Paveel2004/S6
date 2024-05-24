@@ -71,6 +71,7 @@ namespace S6
             _thread = new Thread(UpdateData);
             _thread.IsBackground = true;
             _thread.Start();
+         
             DataBaseHelper.connectionString = DeserializeFromJsonFile<DataSettings>("data.json").connectionString;
             //ShowDataOnGraph();
 

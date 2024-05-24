@@ -15,13 +15,15 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <ListBox Name="listBox" Background="#80FFFFFF" Margin="30,45,30,30"  d:ItemsSource="{d:SampleData ItemCount=5}" FontFamily="Bahnschrift SemiLight" FontSize="14"/>
+        <ListBox Name="listBox"  Margin="30,45,30,30"  d:ItemsSource="{d:SampleData ItemCount=5}" FontFamily="Bahnschrift SemiLight" FontSize="14">
+            <ListBox.Background>
+                <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+            </ListBox.Background>
+        </ListBox>
         <StackPanel Orientation="Horizontal">
 
             <TextBox Background="AntiqueWhite" Height="21"  Name="searchBox" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="194" Margin="30,10,10,0"/>
             <Button Background="AntiqueWhite" FontSize="15" FontFamily="Bahnschrift Condensed" Content="Поиск" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="0,10,10,0"/>
-
-
 
             <RadioButton Checked="WindowsRadioButton_Checked" Content="Окна" FontSize="15" GroupName="FilterTypeProcess" Background="AntiqueWhite"  VerticalAlignment="Top" Margin="10,14,10,0" HorizontalAlignment="Left" FontFamily="Bahnschrift Condensed" Foreground="#FFFF9999"/>
             <RadioButton Checked="AllRadioButton_Checked" Content="Все" FontSize="15"  GroupName="FilterTypeProcess" Background="AntiqueWhite" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Bahnschrift Condensed" Margin="0,14,10,0" Foreground="#FFFF9999"/>

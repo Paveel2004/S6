@@ -26,6 +26,9 @@ using System.Data;
 using System.Runtime.CompilerServices;
 using System.Management;
 using DocumentFormat.OpenXml.AdditionalCharacteristics;
+using GlobalClass;
+using Server;
+using GlobalClass.Static_data;
 
 namespace AdminInterfase
 {
@@ -40,17 +43,19 @@ namespace AdminInterfase
         private string BroadcastAddress = "224.0.0.252";
         private int BroadcastPort = 11000;
         private int localPort = 2222;
+        private int localPort2 = 3333;
         private IPAddress localAddr = IPAddress.Parse(ManagerIP.GetIPAddress());
-        string connectionString = "Data Source = DESKTOP-LVEJL0B\\SQLEXPRESS;Initial Catalog=S6;Integrated Security=true;TrustServerCertificate=True ";
+        static string connectionString = "Server=192.168.1.143\\SQLEXPRESS; Database=S6Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
         public MainWindow()
         {
             InitializeComponent();
             Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Online_Click});
             Menu.Items.Add(new MenuItem { Text = "Контроль"});
             Menu.Items.Add(new MenuItem { Text = "Компьютеры", ClickHandler = Computers_Click });
+            Menu.Items.Add(new MenuItem { Text = "Приложения", ClickHandler = Computers_Click });
             Menu.Items.Add(new MenuItem { Text = "Настройки",});
             Task.Run(() => StartServer(localPort, client => HandleClient(client, onlineComputersListBox), localAddr));
-
+            //Task.Run(() => StartServer(localPort2, client => HandleDB(client), localAddr));
         }
        
         private void Details_Click(object sender, RoutedEventArgs e)
@@ -79,25 +84,12 @@ namespace AdminInterfase
         }
         public void Computers_Click(object sender, RoutedEventArgs e)
         {
+            //GetBuild();
             SetComputersVisibility();
             onlineComputersListBox.Items.Clear();
             LoadData();
         }
-        public class DeviceCharacteristics
-        {
-            public string ComputerName { get; set; }
-            public string ProcessorModel { get; set; }
-            public string ProcessorArchitecture { get; set; }
-            public string ProcessorCores { get; set; }
-            public string RAMSize { get; set; }
-            public string RAMFrequency { get; set; }
-            public string RAMType { get; set; }
-            public string GPUModel { get; set; }
-            public string OS { get; set; }
-            public string OSVersion { get; set; }
-            public string OSArchitecture { get; set; }
-            public string TotalSpaceDisk { get; set; }
-        }
+     
         private List<string> GetBiosSerialNumbers()
         {
             List<string> serialNumbers = new List<string>();
@@ -267,22 +259,21 @@ namespace AdminInterfase
                 server?.Stop();
             }
         }
-
         static void HandleClient(TcpClient tcpClient, ListBox listBox)
-        {            
+        {
             try
             {
                 using NetworkStream stream = tcpClient.GetStream();
-                byte[] data = new byte[999999*100];
+                byte[] data = new byte[999999 * 100];
                 int bytesRead;
                 while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
-                   
+
                     // Обновляем listBox в UI потоке
                     Application.Current.Dispatcher.Invoke(() => listBox.Items.Add(new ListBoxInfo { Text = TextHelper.DictionaryToText(message), Buttons = new ObservableCollection<string> { "Кнопка 1", "Кнопка 2", "Кнопка 3" } }));
-                    
+
                     stream.Write(response, 0, response.Length);
                 }
             }
@@ -295,6 +286,45 @@ namespace AdminInterfase
                 tcpClient.Close();
             }
         }
+      /*  static void HandleDB(TcpClient tcpClient)
+        {            
+            try
+            {
+                DataBaseHelper.connectionString = connectionString;
+                using NetworkStream stream = tcpClient.GetStream();
+                byte[] data = new byte[999999*100];
+                int bytesRead;
+                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                {
+                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
+                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+
+                    DeviceCharacteristics sborka = JsonConvert.DeserializeObject<DeviceCharacteristics>(message);
+                    DataBaseHelper.Query($"\tDELETE FROM Устройтво WHERE [Серийный номер BIOS] = '{sborka.SerialNumberBIOS}'");
+                    DataBaseHelper.Query($"INSERT INTO Устройтво VALUES ('{sborka.SerialNumberBIOS}','{sborka.ComputerName}')");
+                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'Диск', @Характеристика = 'Объём', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.TotalSpaceDisk}'");
+                    DataBaseHelper.Query($"EXECUTE ДобавитьПроцессор @BIOS = '{sborka.SerialNumberBIOS}', @Модель = '{sborka.ProcessorModel}', @Архитектура = '{sborka.ProcessorArchitecture}', @КоличествоЯдер = '{sborka.ProcessorCores}' ");
+                    DataBaseHelper.Query($"EXECUTE ДобавитьОЗУ @BIOS = '{sborka.SerialNumberBIOS}', @Объём = '{sborka.RAMSize}', @Частота = '{sborka.RAMFrequency}', @Тип = '{sborka.RAMType}'");
+                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Операционная система', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OS}'");
+                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Версия', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OSVersion}'");
+                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Разрядность', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OSArchitecture}'");
+                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'Графический процессор', @Характеристика = 'Модель', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение = '{sborka.GPUModel}'");
+                    stream.Write(response, 0, response.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                tcpClient.Close();
+            }
+        }*/
+        static void getApp()
+        {
+
+        }
         public void GetAll()
         {
             onlineComputersListBox.Items.Clear();
@@ -302,11 +332,18 @@ namespace AdminInterfase
 
             
         }
+/*        public void GetBuild()
+        {
+     
+            MessageSender.BroadcastMessage("getBuild", BroadcastAddress, BroadcastPort);
+
+        }*/
         private void Online_Click(object sender, RoutedEventArgs e)
         {
             SetOnlineVisibility();
             GetAll();
         }
+        
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)((Button)sender).DataContext;
@@ -340,7 +377,11 @@ namespace AdminInterfase
             // Используем сравнение с 0, чтобы понять, видимо ли меню
             isMenuVisible = Math.Abs(Menu.Margin.Left) < double.Epsilon;
         }
-
+        private void App_LocalDB(object sender, RoutedEventArgs e)
+        {
+            AppWindow app = new AppWindow();
+            app.Show();
+        }
         //////////////
         ///
         ObservableCollection<string> items;
@@ -349,7 +390,7 @@ namespace AdminInterfase
             //var searchText = textBox.Text.ToLower();
             //listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
         }
-                
+        
 
     }
 

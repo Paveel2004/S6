@@ -44,7 +44,11 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <!-- Изображение компьютера -->
-                                <Image Grid.Column="0" VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\bin\Debug\net6.0-windows\копмьютер с желтым экраном.png" Width="100" Height="100" Margin="5"/>
+
+                                    <Image Grid.Column="0" VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\bin\Debug\net6.0-windows\копмьютер с желтым экраном.png" Width="100" Height="100" Margin="5"/>
+                                 
+                                
+                                
 
                                 <!-- Текстовые данные - Процессор и ОЗУ -->
                                 <StackPanel Grid.Column="1" Width="400" Orientation="Vertical" Margin="10,0,10,0">
@@ -104,6 +108,9 @@
                                 </StackPanel>
                             </Grid>
                             <Label></Label>
+                            <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Content="Приложения" Width="120" Click="App_LocalDB" />
+                            
+                                                  
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
