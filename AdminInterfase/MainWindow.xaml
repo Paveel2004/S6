@@ -8,44 +8,6 @@
         mc:Ignorable="d"
         KeyDown="Menu_KeyDown" Icon="/icons8-компьютер-96.png"
         Title="MainWindow" Height="450" Width="950">
-    <Window.Resources>
-        <Style x:Key="CustomTabItemStyle" TargetType="{x:Type TabItem}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Grid>
-                            <Border Name="Border" 
-                                Background="AntiqueWhite"
-                                BorderBrush="Black" 
-                                BorderThickness="1" 
-                                CornerRadius="2,2,0,0">
-                                <ContentPresenter x:Name="ContentSite"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Center"
-                                              ContentSource="Header"
-                                              Margin="12,2,12,2"/>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="AntiqueWhite"/>
-                                <Setter TargetName="Border" Property="BorderBrush" Value="DarkGray"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="False">
-                                <Setter TargetName="Border" Property="Background" Value="AntiqueWhite"/>
-                                <Setter TargetName="Border" Property="BorderBrush" Value="Black"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="Border" Property="Background" Value="Gray"/>
-                                <Setter TargetName="Border" Property="BorderBrush" Value="DarkGray"/>
-                                <Setter Property="Foreground" Value="DarkGray"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
     <Grid>
         <Grid>
             <Grid.Background>
@@ -64,58 +26,43 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <TabControl Margin="220,10,30,30">
-                <!-- Первая вкладка с содержимым из Grid -->
-                <TabItem Height="20" FontSize="12" Header="Пользователи" Style="{StaticResource CustomTabItemStyle}">
+            <Grid Margin="220,40,30,30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"/>
+                    <!-- Ширина UsersListBox -->
+                    <ColumnDefinition Width="30"/>
+                    <!-- Отступ между ListBox -->
+                    <ColumnDefinition Width="*"/>
+                    <!-- Остальное место для ApplicationsListBox -->
+                </Grid.ColumnDefinitions>
 
-                    <Grid>
-                        <Grid.Background>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="#FF157FED"/>
-                                <GradientStop Color="#FF6D008D" Offset="1"/>
-                                <GradientStop Color="#FF5829D9" Offset="0.548"/>
-                            </LinearGradientBrush>
-                        </Grid.Background>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <!-- Ширина UsersListBox -->
-                            <ColumnDefinition Width="30"/>
-                            <!-- Отступ между ListBox -->
-                            <ColumnDefinition Width="*"/>
-                            <!-- Остальное место для ApplicationsListBox -->
-                        </Grid.ColumnDefinitions>
+                <ListBox SelectionChanged="UsersListBox_SelectionChanged" x:Name="UsersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible">
+                    <ListBox.Background>
+                        <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                    </ListBox.Background>
+                </ListBox>
 
-                        <ListBox SelectionChanged="UsersListBox_SelectionChanged" x:Name="UsersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible">
-                            <ListBox.Background>
-                                <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
-                            </ListBox.Background>
-                        </ListBox>
+                <!-- Пустое пространство для отступа -->
+                <Grid Grid.Column="1"/>
 
-                        <!-- Пустое пространство для отступа -->
-                        <Grid Grid.Column="1"/>
+                <ListBox x:Name="ApplicationsListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Grid.Column="2">
+                    <ListBox.Background>
+                        <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                    </ListBox.Background>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="LightGray" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
+                                    <TextBlock Text="{Binding Weight, StringFormat='Weight: {0} MB'}" FontSize="14"/>
+                                    <TextBlock Text="{Binding InstallDate, StringFormat='Install Date: {0:yyyy-MM-dd}'}" FontSize="14"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
-                        <ListBox x:Name="ApplicationsListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Grid.Column="2">
-                            <ListBox.Background>
-                                <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
-                            </ListBox.Background>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="LightGray" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
-                                        <StackPanel Orientation="Vertical">
-                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
-                                            <TextBlock Text="{Binding Weight, StringFormat='Weight: {0} MB'}" FontSize="14"/>
-                                            <TextBlock Text="{Binding InstallDate, StringFormat='Install Date: {0:yyyy-MM-dd}'}" FontSize="14"/>
-                                        </StackPanel>
-                                    </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </Grid>
-                </TabItem>
-
-                <!-- Вторая вкладка пустая -->
-                <TabItem Header="Empty"/>
-            </TabControl>
+            </Grid>
 
             <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Margin="220,40,30,30">
                 <ListBox.Background>
