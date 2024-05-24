@@ -8,6 +8,44 @@
         mc:Ignorable="d"
         KeyDown="Menu_KeyDown" Icon="/icons8-компьютер-96.png"
         Title="MainWindow" Height="450" Width="950">
+    <Window.Resources>
+        <Style x:Key="CustomTabItemStyle" TargetType="{x:Type TabItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid>
+                            <Border Name="Border" 
+                                Background="AntiqueWhite"
+                                BorderBrush="Black" 
+                                BorderThickness="1" 
+                                CornerRadius="2,2,0,0">
+                                <ContentPresenter x:Name="ContentSite"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Center"
+                                              ContentSource="Header"
+                                              Margin="12,2,12,2"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="AntiqueWhite"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="DarkGray"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="AntiqueWhite"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="Black"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="Gray"/>
+                                <Setter TargetName="Border" Property="BorderBrush" Value="DarkGray"/>
+                                <Setter Property="Foreground" Value="DarkGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid>
             <Grid.Background>
@@ -28,7 +66,8 @@
 
             <TabControl Margin="220,10,30,30">
                 <!-- Первая вкладка с содержимым из Grid -->
-                <TabItem Height="20" FontSize="12"  FontFamily="Bahnschrift SemiBold"  Header="Пользователи">
+                <TabItem Height="20" FontSize="12" Header="Пользователи" Style="{StaticResource CustomTabItemStyle}">
+
                     <Grid>
                         <Grid.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
