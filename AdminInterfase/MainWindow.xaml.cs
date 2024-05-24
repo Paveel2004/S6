@@ -35,6 +35,7 @@ namespace AdminInterfase
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    
 
     public partial class MainWindow : Window
     {
@@ -52,7 +53,7 @@ namespace AdminInterfase
             Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Online_Click});
             Menu.Items.Add(new MenuItem { Text = "Контроль"});
             Menu.Items.Add(new MenuItem { Text = "Компьютеры", ClickHandler = Computers_Click });
-            Menu.Items.Add(new MenuItem { Text = "Приложения", ClickHandler = Computers_Click });
+            Menu.Items.Add(new MenuItem { Text = "Приложения", ClickHandler = Apps_Click });
             Menu.Items.Add(new MenuItem { Text = "Настройки",});
             Task.Run(() => StartServer(localPort, client => HandleClient(client, onlineComputersListBox), localAddr));
             //Task.Run(() => StartServer(localPort2, client => HandleDB(client), localAddr));
@@ -62,11 +63,11 @@ namespace AdminInterfase
         {
             ListBoxItemButtonHandler.Show_Details(sender);
         }
-      
-
+        
+        
         private void App_Click(object sender, RoutedEventArgs e)
         {
-            ListBoxItemButtonHandler.ShowApps(sender, "getApplications", "Приложения");
+            //ListBoxItemButtonHandler.ShowApps(sender, "getApplications", "Приложения");
         }
         public void Process_Click(object sender, RoutedEventArgs e)
         {
@@ -81,6 +82,10 @@ namespace AdminInterfase
         {
             onlineComputersListBox.Visibility = Visibility.Visible;
             allComputersListBox.Visibility = Visibility.Hidden;
+        }
+        public void Apps_Click(object sender, RoutedEventArgs e)
+        {
+            FillUsersListBox(UsersListBox);
         }
         public void Computers_Click(object sender, RoutedEventArgs e)
         {
@@ -228,12 +233,110 @@ namespace AdminInterfase
             public string Attribute { get; set; }
             public string Value { get; set; }
         }
+        public class ApplicationData
+        {
+            public int Weight { get; set; }
+            public string Name { get; set; }
+            public DateTime InstallDate { get; set; }
+
+            public override string ToString()
+            {
+                return $"{Name} (Weight: {Weight} MB, Installed: {InstallDate.ToShortDateString()})";
+            }
+        }
 
         public void Control_Click(object sender, RoutedEventArgs e)
         {
             ListBoxItemButtonHandler.OpenControlWindow(sender);
         }
+        private Dictionary<string, string> usersDictionary = new Dictionary<string, string>();
+        private List<ApplicationData> GetApplicationsForUser(string userSid)
+        {
+            List<ApplicationData> userApplications = new List<ApplicationData>();
 
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "EXEC ПриложенияПользователя @SIDПользователя";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@SIDПользователя", userSid);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var app = new ApplicationData
+                            {
+                                Weight = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                InstallDate = reader.GetDateTime(2)
+                            };
+                            userApplications.Add(app);
+                        }
+                    }
+                }
+            }
+
+            return userApplications;
+        }
+
+        private void UsersListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (UsersListBox.SelectedIndex != -1)
+            {
+                string selectedUserName = UsersListBox.SelectedItem.ToString();
+
+                // Получаем SID выбранного пользователя из словаря
+                string selectedUserSid = usersDictionary[selectedUserName];
+
+                // Вызываем процедуру ПриложенияПользователя с передачей SID
+                List<ApplicationData> userApplications = GetApplicationsForUser(selectedUserSid);
+
+                // Заполняем второй ListBox результатами процедуры
+                FillApplicationsListBox(userApplications);
+            }
+        }
+
+        private void FillApplicationsListBox(List<ApplicationData> applications)
+        {
+            ApplicationsListBox.Items.Clear();
+
+            foreach (var application in applications)
+            {
+                ApplicationsListBox.Items.Add(application);
+            }
+        }
+
+        public void FillUsersListBox(ListBox listBox)
+        {
+            listBox.Items.Clear();
+            usersDictionary.Clear();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT [Имя], [Идентификатор безопасности] FROM Пользователи";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string name = reader.GetString(0);
+                            string sid = reader.GetString(1);
+
+                            listBox.Items.Add(name);
+                            usersDictionary[name] = sid;
+                        }
+                    }
+                }
+            }
+        }
 
         static async void StartServer(int port, Action<TcpClient> handleClient, IPAddress localAddr)
         {
@@ -393,5 +496,6 @@ namespace AdminInterfase
         
 
     }
+
 
 }

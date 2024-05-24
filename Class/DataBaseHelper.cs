@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 
+
 namespace Server
 {
    
@@ -35,5 +36,6 @@ namespace Server
                 connection.Close();
             }
         }
+        
     }
 }
