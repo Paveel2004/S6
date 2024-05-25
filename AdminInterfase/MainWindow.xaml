@@ -26,7 +26,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <Grid Margin="220,40,30,30">
+            <Grid Name="Apps" Visibility="Hidden" Margin="220,40,30,30">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"/>
                     <!-- Ширина UsersListBox -->
@@ -36,11 +36,29 @@
                     <!-- Остальное место для ApplicationsListBox -->
                 </Grid.ColumnDefinitions>
 
-                <ListBox SelectionChanged="UsersListBox_SelectionChanged" x:Name="UsersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible">
+                <ListBox SelectionChanged="UsersListBox_SelectionChanged" 
+         x:Name="UsersListBox" 
+         Foreground="Black" 
+         ScrollViewer.CanContentScroll="False" 
+         Visibility="Visible">
                     <ListBox.Background>
                         <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                     </ListBox.Background>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Пользователь3.png" Height="30" Margin="5"/>
+                                <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
+
 
                 <!-- Пустое пространство для отступа -->
                 <Grid Grid.Column="1"/>
@@ -64,7 +82,7 @@
 
             </Grid>
 
-            <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Margin="220,40,30,30">
+            <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="222,40,28,30">
                 <ListBox.Background>
                     <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                 </ListBox.Background>
@@ -143,9 +161,7 @@
                                     </TextBlock>
                                 </StackPanel>
                             </Grid>
-                            <Label></Label>
-                            <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" HorizontalAlignment="Left" Content="Приложения" Width="120" Click="App_LocalDB" />
-                            
+                            <Label></Label>                          
                                                   
                         </StackPanel>
                     </DataTemplate>
@@ -189,7 +205,6 @@
 
 
                                     <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Процессы" Margin="5" Click="Process_Click" />
-                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Приложения" Margin="5" Click="App_Click"/>
                                     <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Трафик" Margin="5" Click="App_Click"/>
                                     <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Клавиатура" Margin="5" Click="App_Click"/>
                                     <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Контроль" Margin="5" Click="Control_Click"/>
@@ -203,8 +218,14 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <StackPanel HorizontalAlignment="Right"  Margin="0,10,30,0">
-                <TextBox Text="Поиск 🔍" HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged"  Width="250"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Margin="220,10,60,30">
+                <TextBox Text="Поиск 🔍" HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged" Height="30" VerticalAlignment="Top" Width="378"/>
+                <StackPanel>
+                <CheckBox  Content="Включен" />
+                <CheckBox  Content="Выключен" />
+                </StackPanel>
+              
+
             </StackPanel>
            
           

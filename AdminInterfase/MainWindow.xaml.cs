@@ -77,16 +77,26 @@ namespace AdminInterfase
         {
             onlineComputersListBox.Visibility = Visibility.Hidden;
             allComputersListBox.Visibility = Visibility.Visible;
+            Apps.Visibility = Visibility.Hidden;
         }
         private void SetOnlineVisibility()
         {
             onlineComputersListBox.Visibility = Visibility.Visible;
             allComputersListBox.Visibility = Visibility.Hidden;
+            Apps.Visibility = Visibility.Hidden;
+        }
+        private void AppsVisibility()
+        {
+            onlineComputersListBox.Visibility = Visibility.Hidden;
+            allComputersListBox.Visibility = Visibility.Hidden;
+            Apps.Visibility = Visibility.Visible;
         }
         public void Apps_Click(object sender, RoutedEventArgs e)
         {
+            AppsVisibility();
             FillUsersListBox(UsersListBox);
         }
+        
         public void Computers_Click(object sender, RoutedEventArgs e)
         {
             //GetBuild();
