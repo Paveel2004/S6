@@ -9,7 +9,87 @@
         KeyDown="Menu_KeyDown" Icon="/icons8-компьютер-96.png"
         Title="MainWindow" Height="450" Width="950">
     <Window.Resources>
-        <local:IsLastItemConverter x:Key="IsLastItemConverter"/>
+        <!-- Стиль для ComboBox -->
+        <!-- Стиль для ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="AntiqueWhite"/>
+            <Setter Property="BorderBrush" Value="AntiqueWhite"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Name="ToggleButton"
+                                          Grid.Column="2"
+                                          Focusable="false"
+                                          IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                          ClickMode="Press"
+                                          Background="AntiqueWhite"
+                                          BorderBrush="AntiqueWhite"/>
+                            <ContentPresenter Name="ContentSite"
+                                              IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="3,3,23,3"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left"/>
+                            <TextBox x:Name="PART_EditableTextBox"
+                                     Style="{x:Null}"
+                                     HorizontalAlignment="Left"
+                                     VerticalAlignment="Center"
+                                     Margin="3,3,23,3"
+                                     Focusable="True"
+                                     Background="AntiqueWhite"
+                                     BorderBrush="AntiqueWhite"
+                                     Foreground="Black"
+                                     Visibility="Hidden"
+                                     IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Popup Name="Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Grid Name="DropDown"
+                                      SnapsToDevicePixels="True"
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder"
+                                            Background="AntiqueWhite"
+                                            BorderBrush="AntiqueWhite"
+                                            BorderThickness="1"/>
+                                    <ScrollViewer Margin="4,6,4,6"
+                                                  SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True"
+                                                    KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="Gray"/>
+                            </Trigger>
+                            <Trigger Property="IsEditable" Value="true">
+                                <Setter Property="IsTabStop" Value="false"/>
+                                <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Стиль для ComboBoxItem -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Background" Value="AntiqueWhite"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -23,6 +103,7 @@
             </Grid.Background>
 
             <ListBox x:Name="Menu" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Left" Width="190">
+
                 <ListBoxItem>
                     <Button Content="Онлайн" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
                 </ListBoxItem>
@@ -36,20 +117,22 @@
                     <Button Content="Компьютеры" Click="Computers_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
                 </ListBoxItem>
 
-                <ListBoxItem ScrollViewer.CanContentScroll="False">
-                    <!-- Вложенный ListBox -->
-                    <ListBox x:Name="Filter" Background="Transparent"  ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                <ListBoxItem ScrollViewer.CanContentScroll="True">
+                    
                         <StackPanel>
-                            <StackPanel>
+                  
+                        <StackPanel>
                                 <Label Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Операционная система:</Label>
                                 <StackPanel Orientation="Horizontal">
                                 </StackPanel>
                                 <Label FontStyle="Italic">Название:</Label>
-                                <ComboBox Margin="0,-6,7,-5"/>
+                            <ComboBox Background="AntiqueWhite" Name="NameOS" Margin="0,-4,7,-5">
+                                
+                            </ComboBox>
                                 <Label FontStyle="Italic">Версия:</Label>
-                                <ComboBox Margin="0,-6,7,-5"/>
+                            <ComboBox Background="AntiqueWhite" Name="VersionOS" Margin="0,-4,7,-5"/>
                                 <Label FontStyle="Italic">Архитектура:</Label>
-                                <ComboBox Margin="0,-6,7,-5"/>
+                            <ComboBox Name="ArchitectureOS" Margin="0,-6,7,-5"/>
 
                             </StackPanel>
                             <StackPanel Margin="0,23,7,-5">
@@ -58,11 +141,11 @@
                                     <StackPanel Orientation="Horizontal">
                                     </StackPanel>
                                     <Label FontStyle="Italic">Модель:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
+                                <ComboBox Background="AntiqueWhite" Name="ModelCPU"  Margin="0,-4,7,-5"/>
                                     <Label FontStyle="Italic">Архитектура:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
+                                <ComboBox Background="AntiqueWhite" Name="ArchitectureCPU" Margin="0,-6,7,-5"/>
                                     <Label FontStyle="Italic">Количество ядер:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
+                                <ComboBox  Background="AntiqueWhite" Name="CoreCPU" Margin="0,-4,7,-5"/>
 
                                 </StackPanel>
                             </StackPanel>
@@ -72,46 +155,38 @@
                                     <StackPanel Orientation="Horizontal">
                                     </StackPanel>
                                     <Label FontStyle="Italic">Объём:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
+                                <ComboBox Background="AntiqueWhite" Name="TotalSpaseRAM" Margin="0,-4,7,-5"/>
                                     <Label FontStyle="Italic">Частота:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
+                                <ComboBox Background="AntiqueWhite" Name="SpeedRAM" Margin="0,-4,7,-5"/>
                                     <Label FontStyle="Italic">Тип</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
+                                <ComboBox Background="AntiqueWhite" Name="TypeRam" Margin="0,-4,7,-5"/>
 
                                 </StackPanel>
                             </StackPanel>
-                            <StackPanel Margin="0,23,7,-5">
-                                <StackPanel>
-                                    <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
-                                    <StackPanel Orientation="Horizontal">
-                                    </StackPanel>
-                                    <Label FontStyle="Italic">Объём:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
-                                    <Label FontStyle="Italic">Частота:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
-                                    <Label FontStyle="Italic">Тип</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
-
-                                </StackPanel>
-                            </StackPanel>
-
+               
+                            
                             <StackPanel Margin="0,23,7,-5">
                                 <StackPanel>
                                     <Label  FontWeight="Bold" FontSize="14">Диск</Label>
                                     <StackPanel Orientation="Horizontal">
                                     </StackPanel>
+                               
                                     <Label FontStyle="Italic">Объём:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
-                                    <Label FontStyle="Italic">Частота:</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label FontStyle="Italic">От</Label>
+                                    <TextBox Background="AntiqueWhite" Height="20" Width="50" ></TextBox>
+                                    <Label FontStyle="Italic">До</Label>
+                                    <TextBox Background="AntiqueWhite" Height="20"  Width="50" ></TextBox>
+                                    <Label FontStyle="Italic">ГБ</Label>
+                                </StackPanel>
                                     <Label FontStyle="Italic">Тип</Label>
-                                    <ComboBox Margin="0,-6,7,-5"/>
+                                <ComboBox Name="DiskType" Margin="0,-4,7,-5"/>
 
                                 </StackPanel>
                                 <Label></Label>
                             </StackPanel>
                         </StackPanel>
-                    </ListBox>
+                 
                 </ListBoxItem>
 
 

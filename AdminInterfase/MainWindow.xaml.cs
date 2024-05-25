@@ -50,11 +50,22 @@ namespace AdminInterfase
         public MainWindow()
         {
             InitializeComponent();
-/*            Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Online_Click});
-            Menu.Items.Add(new MenuItem { Text = "Контроль"});
-            Menu.Items.Add(new MenuItem { Text = "Компьютеры", ClickHandler = Computers_Click });
-            Menu.Items.Add(new MenuItem { Text = "Приложения", ClickHandler = Apps_Click });
-            Menu.Items.Add(new MenuItem { Text = "Настройки",});*/
+
+            FillComboBoxFromProcedure(NameOS, "Операционная система", "ОС");
+            FillComboBoxFromProcedure(VersionOS, "Версия", "ОС");
+            FillComboBoxFromProcedure(ArchitectureOS, "Разрядность", "ОС");
+
+            FillComboBoxFromProcedure(ModelCPU,"Модель","Процессор");
+            FillComboBoxFromProcedure(ArchitectureCPU, "Архитектура", "Процессор");
+            FillComboBoxFromProcedure(CoreCPU, "К-во ядер", "Процессор");
+
+
+            FillComboBoxFromProcedure(TotalSpaseRAM, "Объём", "ОЗУ");
+            FillComboBoxFromProcedure(SpeedRAM, "Частота", "ОЗУ");
+            FillComboBoxFromProcedure(TypeRam, "Тип", "ОЗУ");
+
+
+
             Task.Run(() => StartServer(localPort, client => HandleClient(client, onlineComputersListBox), localAddr));
             //Task.Run(() => StartServer(localPort2, client => HandleDB(client), localAddr));
         }
@@ -63,8 +74,38 @@ namespace AdminInterfase
         {
             ListBoxItemButtonHandler.Show_Details(sender);
         }
-        
-        
+        public void FillComboBoxFromProcedure(ComboBox comboBox, string characteristic, string type)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    SqlCommand command = new SqlCommand("ПараметрыДляФильтра", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Характеристика", characteristic);
+                    command.Parameters.AddWithValue("@ТипХарактеристики", type);
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    // Очищаем комбобокс перед добавлением новых элементов
+                    comboBox.Items.Clear();
+
+                    // Добавляем значения из столбца "Значение" в комбобокс
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        comboBox.Items.Add(row["Значение"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+            }
+        }
+
         private void App_Click(object sender, RoutedEventArgs e)
         {
             //ListBoxItemButtonHandler.ShowApps(sender, "getApplications", "Приложения");

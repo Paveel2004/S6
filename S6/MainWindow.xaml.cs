@@ -391,7 +391,37 @@ namespace S6
                 }
             }
         }
+        public void FillComboBoxFromProcedure(ComboBox comboBox, string characteristic, string type)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    SqlCommand command = new SqlCommand("ПараметрыДляФильтра", connection);
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Характеристика", characteristic);
+                    command.Parameters.AddWithValue("@ТипХарактеристики", type);
 
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    // Очищаем комбобокс перед добавлением новых элементов
+                    comboBox.Items.Clear();
+
+                    // Добавляем значения из столбца "Значение" в комбобокс
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        comboBox.Items.Add(row["Значение"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+            }
+        }
         private void Type_DropDownOpened(object sender, EventArgs e)
         {
             Type.Items.Clear();

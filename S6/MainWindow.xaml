@@ -27,17 +27,17 @@
 
 
 
-        <ComboBox Visibility="Hidden" DropDownOpened="Type_DropDownOpened"  Name="Type" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="586,1,0,0"/>
-        <ComboBox Visibility="Hidden" DropDownOpened="Character_DropDownOpened"  Name="Character" HorizontalAlignment="Left" Margin="813,0,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="1.478,0.521"/>
-        <Button Visibility="Hidden" Name = "pokazat" Content="Показать" Background="White" HorizontalAlignment="Left" Margin="948,2,0,0" VerticalAlignment="Top" Width="57" Click="pokazat_Click"/>
-        <Label Name="Text1" Visibility="Hidden" Content="Тип характеристики" Foreground="White" HorizontalAlignment="Left" Margin="452,-1,0,0" VerticalAlignment="Top"/>
-        <Label Name="Text2" Visibility="Hidden" Content="Характеристика" Foreground="White" HorizontalAlignment="Left" Margin="711,-2,0,0" VerticalAlignment="Top"/>
-        <DataGrid Visibility="Hidden" AutoGenerateColumns="True" Name="dataGrid" Margin="220,30,30,40"/>
+        <ComboBox Visibility="Visible" DropDownOpened="Type_DropDownOpened"  Name="Type" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="586,1,0,0"/>
+        <ComboBox Visibility="Visible" DropDownOpened="Character_DropDownOpened"  Name="Character" HorizontalAlignment="Left" Margin="813,0,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="1.478,0.521"/>
+        <Button Visibility="Visible" Name = "pokazat" Content="Показать" Background="White" HorizontalAlignment="Left" Margin="948,2,0,0" VerticalAlignment="Top" Width="57" Click="pokazat_Click"/>
+        <Label Name="Text1" Visibility="Visible" Content="Тип характеристики" Foreground="White" HorizontalAlignment="Left" Margin="452,-1,0,0" VerticalAlignment="Top"/>
+        <Label Name="Text2" Visibility="Visible" Content="Характеристика" Foreground="White" HorizontalAlignment="Left" Margin="711,-2,0,0" VerticalAlignment="Top"/>
+        <DataGrid Visibility="Visible" AutoGenerateColumns="True" Name="dataGrid" Margin="220,30,30,40"/>
         <ComboBox DropDownOpened="ComputerName_DropDownOpened" Name="ComputerName" HorizontalAlignment="Left" Margin="327,1,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComputerName_SelectionChanged"/>
         <Label Content="Имя компьютера" Foreground="White" HorizontalAlignment="Left" Margin="217,-2,0,0" VerticalAlignment="Top"/>
 
 
-        <StackPanel x:Name="Date" Visibility="Hidden" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="204,0,0,0" Height="45">
+        <StackPanel x:Name="Date" Visibility="Visible" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="204,0,0,0" Height="45">
             <Label Content="Начальная дата" Foreground="White" Margin="10"/>
             <DatePicker Name = "StartData" HorizontalAlignment="Left" Height="25" Width="150" Margin="10"/>
             <Label Content="Конечная дата" Foreground="White" Margin="10"/>
@@ -46,17 +46,17 @@
         <Button Name="prosmotr" Click="prosmotr_Click" Content="Просмотр" Background="White"  HorizontalAlignment="Left" Margin="454,2,0,535"  Width="72"/>
         <Button x:Name="delete" Click="delete_Click" Content="Удалить" Background="White"  HorizontalAlignment="Left" Height="20" Margin="948,5,0,0" VerticalAlignment="Top"  Width="72"/>
         <ListBox Visibility="Visible" Name="listBox" Margin="220,30,30,40"/>
-        <Label Name="TextNow1" Visibility="Hidden" Content="Загруженность ОЗУ" Foreground="White" HorizontalAlignment="Left" Margin="222,30,0,0" VerticalAlignment="Top"/>
-        <Label  Name="TextNow2" Visibility="Hidden"  Content="Загруженность ЦП" Foreground="White" HorizontalAlignment="Left" Margin="365,30,0,0" VerticalAlignment="Top"/>
-        <Label  Name="TextNow3" Visibility="Hidden" Content="Температура ЦП" Foreground="White" HorizontalAlignment="Left" Margin="518,30,0,0" VerticalAlignment="Top"/>
-        <Label  Name="TextNow4" Visibility="Hidden" Content="Свободное мето на диске" Foreground="White" HorizontalAlignment="Left" Margin="224,59,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="ValueRAM"  Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="339,30,0,0" VerticalAlignment="Top" Width="50"/>
-        <Label x:Name="ValueUsageCPU" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="482,30,0,0" VerticalAlignment="Top" Width="30"/>
-        <Label x:Name="ValueTemperatureCPU" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="627,30,0,0" VerticalAlignment="Top" Width="34"/>
-        <Label x:Name="ValueFreeSpace" Visibility="Hidden"  Content="0" Foreground="White" HorizontalAlignment="Left" Margin="381,59,0,0" VerticalAlignment="Top" Width="206"/>
-        <Label  x:Name="TextNow5" Visibility="Hidden" Content="Скорость Ethernet" Foreground="White" HorizontalAlignment="Left" Margin="226,85,0,0" VerticalAlignment="Top" Width="114"/>
-        <Label x:Name="ValueEthernrtSpeed" Visibility="Hidden" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="350,85,0,0" VerticalAlignment="Top" Width="206"/>
-        <oxy:PlotView Visibility="Hidden" Name="Ethernet" HorizontalAlignment="Left" Height="401" Margin="220,116,0,0" VerticalAlignment="Top" Width="800"/>
+        <Label Name="TextNow1" Visibility="Visible" Content="Загруженность ОЗУ" Foreground="White" HorizontalAlignment="Left" Margin="222,30,0,0" VerticalAlignment="Top"/>
+        <Label  Name="TextNow2" Visibility="Visible"  Content="Загруженность ЦП" Foreground="White" HorizontalAlignment="Left" Margin="365,30,0,0" VerticalAlignment="Top"/>
+        <Label  Name="TextNow3" Visibility="Visible" Content="Температура ЦП" Foreground="White" HorizontalAlignment="Left" Margin="518,30,0,0" VerticalAlignment="Top"/>
+        <Label  Name="TextNow4" Visibility="Visible" Content="Свободное мето на диске" Foreground="White" HorizontalAlignment="Left" Margin="224,59,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="ValueRAM"  Visibility="Visible" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="339,30,0,0" VerticalAlignment="Top" Width="50"/>
+        <Label x:Name="ValueUsageCPU" Visibility="Visible" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="482,30,0,0" VerticalAlignment="Top" Width="30"/>
+        <Label x:Name="ValueTemperatureCPU" Visibility="Visible" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="627,30,0,0" VerticalAlignment="Top" Width="34"/>
+        <Label x:Name="ValueFreeSpace" Visibility="Visible"  Content="0" Foreground="White" HorizontalAlignment="Left" Margin="381,59,0,0" VerticalAlignment="Top" Width="206"/>
+        <Label  x:Name="TextNow5" Visibility="Visible" Content="Скорость Ethernet" Foreground="White" HorizontalAlignment="Left" Margin="226,85,0,0" VerticalAlignment="Top" Width="114"/>
+        <Label x:Name="ValueEthernrtSpeed" Visibility="Visible" Content="0" Foreground="White" HorizontalAlignment="Left" Margin="350,85,0,0" VerticalAlignment="Top" Width="206"/>
+        <oxy:PlotView Visibility="Visible" Name="Ethernet" HorizontalAlignment="Left" Height="401" Margin="220,116,0,0" VerticalAlignment="Top" Width="800"/>
 
 
     </Grid>
