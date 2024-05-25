@@ -8,6 +8,10 @@
         mc:Ignorable="d"
         KeyDown="Menu_KeyDown" Icon="/icons8-компьютер-96.png"
         Title="MainWindow" Height="450" Width="950">
+    <Window.Resources>
+        <local:IsLastItemConverter x:Key="IsLastItemConverter"/>
+    </Window.Resources>
+
     <Grid>
         <Grid>
             <Grid.Background>
@@ -18,13 +22,103 @@
                 </LinearGradientBrush>
             </Grid.Background>
 
-            <ListBox x:Name="Menu" Background="#80FFFFFF" HorizontalAlignment="Left" Width="190">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Button Opacity="0.9"  Content="{Binding Text}" Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Click="MenuItem_Click" Background="AntiqueWhite"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+            <ListBox x:Name="Menu" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Left" Width="190">
+                <ListBoxItem>
+                    <Button Content="Онлайн" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
+                </ListBoxItem>
+                <ListBoxItem>
+                    <Button Content="Контроль" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
+                </ListBoxItem>
+                <ListBoxItem>
+                    <Button Content="Приложения" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
+                </ListBoxItem>
+                <ListBoxItem>
+                    <Button Content="Компьютеры" Click="Computers_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
+                </ListBoxItem>
+
+                <ListBoxItem ScrollViewer.CanContentScroll="False">
+                    <!-- Вложенный ListBox -->
+                    <ListBox x:Name="Filter" Background="Transparent"  ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                        <StackPanel>
+                            <StackPanel>
+                                <Label Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Операционная система:</Label>
+                                <StackPanel Orientation="Horizontal">
+                                </StackPanel>
+                                <Label FontStyle="Italic">Название:</Label>
+                                <ComboBox Margin="0,-6,7,-5"/>
+                                <Label FontStyle="Italic">Версия:</Label>
+                                <ComboBox Margin="0,-6,7,-5"/>
+                                <Label FontStyle="Italic">Архитектура:</Label>
+                                <ComboBox Margin="0,-6,7,-5"/>
+
+                            </StackPanel>
+                            <StackPanel Margin="0,23,7,-5">
+                                <StackPanel>
+                                    <Label  FontWeight="Bold" FontSize="14">Процессор:</Label>
+                                    <StackPanel Orientation="Horizontal">
+                                    </StackPanel>
+                                    <Label FontStyle="Italic">Модель:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+                                    <Label FontStyle="Italic">Архитектура:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+                                    <Label FontStyle="Italic">Количество ядер:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Margin="0,23,7,-5">
+                                <StackPanel>
+                                    <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
+                                    <StackPanel Orientation="Horizontal">
+                                    </StackPanel>
+                                    <Label FontStyle="Italic">Объём:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+                                    <Label FontStyle="Italic">Частота:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+                                    <Label FontStyle="Italic">Тип</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Margin="0,23,7,-5">
+                                <StackPanel>
+                                    <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
+                                    <StackPanel Orientation="Horizontal">
+                                    </StackPanel>
+                                    <Label FontStyle="Italic">Объём:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+                                    <Label FontStyle="Italic">Частота:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+                                    <Label FontStyle="Italic">Тип</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Margin="0,23,7,-5">
+                                <StackPanel>
+                                    <Label  FontWeight="Bold" FontSize="14">Диск</Label>
+                                    <StackPanel Orientation="Horizontal">
+                                    </StackPanel>
+                                    <Label FontStyle="Italic">Объём:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+                                    <Label FontStyle="Italic">Частота:</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+                                    <Label FontStyle="Italic">Тип</Label>
+                                    <ComboBox Margin="0,-6,7,-5"/>
+
+                                </StackPanel>
+                                <Label></Label>
+                            </StackPanel>
+                        </StackPanel>
+                    </ListBox>
+                </ListBoxItem>
+
+
             </ListBox>
+
+
+
 
             <Grid Name="Apps" Visibility="Hidden" Margin="220,40,30,30">
                 <Grid.ColumnDefinitions>

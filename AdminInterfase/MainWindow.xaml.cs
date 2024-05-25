@@ -50,11 +50,11 @@ namespace AdminInterfase
         public MainWindow()
         {
             InitializeComponent();
-            Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Online_Click});
+/*            Menu.Items.Add(new MenuItem { Text = "Онлайн", ClickHandler = Online_Click});
             Menu.Items.Add(new MenuItem { Text = "Контроль"});
             Menu.Items.Add(new MenuItem { Text = "Компьютеры", ClickHandler = Computers_Click });
             Menu.Items.Add(new MenuItem { Text = "Приложения", ClickHandler = Apps_Click });
-            Menu.Items.Add(new MenuItem { Text = "Настройки",});
+            Menu.Items.Add(new MenuItem { Text = "Настройки",});*/
             Task.Run(() => StartServer(localPort, client => HandleClient(client, onlineComputersListBox), localAddr));
             //Task.Run(() => StartServer(localPort2, client => HandleDB(client), localAddr));
         }
