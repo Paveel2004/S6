@@ -74,6 +74,19 @@ namespace AdminInterfase
         {
             ListBoxItemButtonHandler.Show_Details(sender);
         }
+        private void ToggleMenu_Checked(object sender, RoutedEventArgs e)
+        {
+            // Запускаем анимацию для отображения меню
+            var slideDownStoryboard = Resources["SlideDown"] as Storyboard;
+            slideDownStoryboard?.Begin();
+        }
+
+        private void ToggleMenu_Unchecked(object sender, RoutedEventArgs e)
+        {
+            // Запускаем анимацию для скрытия меню
+            var slideUpStoryboard = Resources["SlideUp"] as Storyboard;
+            slideUpStoryboard?.Begin();
+        }
         public void FillComboBoxFromProcedure(ComboBox comboBox, string characteristic, string type)
         {
             try
