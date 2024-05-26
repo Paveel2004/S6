@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:AdminInterfase"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <local:CenterConverter x:Key="CenterConverter"/>
     </Application.Resources>
 </Application>

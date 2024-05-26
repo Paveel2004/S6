@@ -12,21 +12,21 @@
         <!-- Анимация для выдвижного меню -->
         <Storyboard x:Key="SlideDown">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MenuPanel" Storyboard.TargetProperty="(Canvas.Top)">
-                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="-100"/>
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="-150"/>
                 <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ToggleButton" Storyboard.TargetProperty="(Canvas.Top)">
                 <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
-                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="100"/>
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="150"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="SlideUp">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MenuPanel" Storyboard.TargetProperty="(Canvas.Top)">
                 <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
-                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="-100"/>
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="-150"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ToggleButton" Storyboard.TargetProperty="(Canvas.Top)">
-                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="100"/>
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="150"/>
                 <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
@@ -111,338 +111,381 @@
             <Setter Property="Foreground" Value="Black"/>
         </Style>
     </Window.Resources>
-
     <Grid>
         <Grid>
-            <!-- Верхний Canvas для выдвижного меню -->
-            <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}">
-                <!-- Выдвижное меню -->
-                <StackPanel  x:Name="MenuPanel" Background="LightGray" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="100" Canvas.Top="-100">
-                    <TextBlock Text="Menu Item 1" Margin="10"/>
-                    <TextBlock Text="Menu Item 2" Margin="10"/>
-                    <TextBlock Text="Menu Item 3" Margin="10"/>
-                </StackPanel>
-                <!-- Кнопка для выдвижения меню -->
-                <ToggleButton x:Name="ToggleButton"  Content="Toggle Menu" Width="100" Height="30" Canvas.Top="0"  Checked="ToggleMenu_Checked" Unchecked="ToggleMenu_Unchecked"/>
-            </Canvas>
-        </Grid>
-        <Grid>
-            <Grid.Background>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FF157FED"/>
-                    <GradientStop Color="#FF6D008D" Offset="1"/>
-                    <GradientStop Color="#FF5829D9" Offset="0.548"/>
-                </LinearGradientBrush>
-            </Grid.Background>
 
-            <ListBox x:Name="Menu" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Left" Width="190">
+            <Grid>
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF157FED"/>
+                        <GradientStop Color="#FF6D008D" Offset="1"/>
+                        <GradientStop Color="#FF5829D9" Offset="0.548"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
 
-                <ListBoxItem>
-                    <Button Content="Онлайн" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
-                </ListBoxItem>
-                <ListBoxItem>
-                    <Button Content="Контроль" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
-                </ListBoxItem>
-                <ListBoxItem>
-                    <Button Content="Приложения" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
-                </ListBoxItem>
-                <ListBoxItem>
-                    <Button Content="Компьютеры" Click="Computers_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
-                </ListBoxItem>
+                <ListBox x:Name="Menu" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False" Background="#80FFFFFF" ScrollViewer.VerticalScrollBarVisibility="Hidden" HorizontalAlignment="Left" Width="190">
 
-                <ListBoxItem ScrollViewer.CanContentScroll="True">
+                    <ListBoxItem>
+                        <Button Content="Онлайн" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <Button Content="Контроль" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <Button Content="Приложения" Click="Apps_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        <Button Content="Компьютеры" Click="Computers_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
+                    </ListBoxItem>
 
-                    <StackPanel>
+                    <ListBoxItem ScrollViewer.CanContentScroll="True">
 
                         <StackPanel>
-                            <Label Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Операционная система:</Label>
-                            <Label FontStyle="Italic">Название:</Label>
-                            <ComboBox FontSize="9" Height="20" Background="AntiqueWhite" Name="NameOS" Margin="0,-4,7,-5"></ComboBox>
+
+                        
+                            
+                            <StackPanel Margin="0,23,7,-5">
+                              
+                            </StackPanel>
 
 
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel>
-                                    <Label FontStyle="Italic" Content="Разрядность:"/>
-                                    <ComboBox Width="80" x:Name="ArchitectureOS" Height="20"/>
-                                   
-                                </StackPanel>
+                            <StackPanel Margin="0,23,7,-5">
                                 
-                                <StackPanel>
-                                    <Label FontStyle="Italic">Версия:</Label>
-                                    <ComboBox Width="80" Height="20" Background="AntiqueWhite" Name="VersionOS"/>
-                                </StackPanel>
-                                
-                            </StackPanel>
-
-                        </StackPanel>
-                        <StackPanel Margin="0,23,7,-5">
-                            <StackPanel>
-                                <Label  FontWeight="Bold" FontSize="14">Процессор:</Label>
-                                <StackPanel Orientation="Horizontal">
-                                </StackPanel>
-                                <Label FontStyle="Italic">Модель:</Label>
-                                <ComboBox  Background="AntiqueWhite" Name="ModelCPU"  Margin="0,-4,7,-5"/>
-                                <Label FontStyle="Italic">Архитектура:</Label>
-                                <ComboBox Background="AntiqueWhite" Name="ArchitectureCPU" Margin="0,-6,7,-5"/>
-                                <Label FontStyle="Italic">Количество ядер:</Label>
-                                <ComboBox  Background="AntiqueWhite" Name="CoreCPU" Margin="0,-4,7,-5"/>
-
-                            </StackPanel>
-                        </StackPanel>
-                        <StackPanel Margin="0,23,7,-5">
-                            <StackPanel>
-                                <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
-                                <StackPanel Orientation="Horizontal">
-                                </StackPanel>
-                                <Label FontStyle="Italic">Объём:</Label>
-                                <ComboBox Background="AntiqueWhite" Name="TotalSpaseRAM" Margin="0,-4,7,-5"/>
-                                <Label FontStyle="Italic">Частота:</Label>
-                                <ComboBox Background="AntiqueWhite" Name="SpeedRAM" Margin="0,-4,7,-5"/>
-                                <Label FontStyle="Italic">Тип</Label>
-                                <ComboBox Background="AntiqueWhite" Name="TypeRam" Margin="0,-4,7,-5"/>
-
+                                <Label></Label>
                             </StackPanel>
                         </StackPanel>
 
+                    </ListBoxItem>
 
-                        <StackPanel Margin="0,23,7,-5">
-                            <StackPanel>
-                                <Label  FontWeight="Bold" FontSize="14">Диск</Label>
+
+                </ListBox>
+
+
+
+
+                <Grid Name="Apps" Visibility="Hidden" Margin="220,40,30,30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <!-- Ширина UsersListBox -->
+                        <ColumnDefinition Width="30"/>
+                        <!-- Отступ между ListBox -->
+                        <ColumnDefinition Width="*"/>
+                        <!-- Остальное место для ApplicationsListBox -->
+                    </Grid.ColumnDefinitions>
+
+                    <ListBox SelectionChanged="UsersListBox_SelectionChanged" 
+        x:Name="UsersListBox" 
+        Foreground="Black" 
+        ScrollViewer.CanContentScroll="False" 
+        Visibility="Visible">
+                        <ListBox.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </ListBox.Background>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
+                                    <Image Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Пользователь3.png" Height="30" Margin="5"/>
+                                    <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="5,0,0,0"/>
                                 </StackPanel>
-
-                                <Label FontStyle="Italic">Объём:</Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label FontStyle="Italic">От</Label>
-                                    <TextBox Background="AntiqueWhite" Height="20" Width="50" ></TextBox>
-                                    <Label FontStyle="Italic">До</Label>
-                                    <TextBox Background="AntiqueWhite" Height="20"  Width="50" ></TextBox>
-                                    <Label FontStyle="Italic">ГБ</Label>
-                                </StackPanel>
-                                <Label FontStyle="Italic">Тип</Label>
-                                <ComboBox Name="DiskType" Margin="0,-4,7,-5"/>
-
-                            </StackPanel>
-                            <Label></Label>
-                        </StackPanel>
-                    </StackPanel>
-
-                </ListBoxItem>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
 
-            </ListBox>
+                    <!-- Пустое пространство для отступа -->
+                    <Grid Grid.Column="1"/>
 
+                    <ListBox x:Name="ApplicationsListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Grid.Column="2">
+                        <ListBox.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </ListBox.Background>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="LightGray" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
+                                        <TextBlock Text="{Binding Weight, StringFormat='Weight: {0} MB'}" FontSize="14"/>
+                                        <TextBlock Text="{Binding InstallDate, StringFormat='Install Date: {0:yyyy-MM-dd}'}" FontSize="14"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
 
+                </Grid>
 
-
-            <Grid Name="Apps" Visibility="Hidden" Margin="220,40,30,30">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
-                    <!-- Ширина UsersListBox -->
-                    <ColumnDefinition Width="30"/>
-                    <!-- Отступ между ListBox -->
-                    <ColumnDefinition Width="*"/>
-                    <!-- Остальное место для ApplicationsListBox -->
-                </Grid.ColumnDefinitions>
-
-                <ListBox SelectionChanged="UsersListBox_SelectionChanged" 
-         x:Name="UsersListBox" 
-         Foreground="Black" 
-         ScrollViewer.CanContentScroll="False" 
-         Visibility="Visible">
+                <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="222,40,28,30">
                     <ListBox.Background>
                         <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                     </ListBox.Background>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical">
+                                <!-- Имя компьютера -->
+                                <TextBlock FontStyle="Italic" FontWeight="Bold" FontSize="16" Text="{Binding ComputerName}" Margin="0,0,0,10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Изображение компьютера -->
+
+                                    <Image Grid.Column="0" VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\bin\Debug\net6.0-windows\копмьютер с желтым экраном.png" Width="100" Height="100" Margin="5"/>
+
+
+
+
+                                    <!-- Текстовые данные - Процессор и ОЗУ -->
+                                    <StackPanel Grid.Column="1" Width="400" Orientation="Vertical" Margin="10,0,10,0">
+                                        <TextBlock FontWeight="Bold" Text="Процессор:"/>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Модель: "/>
+                           <Run FontStyle="Italic" Text="{Binding ProcessorModel}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Архитектура: "/>
+                           <Run FontStyle="Italic" Text="{Binding ProcessorArchitecture}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="К-во ядер: "/>
+                           <Run FontStyle="Italic" Text="{Binding ProcessorCores}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Bold" Text="ОЗУ:"/>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Объём: "/>
+                           <Run FontStyle="Italic" Text="{Binding RAMSize}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Частота: "/>
+                           <Run FontStyle="Italic" Text="{Binding RAMFrequency}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Тип: "/>
+                           <Run FontStyle="Italic" Text="{Binding RAMType}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+
+                                    <!-- Текстовые данные - Графический процессор, ОС и Диск -->
+                                    <StackPanel Grid.Column="2" Orientation="Vertical" Margin="10,0,0,0">
+                                        <TextBlock FontWeight="Bold" Text="Графический процессор:"/>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Модель: "/>
+                           <Run FontStyle="Italic" Text="{Binding GPUModel}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Bold" Text="ОС:"/>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Операционная система: "/>
+                           <Run FontStyle="Italic" Text="{Binding OS}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Версия: "/>
+                           <Run FontStyle="Italic" Text="{Binding OSVersion}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Разрядность: "/>
+                           <Run FontStyle="Italic" Text="{Binding OSArchitecture}"/>
+                                        </TextBlock>
+                                        <TextBlock FontWeight="Bold" Text="Диск:"/>
+                                        <TextBlock FontWeight="Normal">
+                           <Run Text="Объём: "/>
+                           <Run FontStyle="Italic" Text="{Binding TotalSpaceDisk}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                                <Label></Label>
+
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+
+                <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Name="onlineComputersListBox" Margin="220,40,30,30">
+
+                    <ListBox.Background>
+                        <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                    </ListBox.Background>
+
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
-                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Focusable" Value="False"/>
                         </Style>
                     </ListBox.ItemContainerStyle>
+
+
+
+
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Image Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Пользователь3.png" Height="30" Margin="5"/>
-                                <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="5,0,0,0"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                                <!-- Картинка -->
+                                <Image VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\bin\Debug\net6.0-windows\копмьютер с желтым экраном.png" Width="100" Height="100" Margin="5"/>
+
+                                <!-- Вертикальный StackPanel для текста и кнопок -->
+                                <StackPanel>
+                                    <!-- Текст -->
+                                    <TextBlock Text="{Binding Text}" FontFamily="Bahnschrift SemiLight" FontSize="14" FontWeight="Light" />
+
+                                    <!-- Дополнительный текст -->
+                                    <Separator Visibility="Collapsed" Background="Black" Margin="0,0"  />
+                                    <TextBlock Name="AdditionalText" FontStyle="Italic" FontFamily="Verdana" Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
+                                    <Separator Visibility="Collapsed" Background="Black" Margin="0,0" />
+                                    <TextBlock FontStyle="Italic" Name="UsersList" FontFamily="Verdana"  Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
+                                    <!-- Кнопки -->
+                                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Name="ButtonPanel" Visibility="Collapsed">
 
 
-                <!-- Пустое пространство для отступа -->
-                <Grid Grid.Column="1"/>
+                                        <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Процессы" Margin="5" Click="Process_Click" />
+                                        <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Трафик" Margin="5" Click="App_Click"/>
+                                        <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Клавиатура" Margin="5" Click="App_Click"/>
+                                        <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Контроль" Margin="5" Click="Control_Click"/>
+                                    </StackPanel>
+                                    <!-- Кнопка Подробнее -->
+                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Width="100" Content="Подробнее" HorizontalAlignment="Left" Margin="5" Click="Details_Click"/>
 
-                <ListBox x:Name="ApplicationsListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Grid.Column="2">
-                    <ListBox.Background>
-                        <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
-                    </ListBox.Background>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="LightGray" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
-                                <StackPanel Orientation="Vertical">
-                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
-                                    <TextBlock Text="{Binding Weight, StringFormat='Weight: {0} MB'}" FontSize="14"/>
-                                    <TextBlock Text="{Binding InstallDate, StringFormat='Install Date: {0:yyyy-MM-dd}'}" FontSize="14"/>
                                 </StackPanel>
-                            </Border>
+                            </StackPanel>
+
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Margin="220,10,60,30">
+                    <TextBox Text="Поиск 🔍" HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged" Height="30" VerticalAlignment="Top" Width="378"/>
+                    <StackPanel>
+                        <CheckBox  Content="Включен" />
+                        <CheckBox  Content="Выключен" />
+                    </StackPanel>
+
+
+                </StackPanel>
+
+                
+                
+                
+                
+
+
+
+
+
+
 
             </Grid>
+        </Grid>
+        <!-- Верхний Canvas для выдвижного меню -->
+        <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}">
+            <!-- Выдвижное меню -->
+            <StackPanel Orientation="Horizontal"  x:Name="MenuPanel" Background="LightGray" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="150" Canvas.Top="-150">
+                
+                
+                <StackPanel>
+                    <Label Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Операционная система:</Label>
+                    <Label FontStyle="Italic">Название:</Label>
+                    <ComboBox  Height="20" Background="AntiqueWhite" Name="NameOS" Margin="0,-4,7,-5"></ComboBox>
 
-            <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="222,40,28,30">
-                <ListBox.Background>
-                    <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
-                </ListBox.Background>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Vertical">
-                            <!-- Имя компьютера -->
-                            <TextBlock FontStyle="Italic" FontWeight="Bold" FontSize="16" Text="{Binding ComputerName}" Margin="0,0,0,10"/>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <!-- Изображение компьютера -->
-
-                                <Image Grid.Column="0" VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\bin\Debug\net6.0-windows\копмьютер с желтым экраном.png" Width="100" Height="100" Margin="5"/>
-
-
-
-
-                                <!-- Текстовые данные - Процессор и ОЗУ -->
-                                <StackPanel Grid.Column="1" Width="400" Orientation="Vertical" Margin="10,0,10,0">
-                                    <TextBlock FontWeight="Bold" Text="Процессор:"/>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Модель: "/>
-                            <Run FontStyle="Italic" Text="{Binding ProcessorModel}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Архитектура: "/>
-                            <Run FontStyle="Italic" Text="{Binding ProcessorArchitecture}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="К-во ядер: "/>
-                            <Run FontStyle="Italic" Text="{Binding ProcessorCores}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Bold" Text="ОЗУ:"/>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Объём: "/>
-                            <Run FontStyle="Italic" Text="{Binding RAMSize}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Частота: "/>
-                            <Run FontStyle="Italic" Text="{Binding RAMFrequency}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Тип: "/>
-                            <Run FontStyle="Italic" Text="{Binding RAMType}"/>
-                                    </TextBlock>
-                                </StackPanel>
-
-                                <!-- Текстовые данные - Графический процессор, ОС и Диск -->
-                                <StackPanel Grid.Column="2" Orientation="Vertical" Margin="10,0,0,0">
-                                    <TextBlock FontWeight="Bold" Text="Графический процессор:"/>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Модель: "/>
-                            <Run FontStyle="Italic" Text="{Binding GPUModel}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Bold" Text="ОС:"/>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Операционная система: "/>
-                            <Run FontStyle="Italic" Text="{Binding OS}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Версия: "/>
-                            <Run FontStyle="Italic" Text="{Binding OSVersion}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Разрядность: "/>
-                            <Run FontStyle="Italic" Text="{Binding OSArchitecture}"/>
-                                    </TextBlock>
-                                    <TextBlock FontWeight="Bold" Text="Диск:"/>
-                                    <TextBlock FontWeight="Normal">
-                            <Run Text="Объём: "/>
-                            <Run FontStyle="Italic" Text="{Binding TotalSpaceDisk}"/>
-                                    </TextBlock>
-                                </StackPanel>
-                            </Grid>
-                            <Label></Label>
+                    <StackPanel Orientation="Horizontal">
+                      
+                        <StackPanel>
+                            <Label FontStyle="Italic" Content="Разрядность:"/>
+                            <ComboBox Width="80" x:Name="ArchitectureOS" Height="20"/>
 
                         </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                        <StackPanel>
+                            <Label FontStyle="Italic" Content="Версия:" ></Label>
+                            <ComboBox Width="80" Height="20" Background="AntiqueWhite" Name="VersionOS"/>
+                        </StackPanel>
 
-
-            <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Name="onlineComputersListBox" Margin="220,40,30,30">
-
-                <ListBox.Background>
-                    <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
-                </ListBox.Background>
-
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Focusable" Value="False"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
+                    </StackPanel>
+                </StackPanel>
 
 
 
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
+                <StackPanel>
+                    <StackPanel>
+                        <Label   Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Процессор:</Label>
+
+                        <Label FontStyle="Italic" >Модель:</Label>
+                        <ComboBox  Margin="0,-4,7,-5"  Height="20"   Background="AntiqueWhite" Name="ModelCPU" />
+
+                        <Label></Label>
+
+                        <Label></Label>
                         <StackPanel Orientation="Horizontal">
-                            <!-- Картинка -->
-                            <Image VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\bin\Debug\net6.0-windows\копмьютер с желтым экраном.png" Width="100" Height="100" Margin="5"/>
-
-                            <!-- Вертикальный StackPanel для текста и кнопок -->
-                            <StackPanel>
-                                <!-- Текст -->
-                                <TextBlock Text="{Binding Text}" FontFamily="Bahnschrift SemiLight" FontSize="14" FontWeight="Light" />
-
-                                <!-- Дополнительный текст -->
-                                <Separator Visibility="Collapsed" Background="Black" Margin="0,0"  />
-                                <TextBlock Name="AdditionalText" FontStyle="Italic" FontFamily="Verdana" Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
-                                <Separator Visibility="Collapsed" Background="Black" Margin="0,0" />
-                                <TextBlock FontStyle="Italic" Name="UsersList" FontFamily="Verdana"  Visibility="Collapsed" FontSize="12" FontWeight="Light" Text="Дополнительный текст" />
-                                <!-- Кнопки -->
-                                <StackPanel HorizontalAlignment="Left" Orientation="Horizontal" Name="ButtonPanel" Visibility="Collapsed">
+                            <Label FontStyle="Italic">Архитектура:</Label>
+                            <ComboBox HorizontalAlignment="Left" Height="20" Width="30"  Background="AntiqueWhite" Name="ArchitectureCPU"/>
+                            <Label FontStyle="Italic">К-во ядер:</Label>
+                            <ComboBox HorizontalAlignment="Left" Height="20" Width="30"   Background="AntiqueWhite" Name="CoreCPU"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
 
 
-                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Процессы" Margin="5" Click="Process_Click" />
-                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Трафик" Margin="5" Click="App_Click"/>
-                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Клавиатура" Margin="5" Click="App_Click"/>
-                                    <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Content="Контроль" Margin="5" Click="Control_Click"/>
-                                </StackPanel>
-                                <!-- Кнопка Подробнее -->
-                                <Button Background="AntiqueWhite" FontFamily="Bahnschrift SemiBold" Width="100" Content="Подробнее" HorizontalAlignment="Left" Margin="5" Click="Details_Click"/>
+                <StackPanel>
+                    <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
+                    <StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                        <StackPanel> 
+                            <Label FontStyle="Italic">Объём:</Label>
+                            <Label FontStyle="Italic">Частота:</Label>
+                            <Label FontStyle="Italic">Тип:</Label>                           
+                        </StackPanel>
+                        
+                        <StackPanel>
+                                <ComboBox Height="20" Background="AntiqueWhite" Name="TotalSpaseRAM" Margin="0,4,0,0"/>
+                                <ComboBox Height="20" Background="AntiqueWhite" Name="SpeedRAM" Margin="0,7,0,0"/>
+                                <ComboBox Height="20" Background="AntiqueWhite" Name="TypeRam" Margin="0,7,0,0"/>
 
                             </StackPanel>
-                        </StackPanel>
 
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Margin="220,10,60,30">
-                <TextBox Text="Поиск 🔍" HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged" Height="30" VerticalAlignment="Top" Width="378"/>
+
+                        </StackPanel>
+                    </StackPanel>
+                    
+                    
+                    
+
+                </StackPanel>
+
                 <StackPanel>
-                    <CheckBox  Content="Включен" />
-                    <CheckBox  Content="Выключен" />
+                    <Label  FontWeight="Bold" FontSize="14">Диск</Label>
+                    <StackPanel Orientation="Horizontal">
+                    </StackPanel>
+
+            
+                    <StackPanel Orientation="Horizontal">
+                        <Label FontStyle="Italic">От</Label>
+                        <TextBox Background="AntiqueWhite" Height="20" Width="50" ></TextBox>
+                        <Label FontStyle="Italic">До</Label>
+                        <TextBox Background="AntiqueWhite" Height="20"  Width="50" ></TextBox>
+                        <Label FontStyle="Italic">ГБ</Label>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label FontStyle="Italic">Тип</Label>
+                        <ComboBox Height="20" Name="DiskType" Margin="0,-4,7,-5"/>
+                    </StackPanel>
+                 
+
                 </StackPanel>
 
 
             </StackPanel>
+            <!-- Кнопка для выдвижения меню -->
+            <ToggleButton x:Name="ToggleButton" Content="Toggle Menu" Width="100" Height="30" 
+              Canvas.Left="{Binding ActualWidth, ElementName=MenuPanel, Converter={StaticResource CenterConverter}}"
+              Canvas.Top="0" Checked="ToggleMenu_Checked" Unchecked="ToggleMenu_Unchecked"/>
+
+        </Canvas>
 
 
-
-
-
-
-
-        </Grid>
+        
     </Grid>
+ 
 </Window>
