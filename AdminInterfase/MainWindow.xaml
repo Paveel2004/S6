@@ -165,7 +165,7 @@
 -->
 
 
-                <Grid Name="Apps" Visibility="Hidden" Margin="27,40,30,30" Grid.Column="1">
+                <Grid Name="Apps" Visibility="Hidden" Margin="30,30,30,30" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>
                         <!-- Ширина UsersListBox -->
@@ -473,17 +473,23 @@
                             <Label FontStyle="Italic">До</Label>
                             <TextBox Background="AntiqueWhite" Height="20"  Width="50" ></TextBox>
                             <Label FontStyle="Italic">ГБ</Label>
-                        </StackPanel>
+                            </StackPanel>
+                            <StackPanel  Orientation="Horizontal">
                         <StackPanel Orientation="Horizontal">
                             <Label FontStyle="Italic">Тип</Label>
                             <ComboBox Height="20" Name="DiskType" Margin="0,-4,7,-5"/>
                         </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic">Пул</Label>
+                                <ComboBox Height="20" Name="Pool" Margin="0,-4,7,-5"/>
+                            </StackPanel>
+                            </StackPanel>
 
 
-                    </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </TabItem>
-                <TabItem Background="#80FFFFFF"  Header="Приложения">
+                <TabItem PreviewMouseLeftButtonDown="Apps_Click" Background="#80FFFFFF"  Header="Приложения" Height="24" Margin="-2,-2,-2,0" VerticalAlignment="Top">
         
                 </TabItem >
                 <TabItem Background="#80FFFFFF"  Header="Оналйн">
