@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="icons8-компьютер-96.png" />
+    <Resource Include="Image\icons8-компьютер-96.png" />
   </ItemGroup>
 
 </Project>
