@@ -115,6 +115,10 @@
         <Grid>
 
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="193*"/>
+                    <ColumnDefinition Width="757*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF157FED"/>
@@ -142,15 +146,15 @@
 
                         <StackPanel>
 
-                        
-                            
+
+
                             <StackPanel Margin="0,23,7,-5">
-                              
+
                             </StackPanel>
 
 
                             <StackPanel Margin="0,23,7,-5">
-                                
+
                                 <Label></Label>
                             </StackPanel>
                         </StackPanel>
@@ -163,7 +167,7 @@
 
 
 
-                <Grid Name="Apps" Visibility="Hidden" Margin="220,40,30,30">
+                <Grid Name="Apps" Visibility="Hidden" Margin="27,40,30,30" Grid.Column="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>
                         <!-- Ширина UsersListBox -->
@@ -219,7 +223,7 @@
 
                 </Grid>
 
-                <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="222,40,28,30">
+                <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="29,40,28,30" Grid.Column="1">
                     <ListBox.Background>
                         <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                     </ListBox.Background>
@@ -306,7 +310,7 @@
                 </ListBox>
 
 
-                <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Name="onlineComputersListBox" Margin="220,40,30,30">
+                <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Name="onlineComputersListBox" Margin="27,40,30,30" Grid.Column="1">
 
                     <ListBox.Background>
                         <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
@@ -355,7 +359,7 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Margin="220,10,60,30">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Margin="27,10,0,30" Grid.Column="1">
                     <TextBox Text="Поиск 🔍" HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged" Height="30" VerticalAlignment="Top" Width="378"/>
                     <StackPanel>
                         <CheckBox  Content="Включен" />
@@ -365,10 +369,10 @@
 
                 </StackPanel>
 
-                
-                
-                
-                
+
+
+
+
 
 
 
@@ -380,17 +384,20 @@
         </Grid>
         <!-- Верхний Canvas для выдвижного меню -->
         <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}">
+
             <!-- Выдвижное меню -->
-            <StackPanel Orientation="Horizontal"  x:Name="MenuPanel" Background="LightGray" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="150" Canvas.Top="-150">
-                
-                
+            <StackPanel Orientation="Horizontal"  x:Name="MenuPanel" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="150" Canvas.Top="-150">
+                <StackPanel.Background>      
+                <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                </StackPanel.Background>
+
                 <StackPanel>
                     <Label Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Операционная система:</Label>
                     <Label FontStyle="Italic">Название:</Label>
                     <ComboBox  Height="20" Background="AntiqueWhite" Name="NameOS" Margin="0,-4,7,-5"></ComboBox>
 
                     <StackPanel Orientation="Horizontal">
-                      
+
                         <StackPanel>
                             <Label FontStyle="Italic" Content="Разрядность:"/>
                             <ComboBox Width="80" x:Name="ArchitectureOS" Height="20"/>
@@ -419,9 +426,9 @@
                         <Label></Label>
                         <StackPanel Orientation="Horizontal">
                             <Label FontStyle="Italic">Архитектура:</Label>
-                            <ComboBox HorizontalAlignment="Left" Height="20" Width="30"  Background="AntiqueWhite" Name="ArchitectureCPU"/>
+                            <ComboBox HorizontalAlignment="Left" Height="20"   Background="AntiqueWhite" Name="ArchitectureCPU"/>
                             <Label FontStyle="Italic">К-во ядер:</Label>
-                            <ComboBox HorizontalAlignment="Left" Height="20" Width="30"   Background="AntiqueWhite" Name="CoreCPU"/>
+                            <ComboBox HorizontalAlignment="Left" Height="20"   Background="AntiqueWhite" Name="CoreCPU"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -432,13 +439,13 @@
                     <StackPanel>
 
                         <StackPanel Orientation="Horizontal">
-                        <StackPanel> 
-                            <Label FontStyle="Italic">Объём:</Label>
-                            <Label FontStyle="Italic">Частота:</Label>
-                            <Label FontStyle="Italic">Тип:</Label>                           
-                        </StackPanel>
-                        
-                        <StackPanel>
+                            <StackPanel>
+                                <Label FontStyle="Italic">Объём:</Label>
+                                <Label FontStyle="Italic">Частота:</Label>
+                                <Label FontStyle="Italic">Тип:</Label>
+                            </StackPanel>
+
+                            <StackPanel>
                                 <ComboBox Height="20" Background="AntiqueWhite" Name="TotalSpaseRAM" Margin="0,4,0,0"/>
                                 <ComboBox Height="20" Background="AntiqueWhite" Name="SpeedRAM" Margin="0,7,0,0"/>
                                 <ComboBox Height="20" Background="AntiqueWhite" Name="TypeRam" Margin="0,7,0,0"/>
@@ -448,9 +455,9 @@
 
                         </StackPanel>
                     </StackPanel>
-                    
-                    
-                    
+
+
+
 
                 </StackPanel>
 
@@ -459,7 +466,7 @@
                     <StackPanel Orientation="Horizontal">
                     </StackPanel>
 
-            
+
                     <StackPanel Orientation="Horizontal">
                         <Label FontStyle="Italic">От</Label>
                         <TextBox Background="AntiqueWhite" Height="20" Width="50" ></TextBox>
@@ -471,7 +478,7 @@
                         <Label FontStyle="Italic">Тип</Label>
                         <ComboBox Height="20" Name="DiskType" Margin="0,-4,7,-5"/>
                     </StackPanel>
-                 
+
 
                 </StackPanel>
 
@@ -485,7 +492,7 @@
         </Canvas>
 
 
-        
+
     </Grid>
- 
+
 </Window>
