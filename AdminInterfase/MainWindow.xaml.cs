@@ -520,11 +520,11 @@ namespace AdminInterfase
         {
             if (e.Key == Key.Escape)
             {
-                ToggleMenuVisibility(onlineComputersListBox);
-                ToggleMenuVisibility(allComputersListBox);
+              /*  ToggleMenuVisibility(onlineComputersListBox);
+                ToggleMenuVisibility(allComputersListBox);*/
             }
         }
-        private void ToggleMenuVisibility(ListBox listBox)
+       /* private void ToggleMenuVisibility(ListBox listBox)
         {
             DoubleAnimation animation = new DoubleAnimation();
             if (Menu.Margin.Left >= 0) // Если Menu видимо, то анимируем его влево (скрываем)
@@ -542,7 +542,7 @@ namespace AdminInterfase
             Menu.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(Menu.Margin, new Thickness(animation.To.Value, 0, 0, 0), animation.Duration));
             // Используем сравнение с 0, чтобы понять, видимо ли меню
             isMenuVisible = Math.Abs(Menu.Margin.Left) < double.Epsilon;
-        }
+        }*/
         private void App_LocalDB(object sender, RoutedEventArgs e)
         {
             AppWindow app = new AppWindow();
