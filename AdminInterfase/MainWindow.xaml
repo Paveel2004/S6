@@ -135,9 +135,9 @@
                 </Grid.ColumnDefinitions>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                        <GradientStop Color="#FF157FED"/>
-                        <GradientStop Color="#FF6D008D" Offset="1"/>
-                        <GradientStop Color="#FF5829D9" Offset="0.548"/>
+                        <GradientStop Color="#FF739AC3"/>
+                        <GradientStop Color="#FF739AC3" Offset="1"/>
+                        <GradientStop Color="#FF739AC3" Offset="0.548"/>
                     </LinearGradientBrush>
                 </Grid.Background>
 
