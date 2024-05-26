@@ -19,6 +19,10 @@
                 <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
                 <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="150"/>
             </DoubleAnimationUsingKeyFrames>
+            <ThicknessAnimation Storyboard.TargetName="MainGrid" 
+                        Storyboard.TargetProperty="Margin"
+                        Duration="0:0:0.5" 
+                        To="0,150,0,0"/>
         </Storyboard>
         <Storyboard x:Key="SlideUp">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MenuPanel" Storyboard.TargetProperty="(Canvas.Top)">
@@ -28,7 +32,14 @@
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ToggleButton" Storyboard.TargetProperty="(Canvas.Top)">
                 <LinearDoubleKeyFrame KeyTime="0:0:0" Value="150"/>
                 <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+
             </DoubleAnimationUsingKeyFrames>
+            <ThicknessAnimation Storyboard.TargetName="MainGrid" 
+                      Storyboard.TargetProperty="Margin"
+                      Duration="0:0:0.5" 
+                      To="0,0,0,0"/>
+
+
         </Storyboard>
         <!-- Стиль для ComboBox -->
         <Style TargetType="ComboBox">
@@ -111,8 +122,9 @@
             <Setter Property="Foreground" Value="Black"/>
         </Style>
     </Window.Resources>
-    <Grid>
-        <Grid>
+    <Grid >
+
+        <Grid x:Name="MainGrid">
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -141,27 +153,6 @@
                     <ListBoxItem>
                         <Button Content="Компьютеры" Click="Computers_Click"  Height="30" FontSize="14"  FontFamily="Bahnschrift SemiBold"  Width="176" Background="AntiqueWhite"/>
                     </ListBoxItem>
-
-                    <ListBoxItem ScrollViewer.CanContentScroll="True">
-
-                        <StackPanel>
-
-
-
-                            <StackPanel Margin="0,23,7,-5">
-
-                            </StackPanel>
-
-
-                            <StackPanel Margin="0,23,7,-5">
-
-                                <Label></Label>
-                            </StackPanel>
-                        </StackPanel>
-
-                    </ListBoxItem>
-
-
                 </ListBox>
 
 
@@ -360,11 +351,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Margin="27,10,0,30" Grid.Column="1">
-                    <TextBox Text="Поиск 🔍" HorizontalAlignment="Right" FontSize="15" Background="AntiqueWhite" TextWrapping="Wrap" Name="textBox" TextChanged="TextBox_TextChanged" Height="30" VerticalAlignment="Top" Width="378"/>
-                    <StackPanel>
-                        <CheckBox  Content="Включен" />
-                        <CheckBox  Content="Выключен" />
-                    </StackPanel>
+                    <StackPanel/>
 
 
                 </StackPanel>
