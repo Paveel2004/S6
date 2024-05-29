@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:AdminInterfase"
          xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
-        Background="AntiqueWhite"
         KeyDown="Menu_KeyDown" Icon="Image\icons8-компьютер-96.png"
         Title="MainWindow" Height="450" Width="950">
 
@@ -124,6 +123,12 @@
             <Setter Property="Foreground" Value="Black"/>
         </Style>
     </Window.Resources>
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="AntiqueWhite" Offset="0"/>
+            <GradientStop Color="#FF739AC3" Offset="0.199"/>
+        </LinearGradientBrush>
+    </Window.Background>
     <Grid >
 
         <Grid x:Name="MainGrid">
@@ -136,8 +141,7 @@
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="#FF739AC3"/>
-                        <GradientStop Color="#FF739AC3" Offset="1"/>
-                        <GradientStop Color="#FF739AC3" Offset="0.548"/>
+                        <GradientStop Color="#FF2D4E70" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
 
@@ -223,7 +227,7 @@
 
                 <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="30,30,30,30" Grid.ColumnSpan="2">
                     <ListBox.Background>
-                        <SolidColorBrush Color="AntiqueWhite" Opacity="0.7"/>
+                        <SolidColorBrush Color="White" Opacity="0.8"/>
                     </ListBox.Background>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -238,7 +242,7 @@
                                     </Grid.ColumnDefinitions>
                                     <!-- Изображение компьютера -->
 
-                                    <Image Grid.Column="0" VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\bin\Debug\net6.0-windows\копмьютер с желтым экраном.png" Width="100" Height="100" Margin="5"/>
+                                    <Image Grid.Column="0" VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Image\Комп2.png" Width="100" Height="100" Margin="5"/>
 
 
 
@@ -327,7 +331,7 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <!-- Картинка -->
-                                <Image VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\bin\Debug\net6.0-windows\копмьютер с желтым экраном.png" Width="100" Height="100" Margin="5"/>
+                                <Image VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Image\Комп2.png" Width="100" Height="100" Margin="5"/>
 
                                 <!-- Вертикальный StackPanel для текста и кнопок -->
                                 <StackPanel>
@@ -378,80 +382,35 @@
         </Grid>
         <!-- Верхний Canvas для выдвижного меню -->
         <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}">
-            
+
             <!-- Выдвижное меню -->
             <TabControl  x:Name="MenuPanel" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="135" Canvas.Top="-135">
                 <TabControl.Background>
                     <SolidColorBrush Color="#FFFFFF" Opacity="0"/>
                 </TabControl.Background>
-                <TabItem PreviewMouseLeftButtonDown="Computers_Click" Background="#80FFFFFF" Header="Компьютеры" Height="22" Margin="-2,-2,-2,0" VerticalAlignment="Top">
-                    
+                <TabItem PreviewMouseLeftButtonDown="Computers_Click" Background="{x:Null}" Header="Компьютеры" Height="22" Margin="-2,-2,-2,0" VerticalAlignment="Top" IsSelected="True" AllowDrop="True">
+
                     <StackPanel Orientation="Horizontal">
                         <StackPanel.Background>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                         </StackPanel.Background>
 
                         <StackPanel>
-                        <Label Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Операционная система:</Label>
-                        <Label FontStyle="Italic">Название:</Label>
-                        <ComboBox  Height="20" Background="AntiqueWhite" Name="NameOS" Margin="0,-4,7,-5"></ComboBox>
-
-                        <StackPanel Orientation="Horizontal">
-
-                            <StackPanel>
-                                <Label FontStyle="Italic" Content="Разрядность:"/>
-                                <ComboBox Width="80" x:Name="ArchitectureOS" Height="20"/>
-
-                            </StackPanel>
-                            <StackPanel>
-                                <Label FontStyle="Italic" Content="Версия:" ></Label>
-                                <ComboBox Width="80" Height="20" Background="AntiqueWhite" Name="VersionOS"/>
-                            </StackPanel>
-
-                        </StackPanel>
-                    </StackPanel>
-
-
-
-
-                    <StackPanel>
-                        <StackPanel>
-                            <Label   Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Процессор:</Label>
-
-                            <Label FontStyle="Italic" >Модель:</Label>
-                            <ComboBox  Margin="0,-4,7,-5"  Height="20"   Background="AntiqueWhite" Name="ModelCPU" />
-
-                            <Label></Label>
-
-                            <Label></Label>
-                            <StackPanel Orientation="Horizontal">
-                                <Label FontStyle="Italic">Архитектура:</Label>
-                                <ComboBox HorizontalAlignment="Left" Height="20"   Background="AntiqueWhite" Name="ArchitectureCPU"/>
-                                <Label FontStyle="Italic">К-во ядер:</Label>
-                                <ComboBox HorizontalAlignment="Left" Height="20"   Background="AntiqueWhite" Name="CoreCPU"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </StackPanel>
-
-
-                    <StackPanel>
-                        <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
-                        <StackPanel>
+                            <Label Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Операционная система:</Label>
+                            <Label FontStyle="Italic">Название:</Label>
+                            <ComboBox  Height="20" Background="AntiqueWhite" Name="NameOS" Margin="0,-4,7,-5"></ComboBox>
 
                             <StackPanel Orientation="Horizontal">
-                                <StackPanel>
-                                    <Label FontStyle="Italic">Объём:</Label>
-                                    <Label FontStyle="Italic">Частота:</Label>
-                                    <Label FontStyle="Italic">Тип:</Label>
-                                </StackPanel>
 
                                 <StackPanel>
-                                    <ComboBox Height="20" Background="AntiqueWhite" Name="TotalSpaseRAM" Margin="0,4,0,0"/>
-                                    <ComboBox Height="20" Background="AntiqueWhite" Name="SpeedRAM" Margin="0,7,0,0"/>
-                                    <ComboBox Height="20" Background="AntiqueWhite" Name="TypeRam" Margin="0,7,0,0"/>
+                                    <Label FontStyle="Italic" Content="Разрядность:"/>
+                                    <ComboBox Width="80" x:Name="ArchitectureOS" Height="20"/>
 
                                 </StackPanel>
-
+                                <StackPanel>
+                                    <Label FontStyle="Italic" Content="Версия:" ></Label>
+                                    <ComboBox Width="80" Height="20" Background="AntiqueWhite" Name="VersionOS"/>
+                                </StackPanel>
 
                             </StackPanel>
                         </StackPanel>
@@ -459,30 +418,75 @@
 
 
 
-                    </StackPanel>
+                        <StackPanel>
+                            <StackPanel>
+                                <Label   Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Процессор:</Label>
 
-                    <StackPanel>
-                        <Label  FontWeight="Bold" FontSize="14">Диск</Label>
-                        <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic" >Модель:</Label>
+                                <ComboBox  Margin="0,-4,7,-5"  Height="20"   Background="AntiqueWhite" Name="ModelCPU" />
+
+                                <Label></Label>
+
+                                <Label></Label>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label FontStyle="Italic">Архитектура:</Label>
+                                    <ComboBox HorizontalAlignment="Left" Height="20"   Background="AntiqueWhite" Name="ArchitectureCPU"/>
+                                    <Label FontStyle="Italic">К-во ядер:</Label>
+                                    <ComboBox HorizontalAlignment="Left" Height="20"   Background="AntiqueWhite" Name="CoreCPU"/>
+                                </StackPanel>
+                            </StackPanel>
                         </StackPanel>
 
 
-                        <StackPanel Orientation="Horizontal">
-                            <Label FontStyle="Italic">От</Label>
-                            <TextBox Background="AntiqueWhite" Height="20" Width="50" ></TextBox>
-                            <Label FontStyle="Italic">До</Label>
-                            <TextBox Background="AntiqueWhite" Height="20"  Width="50" ></TextBox>
-                            <Label FontStyle="Italic">ГБ</Label>
+                        <StackPanel>
+                            <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
+                            <StackPanel>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel>
+                                        <Label FontStyle="Italic">Объём:</Label>
+                                        <Label FontStyle="Italic">Частота:</Label>
+                                        <Label FontStyle="Italic">Тип:</Label>
+                                    </StackPanel>
+
+                                    <StackPanel>
+                                        <ComboBox Height="20" Background="AntiqueWhite" Name="TotalSpaseRAM" Margin="0,4,0,0"/>
+                                        <ComboBox Height="20" Background="AntiqueWhite" Name="SpeedRAM" Margin="0,7,0,0"/>
+                                        <ComboBox Height="20" Background="AntiqueWhite" Name="TypeRam" Margin="0,7,0,0"/>
+
+                                    </StackPanel>
+
+
+                                </StackPanel>
+                            </StackPanel>
+
+
+
+
+                        </StackPanel>
+
+                        <StackPanel>
+                            <Label  FontWeight="Bold" FontSize="14">Диск</Label>
+                            <StackPanel Orientation="Horizontal">
+                            </StackPanel>
+
+
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic">От</Label>
+                                <TextBox Background="AntiqueWhite" Height="20" Width="50" ></TextBox>
+                                <Label FontStyle="Italic">До</Label>
+                                <TextBox Background="AntiqueWhite" Height="20"  Width="50" ></TextBox>
+                                <Label FontStyle="Italic">ГБ</Label>
                             </StackPanel>
                             <StackPanel  Orientation="Horizontal">
-                        <StackPanel Orientation="Horizontal">
-                            <Label FontStyle="Italic">Тип</Label>
-                            <ComboBox Height="20" Name="DiskType" Margin="0,-4,7,-5"/>
-                        </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label FontStyle="Italic">Пул</Label>
-                                <ComboBox Height="20" Name="Pool" Margin="0,-4,7,-5"/>
-                            </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label FontStyle="Italic">Тип</Label>
+                                    <ComboBox Height="20" Name="DiskType" Margin="0,-4,7,-5"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label FontStyle="Italic">Пул</Label>
+                                    <ComboBox Height="20" Name="Pool" Margin="0,-4,7,-5"/>
+                                </StackPanel>
                             </StackPanel>
 
 
@@ -490,7 +494,7 @@
                     </StackPanel>
                 </TabItem>
                 <TabItem PreviewMouseLeftButtonDown="Apps_Click" Background="#80FFFFFF"  Header="Приложения" Height="24" Margin="-2,-2,-2,0" VerticalAlignment="Top">
-        
+
                 </TabItem >
                 <TabItem Background="#80FFFFFF"  Header="Оналйн">
 
@@ -501,10 +505,10 @@
 
 
             </TabControl>
-            
-            
-            
-            
+
+
+
+
             <!-- Кнопка для выдвижения меню -->
             <ToggleButton x:Name="ToggleButton" Width="100" Height="10" 
               Canvas.Left="{Binding ActualWidth, ElementName=MenuPanel, Converter={StaticResource CenterConverter}}"
