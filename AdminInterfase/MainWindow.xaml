@@ -7,7 +7,7 @@
          xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         Background="AntiqueWhite"
-        KeyDown="Menu_KeyDown" Icon="/icons8-компьютер-96.png"
+        KeyDown="Menu_KeyDown" Icon="Image\icons8-компьютер-96.png"
         Title="MainWindow" Height="450" Width="950">
 
     <Window.Resources>
@@ -191,7 +191,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Пользователь3.png" Height="30" Margin="5"/>
+                                    <Image Source="Image\Пользователь3.png" Height="30" Margin="5"/>
                                     <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="5,0,0,0"/>
                                 </StackPanel>
                             </DataTemplate>
