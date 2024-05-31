@@ -46,12 +46,12 @@ namespace AdminInterfase
         private int localPort = 2222;
         private int localPort2 = 3333;
         private IPAddress localAddr = IPAddress.Parse(ManagerIP.GetIPAddress());
-        static string connectionString = "Server=192.168.1.143\\SQLEXPRESS; Database=S6Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
+        static string connectionString = "Server=192.168.1.143\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
         public MainWindow()
         {
             InitializeComponent();
 
-            FillComboBoxFromProcedure(NameOS, "Операционная система", "ОС");
+/*            FillComboBoxFromProcedure(NameOS, "Операционная система", "ОС");
             FillComboBoxFromProcedure(VersionOS, "Версия", "ОС");
             FillComboBoxFromProcedure(ArchitectureOS, "Разрядность", "ОС");
 
@@ -63,7 +63,7 @@ namespace AdminInterfase
             FillComboBoxFromProcedure(TotalSpaseRAM, "Объём", "ОЗУ");
             FillComboBoxFromProcedure(SpeedRAM, "Частота", "ОЗУ");
             FillComboBoxFromProcedure(TypeRam, "Тип", "ОЗУ");
-
+*/
 
 
             Task.Run(() => StartServer(localPort, client => HandleClient(client, onlineComputersListBox), localAddr));
@@ -87,7 +87,7 @@ namespace AdminInterfase
             var slideUpStoryboard = Resources["SlideUp"] as Storyboard;
             slideUpStoryboard?.Begin();
         }
-        public void FillComboBoxFromProcedure(ComboBox comboBox, string characteristic, string type)
+/*        public void FillComboBoxFromProcedure(ComboBox comboBox, string characteristic, string type)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace AdminInterfase
             {
                 MessageBox.Show("Ошибка: " + ex.Message);
             }
-        }
+        }*/
 
         private void App_Click(object sender, RoutedEventArgs e)
         {
@@ -156,7 +156,9 @@ namespace AdminInterfase
             //GetBuild();
             SetComputersVisibility();
             onlineComputersListBox.Items.Clear();
-            LoadData();
+            ////////////////
+            ///
+            
         }
      
         private List<string> GetBiosSerialNumbers()
@@ -219,96 +221,6 @@ namespace AdminInterfase
             return computerName;
         }
 
-
-        private void LoadData()
-        {
-            string query = "ПолучитьЗначениеХарактеристики";
-            List<DeviceCharacteristics> devices = new List<DeviceCharacteristics>();
-
-            // Получение списка всех устройств из таблицы "Устройство"
-            List<string> biosSerialNumbers = GetBiosSerialNumbers();
-
-            if (biosSerialNumbers.Count == 0)
-            {
-                MessageBox.Show("Нет доступных устройств.");
-                return;
-            }
-
-            // Для каждого устройства извлекаем данные характеристик и добавляем их в список
-            foreach (string biosSerialNumber in biosSerialNumbers)
-            {
-                DeviceCharacteristics deviceCharacteristics = new DeviceCharacteristics();
-
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    connection.Open();
-
-                    var parameters = new List<(string Type, string Attribute, Action<string> Setter)>
-            {
-                ("Процессор", "Модель", value => deviceCharacteristics.ProcessorModel = value),
-                ("Процессор", "Архитектура", value => deviceCharacteristics.ProcessorArchitecture = value),
-                ("Процессор", "К-во ядер", value => deviceCharacteristics.ProcessorCores = value),
-                ("ОЗУ", "Объём", value => deviceCharacteristics.RAMSize = value),
-                ("ОЗУ", "Частота", value => deviceCharacteristics.RAMFrequency = value),
-                ("ОЗУ", "Тип", value => deviceCharacteristics.RAMType = value),
-                ("Графический процессор", "Модель", value => deviceCharacteristics.GPUModel = value),
-                ("ОС", "Операционная система", value => deviceCharacteristics.OS = value),
-                ("ОС", "Версия", value => deviceCharacteristics.OSVersion = value),
-                ("ОС", "Разрядность", value => deviceCharacteristics.OSArchitecture = value),
-                ("Диск", "Объём", value => deviceCharacteristics.TotalSpaceDisk = value),
-            };
-
-                    foreach (var param in parameters)
-                    {
-                        using (SqlCommand command = new SqlCommand(query, connection))
-                        {
-                            command.CommandType = CommandType.StoredProcedure;
-                            command.Parameters.AddWithValue("@ТипХарактеристики", param.Type);
-                            command.Parameters.AddWithValue("@Характеристика", param.Attribute);
-                            command.Parameters.AddWithValue("@BIOS", biosSerialNumber);
-
-                            try
-                            {
-                                SqlDataReader reader = command.ExecuteReader();
-                                if (reader.Read())
-                                {
-                                    param.Setter(reader["Значение"].ToString());
-                                }
-                                reader.Close();
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show("Ошибка при загрузке данных: " + ex.Message);
-                            }
-                        }
-                    }
-                }
-                deviceCharacteristics.ComputerName = GetComputerName(biosSerialNumber);
-                devices.Add(deviceCharacteristics);
-            }
-
-            // Устанавливаем список устройств в качестве источника данных для ListBox
-            allComputersListBox.ItemsSource = devices;
-        }
-
-        public class Characteristic
-        {
-            public string Type { get; set; }
-            public string Attribute { get; set; }
-            public string Value { get; set; }
-        }
-        public class ApplicationData
-        {
-            public int Weight { get; set; }
-            public string Name { get; set; }
-            public DateTime InstallDate { get; set; }
-
-            public override string ToString()
-            {
-                return $"{Name} (Weight: {Weight} MB, Installed: {InstallDate.ToShortDateString()})";
-            }
-        }
-
         public void Control_Click(object sender, RoutedEventArgs e)
         {
             ListBoxItemButtonHandler.OpenControlWindow(sender);
@@ -335,9 +247,10 @@ namespace AdminInterfase
                             userApplications.Add(new ApplicationData
                             {
                                 Name = reader.GetString(reader.GetOrdinal("Название")),
-                                Weight = reader.GetInt32(reader.GetOrdinal("Вес")),
+                                Size = reader.GetDouble(reader.GetOrdinal("Вес")),
                                 InstallDate = reader.GetDateTime(reader.GetOrdinal("Дата установки"))
                             });
+
                         }
                     }
                 }
@@ -382,7 +295,7 @@ namespace AdminInterfase
             {
                 connection.Open();
 
-                string query = "SELECT [Имя], [Идентификатор безопасности] FROM Пользователи";
+                string query = "SELECT * FROM ПользователиСПриложениями";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
