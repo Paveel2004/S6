@@ -13,25 +13,25 @@
         <!-- Анимация для выдвижного меню -->
         <Storyboard x:Key="SlideDown">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MenuPanel" Storyboard.TargetProperty="(Canvas.Top)">
-                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="-135"/>
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="-170"/>
                 <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ToggleButton" Storyboard.TargetProperty="(Canvas.Top)">
                 <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
-                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="135"/>
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="170"/>
             </DoubleAnimationUsingKeyFrames>
             <ThicknessAnimation Storyboard.TargetName="MainGrid" 
                         Storyboard.TargetProperty="Margin"
                         Duration="0:0:0.5" 
-                        To="0,135,0,0"/>
+                        To="0,170,0,0"/>
         </Storyboard>
         <Storyboard x:Key="SlideUp">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MenuPanel" Storyboard.TargetProperty="(Canvas.Top)">
                 <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
-                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="-135"/>
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="-170"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ToggleButton" Storyboard.TargetProperty="(Canvas.Top)">
-                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="135"/>
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="170"/>
                 <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
 
             </DoubleAnimationUsingKeyFrames>
@@ -243,64 +243,72 @@
 
                                     <Image Grid.Column="0" VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Image\Комп2.png" Width="100" Height="100" Margin="5"/>
 
-
-
-
                                     <!-- Текстовые данные - Процессор и ОЗУ -->
-                                    <StackPanel Grid.Column="1" Width="400" Orientation="Vertical" Margin="10,0,10,0">
-                                        <TextBlock FontWeight="Bold" Text="Процессор:"/>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Модель: "/>
-                           <Run FontStyle="Italic" Text="{Binding ProcessorModel}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Архитектура: "/>
-                           <Run FontStyle="Italic" Text="{Binding ProcessorArchitecture}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="К-во ядер: "/>
-                           <Run FontStyle="Italic" Text="{Binding ProcessorCores}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Bold" Text="ОЗУ:"/>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Объём: "/>
-                           <Run FontStyle="Italic" Text="{Binding RAMSize}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Частота: "/>
-                           <Run FontStyle="Italic" Text="{Binding RAMFrequency}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Тип: "/>
-                           <Run FontStyle="Italic" Text="{Binding RAMType}"/>
-                                        </TextBlock>
+                                    <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,10,0">
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <StackPanel Orientation="Vertical" Margin="0,0,50,0">
+                                                <!-- Добавлен отступ справа -->
+                                                <TextBlock FontWeight="Bold" FontSize="15" Text="Процессоры:" Margin="5"/>
+                                                <ItemsControl ItemsSource="{Binding ProcessorInfoTexts}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" >
+                                                                <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
+                                                                <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Vertical"  Margin="0,0,50,0">
+                                                <TextBlock FontWeight="Bold" FontSize="15" Text="Видеоадаптеры:" Margin="5"/>
+                                                <ItemsControl ItemsSource="{Binding VideoAdapterInfoTexts}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
+                                                                <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+
+                                            </StackPanel>
+
+                                            <StackPanel Orientation="Vertical"  Margin="0,0,50,0">
+                                                <TextBlock FontWeight="Bold" FontSize="15" Text="Оперативная память:" Margin="5"/>
+                                                <ItemsControl ItemsSource="{Binding RamInfoTexts}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
+                                                                <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Vertical"  Margin="0,0,50,0">
+                                                <TextBlock FontWeight="Bold" FontSize="15" Text="Диски:" Margin="5"/>
+                                                <ItemsControl ItemsSource="{Binding DriveInfoTexts}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
+                                                                <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+
+                                        </StackPanel>
+
                                     </StackPanel>
 
                                     <!-- Текстовые данные - Графический процессор, ОС и Диск -->
                                     <StackPanel Grid.Column="2" Orientation="Vertical" Margin="10,0,0,0">
-                                        <TextBlock FontWeight="Bold" Text="Графический процессор:"/>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Модель: "/>
-                           <Run FontStyle="Italic" Text="{Binding GPUModel}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Bold" Text="ОС:"/>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Операционная система: "/>
-                           <Run FontStyle="Italic" Text="{Binding OS}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Версия: "/>
-                           <Run FontStyle="Italic" Text="{Binding OSVersion}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Разрядность: "/>
-                           <Run FontStyle="Italic" Text="{Binding OSArchitecture}"/>
-                                        </TextBlock>
-                                        <TextBlock FontWeight="Bold" Text="Диск:"/>
-                                        <TextBlock FontWeight="Normal">
-                           <Run Text="Объём: "/>
-                           <Run FontStyle="Italic" Text="{Binding TotalSpaceDisk}"/>
-                                        </TextBlock>
+
                                     </StackPanel>
                                 </Grid>
                                 <Label></Label>
@@ -383,7 +391,7 @@
         <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}">
 
             <!-- Выдвижное меню -->
-            <TabControl  x:Name="MenuPanel" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="135" Canvas.Top="-135">
+            <TabControl  x:Name="MenuPanel" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="170" Canvas.Top="-170">
                 <TabControl.Background>
                     <SolidColorBrush Color="#FFFFFF" Opacity="0"/>
                 </TabControl.Background>
@@ -403,12 +411,12 @@
 
                                 <StackPanel>
                                     <Label FontStyle="Italic" Content="Разрядность:"/>
-                                    <ComboBox Width="80" x:Name="ArchitectureOS" Height="20"/>
+                                    <ComboBox Margin="0,-4,7,-5" Width="80" x:Name="ArchitectureOS" Height="20"/>
 
                                 </StackPanel>
                                 <StackPanel>
                                     <Label FontStyle="Italic" Content="Версия:" ></Label>
-                                    <ComboBox Width="80" Height="20" Background="AntiqueWhite" Name="VersionOS"/>
+                                    <ComboBox Margin="0,-4,7,-5"  Width="80" Height="20" Background="AntiqueWhite" Name="VersionOS"/>
                                 </StackPanel>
 
                             </StackPanel>
@@ -423,49 +431,51 @@
 
                                 <Label FontStyle="Italic" >Модель:</Label>
                                 <ComboBox  Margin="0,-4,7,-5"  Height="20"   Background="AntiqueWhite" Name="ModelCPU" />
-
+                                <Label FontStyle="Italic">Производитель:</Label>
+                                <ComboBox  Margin="0,-4,7,-5" Height="20"   Background="AntiqueWhite" Name="GPUmanufacturers"/>
                                 <Label></Label>
 
-                                <Label></Label>
                                 <StackPanel Orientation="Horizontal">
+
+                                    <Label FontStyle="Italic">Логических процессов:</Label>
+                                    <ComboBox Height="20"   Background="AntiqueWhite" x:Name="LP"/>
                                     <Label FontStyle="Italic">Архитектура:</Label>
                                     <ComboBox HorizontalAlignment="Left" Height="20"   Background="AntiqueWhite" Name="ArchitectureCPU"/>
-                                    <Label FontStyle="Italic">К-во ядер:</Label>
+                                    <Label FontStyle="Italic">Ядер:</Label>
                                     <ComboBox HorizontalAlignment="Left" Height="20"   Background="AntiqueWhite" Name="CoreCPU"/>
+
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
-
-
                         <StackPanel>
-                            <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
                             <StackPanel>
+                                <Label   Margin="0,-5,7,-5" FontWeight="Bold" FontSize="14">Видеоадаптер:</Label>
 
                                 <StackPanel Orientation="Horizontal">
-                                    <StackPanel>
-                                        <Label FontStyle="Italic">Объём:</Label>
-                                        <Label FontStyle="Italic">Частота:</Label>
-                                        <Label FontStyle="Italic">Тип:</Label>
+                                    <StackPanel Orientation="Vertical">
+                                        <Label FontStyle="Italic" >Модель:</Label>
+                                        <ComboBox  Margin="0,-4,7,-5"  Height="20"   Background="AntiqueWhite" Name="ModelVideo" />
+                                        <Label FontStyle="Italic" >Графический процессор:</Label>
+                                        <ComboBox  Margin="0,-4,7,-5"  Height="20"   Background="AntiqueWhite" Name="GPU" />
                                     </StackPanel>
+                                    <StackPanel Orientation="Vertical">
+                                        <Label FontStyle="Italic">Производитель:</Label>
+                                        <ComboBox  Margin="0,-4,7,-5" Height="20"   Background="AntiqueWhite" Name="videoManufactur"/>
 
-                                    <StackPanel>
-                                        <ComboBox Height="20" Background="AntiqueWhite" Name="TotalSpaseRAM" Margin="0,4,0,0"/>
-                                        <ComboBox Height="20" Background="AntiqueWhite" Name="SpeedRAM" Margin="0,7,0,0"/>
-                                        <ComboBox Height="20" Background="AntiqueWhite" Name="TypeRam" Margin="0,7,0,0"/>
-
+                                        <Label FontStyle="Italic">Объём памяти:</Label>
+                                        <ComboBox Height="20"  Margin="0,-4,7,-5"   Background="AntiqueWhite" x:Name="memoryVideo"/>
                                     </StackPanel>
-
-
                                 </StackPanel>
+                                <Label></Label>
+
                             </StackPanel>
-
-
-
-
                         </StackPanel>
-
                         <StackPanel>
                             <Label  FontWeight="Bold" FontSize="14">Диск</Label>
+                            <Button Content="Button" Height="41" Width="147" Click="Button_Click"/>
                             <StackPanel Orientation="Horizontal">
                             </StackPanel>
 
@@ -490,6 +500,39 @@
 
 
                         </StackPanel>
+
+                        <StackPanel>
+                            <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
+                            <StackPanel Orientation="Horizontal">
+
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel>
+                                        <Label FontStyle="Italic">Производитель</Label>
+                                        <Label FontStyle="Italic">Частота:</Label>
+
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <ComboBox Height="20" Background="AntiqueWhite" Name="Manufacturer" Margin="0,7,0,0"/>
+                                        <ComboBox Height="20" Background="AntiqueWhite" Name="SpeedRAM" Margin="0,7,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel>
+                                        <Label FontStyle="Italic">Объём:</Label>
+                                        <Label FontStyle="Italic">Тип:</Label>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <ComboBox Height="20" Background="AntiqueWhite" Name="TotalSpaseRAM" Margin="0,7,0,0"/>
+                                        <ComboBox Height="20" Background="AntiqueWhite" Name="TypeRam" Margin="0,7,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+
+
+
+                        </StackPanel>
+
+
                     </StackPanel>
                 </TabItem>
                 <TabItem PreviewMouseLeftButtonDown="Apps_Click" Background="#80FFFFFF"  Header="Приложения" Height="24" Margin="-2,-2,-2,0" VerticalAlignment="Top">
@@ -517,7 +560,9 @@
                 </ToggleButton.Background>
             </ToggleButton>
 
+
         </Canvas>
+
 
 
 
