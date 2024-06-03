@@ -224,7 +224,7 @@
 
                 </Grid>
 
-                <ListBox x:Name="allComputersListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Visible" Margin="30,30,30,30" Grid.ColumnSpan="2">
+                <ListBox x:Name="allComputersListBox" Foreground="Black" Visibility="Hidden" ScrollViewer.CanContentScroll="False"  Margin="30,30,30,30" Grid.ColumnSpan="2">
                     <ListBox.Background>
                         <SolidColorBrush Color="White" Opacity="0.8"/>
                     </ListBox.Background>

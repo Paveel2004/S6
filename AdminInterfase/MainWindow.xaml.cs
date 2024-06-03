@@ -118,12 +118,12 @@ namespace AdminInterfase
         public List<string> GetFilteredSerialNumbers(string osName = null, string osArchitecture = null,
                                                string osVersion = null, string processorModel = null,
                                                string processorManufacturer = null, string processorArchitecture = null,
-                                               int? logicalProcessors = null, int? cores = null,
+                                               string? logicalProcessors = null, string? cores = null,
                                                string videoModel = null, string graphicsProcessor = null,
-                                               string videoManufacturer = null, long? videoMemorySize = null,
-                                               string ramPlacement = null, float? ramSize = null,
-                                               string ramType = null, int? ramSpeed = null,
-                                               string driveType = null, bool? drivePool = null)
+                                               string videoManufacturer = null, string? videoMemorySize = null,
+                                               string ramPlacement = null, string? ramSize = null,
+                                               string ramType = null, string? ramSpeed = null,
+                                               string driveType = null, string? drivePool = null)
         {
 
             List<string> serialNumbers = new List<string>();
@@ -366,18 +366,18 @@ namespace AdminInterfase
             string processorModel = ModelCPU.SelectedItem?.ToString();
             string processorManufacturer = GPUmanufacturers.SelectedItem?.ToString();
             string processorArchitecture = ArchitectureCPU.SelectedItem?.ToString();
-            int? logicalProcessors = LP.SelectedItem as int?;
-            int? cores = CoreCPU.SelectedItem as int?;
+            string? logicalProcessors = LP.SelectedItem?.ToString();
+            string? cores = CoreCPU.SelectedItem?.ToString();
             string videoModel = ModelVideo.SelectedItem?.ToString();
             string graphicsProcessor = GPU.SelectedItem?.ToString();
             string videoManufacturer = videoManufactur.SelectedItem?.ToString();
-            long? videoMemorySize = memoryVideo.SelectedItem as long?;
+            string? videoMemorySize = memoryVideo.SelectedItem?.ToString();
             string ramPlacement = null; // Не уверен, откуда брать это значение
-            float? ramSize = TotalSpaseRAM.SelectedItem as float?;
+            string? ramSize = TotalSpaseRAM.SelectedItem?.ToString();
             string ramType = TypeRam.SelectedItem?.ToString();
-            int? ramSpeed = SpeedRAM.SelectedItem as int?;
+            string? ramSpeed = SpeedRAM.SelectedItem?.ToString();
             string driveType = DiskType.SelectedItem?.ToString();
-            bool? drivePool = Pool.SelectedItem as bool?;
+            string? drivePool = Pool.SelectedItem?.ToString();
             List<string> biosSerialNumbers = GetFilteredSerialNumbers(
      osName, osArchitecture, osVersion, processorModel, processorManufacturer,
      processorArchitecture, logicalProcessors, cores, videoModel, graphicsProcessor,
