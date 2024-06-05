@@ -29,6 +29,11 @@ using DocumentFormat.OpenXml.AdditionalCharacteristics;
 using GlobalClass;
 using Server;
 using GlobalClass.Static_data;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
+using OxyPlot.Wpf;
+using DocumentFormat.OpenXml.Vml;
 
 namespace AdminInterfase
 {
@@ -46,7 +51,65 @@ namespace AdminInterfase
         private int localPort = 2222;
         private int localPort2 = 3333;
         private IPAddress localAddr = IPAddress.Parse(ManagerIP.GetIPAddress());
-        static string connectionString = "Server=192.168.1.143\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
+        private string connectionString = "Server=192.168.24.134\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
+        public PlotModel PlotModel { get; private set; }
+        private void LoadDataAndPlot(string sid)
+        {
+            var data = GetDataFromDatabase(sid,
+                                           new DateTime(2001, 1, 1),
+                                           new DateTime(2024, 12, 31));
+
+            PlotModel = new PlotModel { Title = "Оперативная память" };
+            var xAxis = new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Дата" };
+            PlotModel.Axes.Add(xAxis);
+            var yAxis = new LinearAxis { Position = AxisPosition.Left, Title = "Значение" };
+            PlotModel.Axes.Add(yAxis);
+            var lineSeries = new LineSeries
+            {
+                Title = "RAM Usage",
+                MarkerType = MarkerType.Circle
+            };
+
+            foreach (var item in data)
+            {
+                lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(item.Date), item.Value));
+            }
+
+            PlotModel.Series.Add(lineSeries);
+            RamUsage.Model = PlotModel;
+        }
+        private List<UsageData> GetDataFromDatabase(string user, DateTime startDate, DateTime endDate)
+        {
+            var data = new List<UsageData>();
+
+            string storedProcedure = "UserUsageRAM";
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@User", user);
+                    command.Parameters.AddWithValue("@StartData", startDate);
+                    command.Parameters.AddWithValue("@EndData", endDate);
+
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            data.Add(new UsageData
+                            {
+                                Date = reader.GetDateTime(reader.GetOrdinal("Дата/Время")),
+                                Value = reader.GetDouble(reader.GetOrdinal("Значение"))
+                            });
+                        }
+                    }
+                }
+            }
+
+            return data;
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -65,7 +128,8 @@ namespace AdminInterfase
                         FillComboBoxFromProcedure(TypeRam, "Тип", "ОЗУ");
             */
             LoadProcessorModels();
-
+            DataContext = this;
+           
             Task.Run(() => StartServer(localPort, client => HandleClient(client, onlineComputersListBox), localAddr));
             //Task.Run(() => StartServer(localPort2, client => HandleDB(client), localAddr));
         }
@@ -328,18 +392,33 @@ namespace AdminInterfase
             onlineComputersListBox.Visibility = Visibility.Hidden;
             allComputersListBox.Visibility = Visibility.Visible;
             Apps.Visibility = Visibility.Hidden;
+            Usage.Visibility = Visibility.Hidden;
         }
         private void SetOnlineVisibility()
         {
             onlineComputersListBox.Visibility = Visibility.Visible;
             allComputersListBox.Visibility = Visibility.Hidden;
             Apps.Visibility = Visibility.Hidden;
+            Usage.Visibility = Visibility.Hidden;
+        }
+        private void SetUsageVisibility()
+        {
+            onlineComputersListBox.Visibility = Visibility.Hidden;
+        
+            Apps.Visibility = Visibility.Hidden;         
+            allComputersListBox.Visibility = Visibility.Hidden;
+            Apps.Visibility = Visibility.Hidden;
+            onlineComputersListBox.Visibility = Visibility.Hidden;
+            allComputersListBox.Visibility = Visibility.Hidden;
+            Usage.Visibility = Visibility.Visible;
+            Apps.Visibility = Visibility.Visible;//////////
         }
         private void AppsVisibility()
         {
             onlineComputersListBox.Visibility = Visibility.Hidden;
             allComputersListBox.Visibility = Visibility.Hidden;
             Apps.Visibility = Visibility.Visible;
+            Usage.Visibility = Visibility.Hidden;
         }
         public void Apps_Click(object sender, RoutedEventArgs e)
         {
@@ -352,10 +431,12 @@ namespace AdminInterfase
           //  allComputersListBox.Items.Clear();
             //GetBuild();
             SetComputersVisibility();
-            onlineComputersListBox.Items.Clear();
+       
+            allComputersListBox.Items.Clear();
+            LoadAllComputerInfo();
             ////////////////
             ///
-   
+
 
         }
         private void LoadAllComputerInfo()
@@ -526,7 +607,7 @@ namespace AdminInterfase
 
                 // Вызываем процедуру ПриложенияПользователя с передачей SID
                 List<ApplicationData> userApplications = GetApplicationsForUser(selectedUserSid);
-
+                LoadDataAndPlot(selectedUserSid);
                 // Заполняем второй ListBox результатами процедуры
                 FillApplicationsListBox(userApplications);
             }
@@ -863,9 +944,13 @@ namespace AdminInterfase
         
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            allComputersListBox.Items.Clear();
-            LoadAllComputerInfo();
+          
 
+        }
+
+        private void TabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SetUsageVisibility();
         }
     }
 
@@ -878,6 +963,11 @@ namespace AdminInterfase
         public int Cores { get; set; }
         public string Manufacturer { get; set; }
         public double Frequency { get; set; }
+    }
+    public class UsageData
+    {
+        public DateTime Date { get; set; }
+        public double Value { get; set; }
     }
     public class RamInfo
     {

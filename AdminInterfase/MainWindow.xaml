@@ -133,10 +133,11 @@
 
         <Grid x:Name="MainGrid">
 
+
+
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="193*"/>
-                    <ColumnDefinition Width="757*"/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Grid.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -169,7 +170,7 @@
 -->
 
 
-                <Grid Name="Apps" Visibility="Hidden" Margin="30,30,30,30" Grid.ColumnSpan="2">
+                <Grid Name="Apps" Visibility="Visible" Margin="30,30,30,30">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>
                         <!-- Ширина UsersListBox -->
@@ -224,7 +225,7 @@
 
                 </Grid>
 
-                <ListBox x:Name="allComputersListBox" Foreground="Black" Visibility="Hidden" ScrollViewer.CanContentScroll="False"  Margin="30,30,30,30" Grid.ColumnSpan="2">
+                <ListBox x:Name="allComputersListBox" Foreground="Black" Visibility="Hidden" ScrollViewer.CanContentScroll="False"  Margin="30,30,30,30">
                     <ListBox.Background>
                         <SolidColorBrush Color="White" Opacity="0.8"/>
                     </ListBox.Background>
@@ -319,7 +320,7 @@
                 </ListBox>
 
 
-                <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Name="onlineComputersListBox" Margin="27,40,30,30" Grid.Column="1">
+                <ListBox Foreground="Black" ScrollViewer.CanContentScroll="False" Visibility="Hidden" Name="onlineComputersListBox" Margin="220,40,30,30">
 
                     <ListBox.Background>
                         <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
@@ -368,12 +369,26 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Margin="27,10,0,30" Grid.Column="1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"  Margin="220,10,0,30">
                     <StackPanel/>
 
 
                 </StackPanel>
+                <Grid Name="Usage" Visi Margin="260,30,30,30">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
+                    <oxy:PlotView Name="RamUsage" Grid.Row="0" Grid.Column="0" Model="{Binding PlotModel1}" />
+                    <oxy:PlotView Name="CPUtemp" Grid.Row="0" Grid.Column="1" Model="{Binding PlotModel2}" />
+                    <oxy:PlotView Name="LPCPU" Grid.Row="1" Grid.Column="0" Model="{Binding PlotModel3}" />
+                    <oxy:PlotView Name="CpmputerUsage" Grid.Row="1" Grid.Column="1" Model="{Binding PlotModel4}" />
+                </Grid>
 
 
 
@@ -475,7 +490,6 @@
                         </StackPanel>
                         <StackPanel>
                             <Label  FontWeight="Bold" FontSize="14">Диск</Label>
-                            <Button Content="Button" Height="41" Width="147" Click="Button_Click"/>
                             <StackPanel Orientation="Horizontal">
                             </StackPanel>
 
@@ -541,7 +555,7 @@
                 <TabItem Background="#80FFFFFF"  Header="Оналйн">
 
                 </TabItem>
-                <TabItem Background="#80FFFFFF"  Header="Использование">
+                <TabItem PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown" Background="#80FFFFFF"  Header="Использование">
 
                 </TabItem>
 
