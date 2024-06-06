@@ -130,8 +130,12 @@
         </LinearGradientBrush>
     </Window.Background>
     <Grid >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="89*"/>
+            <ColumnDefinition Width="861*"/>
+        </Grid.ColumnDefinitions>
 
-        <Grid x:Name="MainGrid">
+        <Grid x:Name="MainGrid" Grid.ColumnSpan="2">
 
 
 
@@ -180,7 +184,7 @@
                         <!-- Остальное место для ApplicationsListBox -->
                     </Grid.ColumnDefinitions>
 
-                    <ListBox SelectionChanged="UsersListBox_SelectionChanged" 
+                    <ListBox SelectionChanged="UsersListBox_SelectionChanged"
         x:Name="UsersListBox" 
         Foreground="Black" 
         ScrollViewer.CanContentScroll="False" 
@@ -374,7 +378,7 @@
 
 
                 </StackPanel>
-                <Grid Name="Usage" Visi Margin="260,30,30,30">
+                <Grid Name="Usage"  Margin="260,30,30,30">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
@@ -403,7 +407,7 @@
             </Grid>
         </Grid>
         <!-- Верхний Canvas для выдвижного меню -->
-        <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}">
+        <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Grid.ColumnSpan="2">
 
             <!-- Выдвижное меню -->
             <TabControl  x:Name="MenuPanel" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="170" Canvas.Top="-170">
@@ -555,7 +559,48 @@
                 <TabItem Background="#80FFFFFF"  Header="Оналйн">
 
                 </TabItem>
-                <TabItem PreviewMouseLeftButtonDown="TabItem_PreviewMouseLeftButtonDown" Background="#80FFFFFF"  Header="Использование">
+                <TabItem PreviewMouseLeftButtonDown="Usage_Click" Background="#80FFFFFF"  Header="Использование">
+
+
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </StackPanel.Background>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold" FontSize="15" Text="Оперативная память:" Margin="5"/>
+
+                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Загруженность:</Label>
+                            <StackPanel Orientation="Horizontal">
+
+
+                                <Label FontStyle="Italic">День:</Label>
+
+                                <DatePicker x:Name="RAMDate" SelectedDateChanged="RAMDate_SelectedDateChanged"/>
+
+
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel >
+                            <TextBlock FontWeight="Bold" FontSize="15" Text="Процессор:" Margin="5"/>
+                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Температура</Label>
+
+                            <StackPanel Orientation="Horizontal">
+
+                                <Label FontStyle="Italic">День:</Label>
+                                <DatePicker x:Name="TempDate" SelectedDate="{Binding SelectedDate}" />
+                            </StackPanel>
+                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Логические процессы:</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic">День:</Label>
+                                <DatePicker x:Name="CoreDate" SelectedDate="{Binding SelectedDate}" />
+                            </StackPanel>
+
+                        </StackPanel>
+
+
+                    </StackPanel>
+
+
 
                 </TabItem>
 

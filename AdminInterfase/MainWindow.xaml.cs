@@ -51,13 +51,22 @@ namespace AdminInterfase
         private int localPort = 2222;
         private int localPort2 = 3333;
         private IPAddress localAddr = IPAddress.Parse(ManagerIP.GetIPAddress());
-        private string connectionString = "Server=192.168.24.134\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
+        private string connectionString = "Server=WIN-5CLMGM4LR48\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
         public PlotModel PlotModel { get; private set; }
-        private void LoadDataAndPlot(string sid)
+
+        private void LoadDataAndPlot(string sid, DateTime selectedDate)
         {
-            var data = GetDataFromDatabase(sid,
-                                           new DateTime(2001, 1, 1),
-                                           new DateTime(2024, 12, 31));
+            
+            DateTime startDate = selectedDate.Date;
+            DateTime endDate = selectedDate.Date.AddDays(1).AddTicks(-1);
+
+            var data = GetDataFromDatabase(sid, startDate, endDate);
+
+            if (data.Count == 0)
+            {
+                MessageBox.Show("Нет данных за выбранную дату.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
 
             PlotModel = new PlotModel { Title = "Оперативная память" };
             var xAxis = new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Дата" };
@@ -78,6 +87,7 @@ namespace AdminInterfase
             PlotModel.Series.Add(lineSeries);
             RamUsage.Model = PlotModel;
         }
+
         private List<UsageData> GetDataFromDatabase(string user, DateTime startDate, DateTime endDate)
         {
             var data = new List<UsageData>();
@@ -110,9 +120,12 @@ namespace AdminInterfase
 
             return data;
         }
+
+
         public MainWindow()
         {
             InitializeComponent();
+           
 
             /*            FillComboBoxFromProcedure(NameOS, "Операционная система", "ОС");
                         FillComboBoxFromProcedure(VersionOS, "Версия", "ОС");
@@ -403,8 +416,7 @@ namespace AdminInterfase
         }
         private void SetUsageVisibility()
         {
-            onlineComputersListBox.Visibility = Visibility.Hidden;
-        
+            onlineComputersListBox.Visibility = Visibility.Hidden;        
             Apps.Visibility = Visibility.Hidden;         
             allComputersListBox.Visibility = Visibility.Hidden;
             Apps.Visibility = Visibility.Hidden;
@@ -423,7 +435,7 @@ namespace AdminInterfase
         public void Apps_Click(object sender, RoutedEventArgs e)
         {
             AppsVisibility();
-            FillUsersListBox(UsersListBox);
+            FillUsersAppListBox(UsersListBox);
         }
         
         public void Computers_Click(object sender, RoutedEventArgs e)
@@ -564,7 +576,7 @@ namespace AdminInterfase
         }
         private Dictionary<string, string> usersDictionary = new Dictionary<string, string>();
         private List<ApplicationData> GetApplicationsForUser(string userSid)
-        {
+        {//Так2
             List<ApplicationData> userApplications = new List<ApplicationData>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -606,10 +618,34 @@ namespace AdminInterfase
                 string selectedUserSid = usersDictionary[selectedUserName];
 
                 // Вызываем процедуру ПриложенияПользователя с передачей SID
-                List<ApplicationData> userApplications = GetApplicationsForUser(selectedUserSid);
-                LoadDataAndPlot(selectedUserSid);
+                List<ApplicationData> userApplications = GetApplicationsForUser(selectedUserSid);//Так1
+                
                 // Заполняем второй ListBox результатами процедуры
                 FillApplicationsListBox(userApplications);
+                try
+                {
+                    LoadDataAndPlot(selectedUserSid, RAMDate.SelectedDate.Value);
+                }
+                catch {}
+         
+
+
+            }
+        }
+        private void UsersUsageListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (UsersListBox.SelectedIndex != -1)
+            {
+                string selectedUserName = UsersListBox.SelectedItem.ToString();
+
+                // Получаем SID выбранного пользователя из словаря
+                string selectedUserSid = usersDictionary[selectedUserName];
+
+                // Вызываем процедуру ПриложенияПользователя с передачей SID                
+
+                // Заполняем второй ListBox результатами процедуры
+            
+
             }
         }
 
@@ -623,7 +659,7 @@ namespace AdminInterfase
             }
         }
 
-        public void FillUsersListBox(ListBox listBox)
+        public void FillUsersAppListBox(ListBox listBox)
         {
             listBox.Items.Clear();
             usersDictionary.Clear();
@@ -650,6 +686,36 @@ namespace AdminInterfase
                 }
             }
         }
+        public void FillUsersUsageListBox(ListBox listBox,DateTime Date)
+        {           
+            
+                listBox.Items.Clear();
+                usersDictionary.Clear();
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = $"EXEC UsersUsageRamDateList @Date='{Date}'";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string name = reader.GetString(0);
+                                string sid = reader.GetString(1);
+
+                                listBox.Items.Add(name);
+                                usersDictionary[name] = sid;
+                            }
+                        }
+                    }
+                }
+            
+
+        }
+
 
         static async void StartServer(int port, Action<TcpClient> handleClient, IPAddress localAddr)
         {
@@ -881,6 +947,10 @@ namespace AdminInterfase
             return ramInfos;
         }
 
+        private void RAMDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FillUsersUsageListBox(UsersListBox,RAMDate.SelectedDate.Value);
+        }
 
         private List<ProcessorInfo> GetProcessorInfos(string biosSerialNumber, SqlConnection connection)
         {
@@ -948,8 +1018,9 @@ namespace AdminInterfase
 
         }
 
-        private void TabItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
+        private void Usage_Click(object sender, MouseButtonEventArgs e)
+        {           
+            //UsersListBox.Items.Clear();
             SetUsageVisibility();
         }
     }
