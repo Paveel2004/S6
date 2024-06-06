@@ -554,9 +554,60 @@
                     </StackPanel>
                 </TabItem>
                 <TabItem PreviewMouseLeftButtonDown="Apps_Click" Background="#80FFFFFF"  Header="Приложения" Height="24" Margin="-2,-2,-2,0" VerticalAlignment="Top">
+                    <StackPanel  Orientation="Horizontal">
 
+                        <StackPanel.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </StackPanel.Background>
+ 
+                        <StackPanel>
+                            <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique" >Название:</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic" Content="Поиск:" ></Label>
+                                <TextBox Background="AntiqueWhite" Height="20" MinWidth="165" MaxWidth="500" Width="Auto"  ></TextBox>
+
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic" Content="Сортировка:" ></Label>
+                                <ComboBox HorizontalAlignment="Left" Width="130" Height="20"></ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel>
+                            <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique" >Вес:</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic">От</Label>
+                                <TextBox Background="AntiqueWhite" Height="20" Width="50" ></TextBox>
+                                <Label FontStyle="Italic">До</Label>
+                                <TextBox Background="AntiqueWhite" Height="20"  Width="50" ></TextBox>
+                                <Label FontStyle="Italic">МБ</Label>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic" Content="Сортировка:" ></Label>
+                                <ComboBox HorizontalAlignment="Left" Width="130" Height="20"></ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+
+
+
+                        <StackPanel>
+                            <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique" >Дата установки:</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic">С</Label>
+                                <DatePicker />
+                                <Label FontStyle="Italic">По</Label>
+                                <DatePicker />
+
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontStyle="Italic" Content="Сортировка:" ></Label>
+                                <ComboBox HorizontalAlignment="Left" Width="130" Height="20"></ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+
+                    </StackPanel>
                 </TabItem >
-                <TabItem Background="#80FFFFFF"  Header="Оналйн">
+                <TabItem PreviewMouseLeftButtonDown="Online_Click" Background="#80FFFFFF"  Header="Онлайн">
+
 
                 </TabItem>
                 <TabItem PreviewMouseLeftButtonDown="Usage_Click" Background="#80FFFFFF"  Header="Использование">
@@ -569,15 +620,197 @@
                         <StackPanel>
                             <TextBlock FontWeight="Bold" FontSize="15" Text="Оперативная память:" Margin="5"/>
 
-                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Загруженность:</Label>
+
                             <StackPanel Orientation="Horizontal">
 
+                                <Label FontSize="12" FontWeight="Bold" FontStyle="Oblique" >Загруженность:</Label>
+                                <StackPanel>
+                                    <DatePicker x:Name="RAMDate" SelectedDateChanged="RAMDate_SelectedDateChanged"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Label FontSize="12" FontStyle="Oblique">HH:</Label>
+                                        <ComboBox Name="StartHH" SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                            <ComboBoxItem Content="00" />
+                                            <ComboBoxItem Content="01" />
+                                            <ComboBoxItem Content="02" />
+                                            <ComboBoxItem Content="03" />
+                                            <ComboBoxItem Content="04" />
+                                            <ComboBoxItem Content="05" />
+                                            <ComboBoxItem Content="06" />
+                                            <ComboBoxItem Content="07" />
+                                            <ComboBoxItem Content="08" />
+                                            <ComboBoxItem Content="09" />
+                                            <ComboBoxItem Content="10" />
+                                            <ComboBoxItem Content="11" />
+                                            <ComboBoxItem Content="12" />
+                                            <ComboBoxItem Content="13" />
+                                            <ComboBoxItem Content="14" />
+                                            <ComboBoxItem Content="15" />
+                                            <ComboBoxItem Content="16" />
+                                            <ComboBoxItem Content="17" />
+                                            <ComboBoxItem Content="18" />
+                                            <ComboBoxItem Content="19" />
+                                            <ComboBoxItem Content="20" />
+                                            <ComboBoxItem Content="21" />
+                                            <ComboBoxItem Content="22" />
+                                            <ComboBoxItem Content="23" />
+                                        </ComboBox>
+                                        <Label FontSize="12" FontStyle="Oblique">MM:</Label>
+                                        <ComboBox Name="StartMM" SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                            <ComboBoxItem Content="00" />
+                                            <ComboBoxItem Content="01" />
+                                            <ComboBoxItem Content="02" />
+                                            <ComboBoxItem Content="03" />
+                                            <ComboBoxItem Content="04" />
+                                            <ComboBoxItem Content="05" />
+                                            <ComboBoxItem Content="06" />
+                                            <ComboBoxItem Content="07" />
+                                            <ComboBoxItem Content="08" />
+                                            <ComboBoxItem Content="09" />
+                                            <ComboBoxItem Content="10" />
+                                            <ComboBoxItem Content="11" />
+                                            <ComboBoxItem Content="12" />
+                                            <ComboBoxItem Content="13" />
+                                            <ComboBoxItem Content="14" />
+                                            <ComboBoxItem Content="15" />
+                                            <ComboBoxItem Content="16" />
+                                            <ComboBoxItem Content="17" />
+                                            <ComboBoxItem Content="18" />
+                                            <ComboBoxItem Content="19" />
+                                            <ComboBoxItem Content="20" />
+                                            <ComboBoxItem Content="21" />
+                                            <ComboBoxItem Content="22" />
+                                            <ComboBoxItem Content="23" />
+                                            <ComboBoxItem Content="24" />
+                                            <ComboBoxItem Content="25" />
+                                            <ComboBoxItem Content="26" />
+                                            <ComboBoxItem Content="27" />
+                                            <ComboBoxItem Content="28" />
+                                            <ComboBoxItem Content="29" />
+                                            <ComboBoxItem Content="30" />
+                                            <ComboBoxItem Content="31" />
+                                            <ComboBoxItem Content="32" />
+                                            <ComboBoxItem Content="33" />
+                                            <ComboBoxItem Content="34" />
+                                            <ComboBoxItem Content="35" />
+                                            <ComboBoxItem Content="36" />
+                                            <ComboBoxItem Content="37" />
+                                            <ComboBoxItem Content="38" />
+                                            <ComboBoxItem Content="39" />
+                                            <ComboBoxItem Content="40" />
+                                            <ComboBoxItem Content="41" />
+                                            <ComboBoxItem Content="42" />
+                                            <ComboBoxItem Content="43" />
+                                            <ComboBoxItem Content="44" />
+                                            <ComboBoxItem Content="45" />
+                                            <ComboBoxItem Content="46" />
+                                            <ComboBoxItem Content="47" />
+                                            <ComboBoxItem Content="48" />
+                                            <ComboBoxItem Content="49" />
+                                            <ComboBoxItem Content="50" />
+                                            <ComboBoxItem Content="51" />
+                                            <ComboBoxItem Content="52" />
+                                            <ComboBoxItem Content="53" />
+                                            <ComboBoxItem Content="54" />
+                                            <ComboBoxItem Content="55" />
+                                            <ComboBoxItem Content="56" />
+                                            <ComboBoxItem Content="57" />
+                                            <ComboBoxItem Content="58" />
+                                            <ComboBoxItem Content="59" />
+                                        </ComboBox>
+                                        <Label FontSize="12" FontWeight="Bold" FontStyle="Oblique">——</Label>
+                                        <Label FontSize="12" FontStyle="Oblique">HH:</Label>
+                                        <ComboBox Name="EndHH"  SelectedIndex="23"  ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                            <ComboBoxItem Content="00" />
+                                            <ComboBoxItem Content="01" />
+                                            <ComboBoxItem Content="02" />
+                                            <ComboBoxItem Content="03" />
+                                            <ComboBoxItem Content="04" />
+                                            <ComboBoxItem Content="05" />
+                                            <ComboBoxItem Content="06" />
+                                            <ComboBoxItem Content="07" />
+                                            <ComboBoxItem Content="08" />
+                                            <ComboBoxItem Content="09" />
+                                            <ComboBoxItem Content="10" />
+                                            <ComboBoxItem Content="11" />
+                                            <ComboBoxItem Content="12" />
+                                            <ComboBoxItem Content="13" />
+                                            <ComboBoxItem Content="14" />
+                                            <ComboBoxItem Content="15" />
+                                            <ComboBoxItem Content="16" />
+                                            <ComboBoxItem Content="17" />
+                                            <ComboBoxItem Content="18" />
+                                            <ComboBoxItem Content="19" />
+                                            <ComboBoxItem Content="20" />
+                                            <ComboBoxItem Content="21" />
+                                            <ComboBoxItem Content="22" />
+                                            <ComboBoxItem Content="23" />
+                                        </ComboBox>
+                                        <Label FontSize="12" FontStyle="Oblique">MM:</Label>
+                                        <ComboBox Name="EndMM"  SelectedIndex="59" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                            <ComboBoxItem Content="00" />
+                                            <ComboBoxItem Content="01" />
+                                            <ComboBoxItem Content="02" />
+                                            <ComboBoxItem Content="03" />
+                                            <ComboBoxItem Content="04" />
+                                            <ComboBoxItem Content="05" />
+                                            <ComboBoxItem Content="06" />
+                                            <ComboBoxItem Content="07" />
+                                            <ComboBoxItem Content="08" />
+                                            <ComboBoxItem Content="09" />
+                                            <ComboBoxItem Content="10" />
+                                            <ComboBoxItem Content="11" />
+                                            <ComboBoxItem Content="12" />
+                                            <ComboBoxItem Content="13" />
+                                            <ComboBoxItem Content="14" />
+                                            <ComboBoxItem Content="15" />
+                                            <ComboBoxItem Content="16" />
+                                            <ComboBoxItem Content="17" />
+                                            <ComboBoxItem Content="18" />
+                                            <ComboBoxItem Content="19" />
+                                            <ComboBoxItem Content="20" />
+                                            <ComboBoxItem Content="21" />
+                                            <ComboBoxItem Content="22" />
+                                            <ComboBoxItem Content="23" />
+                                            <ComboBoxItem Content="24" />
+                                            <ComboBoxItem Content="25" />
+                                            <ComboBoxItem Content="26" />
+                                            <ComboBoxItem Content="27" />
+                                            <ComboBoxItem Content="28" />
+                                            <ComboBoxItem Content="29" />
+                                            <ComboBoxItem Content="30" />
+                                            <ComboBoxItem Content="31" />
+                                            <ComboBoxItem Content="32" />
+                                            <ComboBoxItem Content="33" />
+                                            <ComboBoxItem Content="34" />
+                                            <ComboBoxItem Content="35" />
+                                            <ComboBoxItem Content="36" />
+                                            <ComboBoxItem Content="37" />
+                                            <ComboBoxItem Content="38" />
+                                            <ComboBoxItem Content="39" />
+                                            <ComboBoxItem Content="40" />
+                                            <ComboBoxItem Content="41" />
+                                            <ComboBoxItem Content="42" />
+                                            <ComboBoxItem Content="43" />
+                                            <ComboBoxItem Content="44" />
+                                            <ComboBoxItem Content="45" />
+                                            <ComboBoxItem Content="46" />
+                                            <ComboBoxItem Content="47" />
+                                            <ComboBoxItem Content="48" />
+                                            <ComboBoxItem Content="49" />
+                                            <ComboBoxItem Content="50" />
+                                            <ComboBoxItem Content="51" />
+                                            <ComboBoxItem Content="52" />
+                                            <ComboBoxItem Content="53" />
+                                            <ComboBoxItem Content="54" />
+                                            <ComboBoxItem Content="55" />
+                                            <ComboBoxItem Content="56" />
+                                            <ComboBoxItem Content="57" />
+                                            <ComboBoxItem Content="58" />
+                                            <ComboBoxItem Content="59" />
+                                        </ComboBox>
+                                    </StackPanel>
 
-                                <Label FontStyle="Italic">День:</Label>
-
-                                <DatePicker x:Name="RAMDate" SelectedDateChanged="RAMDate_SelectedDateChanged"/>
-
-
+                                </StackPanel>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel >

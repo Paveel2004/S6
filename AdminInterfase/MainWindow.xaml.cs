@@ -741,6 +741,7 @@ namespace AdminInterfase
                 server?.Stop();
             }
         }
+        private List<string> OnlineBioslist = new List<string>();
         static void HandleClient(TcpClient tcpClient, ListBox listBox)
         {
             try
@@ -752,9 +753,9 @@ namespace AdminInterfase
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
-
+                    
                     // Обновляем listBox в UI потоке
-                    Application.Current.Dispatcher.Invoke(() => listBox.Items.Add(new ListBoxInfo { Text = TextHelper.DictionaryToText(message), Buttons = new ObservableCollection<string> { "Кнопка 1", "Кнопка 2", "Кнопка 3" } }));
+                   Application.Current.Dispatcher.Invoke(() => listBox.Items.Add(new ListBoxInfo { Text = TextHelper.DictionaryToText(message), Buttons = new ObservableCollection<string> { "Кнопка 1", "Кнопка 2", "Кнопка 3" } }));
 
                     stream.Write(response, 0, response.Length);
                 }
