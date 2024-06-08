@@ -235,6 +235,7 @@
                     </ListBox.Background>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
+                            
                             <StackPanel Orientation="Vertical">
                                 <!-- Имя компьютера -->
                                 <TextBlock FontStyle="Italic" FontWeight="Bold" FontSize="16" Text="{Binding ComputerName}" Margin="0,0,0,10"/>
@@ -249,10 +250,12 @@
                                     <Image Grid.Column="0" VerticalAlignment="Top" Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Image\Комп2.png" Width="100" Height="100" Margin="5"/>
 
                                     <!-- Текстовые данные - Процессор и ОЗУ -->
-                                    <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,10,0">
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
+                                        <StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="5">
-                                            <StackPanel Orientation="Vertical" Margin="0,0,50,0">
-                                                <!-- Добавлен отступ справа -->
+                                            <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                                <StackPanel Orientation="Vertical" Margin="0,0,10,0">
+                                                    <!-- Добавлен отступ справа -->
                                                 <TextBlock FontWeight="Bold" FontSize="15" Text="Процессоры:" Margin="5"/>
                                                 <ItemsControl ItemsSource="{Binding ProcessorInfoTexts}">
                                                     <ItemsControl.ItemTemplate>
@@ -265,7 +268,9 @@
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
                                             </StackPanel>
-                                            <StackPanel Orientation="Vertical"  Margin="0,0,50,0">
+                                            </Border>
+                                            <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                                <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
                                                 <TextBlock FontWeight="Bold" FontSize="15" Text="Видеоадаптеры:" Margin="5"/>
                                                 <ItemsControl ItemsSource="{Binding VideoAdapterInfoTexts}">
                                                     <ItemsControl.ItemTemplate>
@@ -279,8 +284,9 @@
                                                 </ItemsControl>
 
                                             </StackPanel>
-
-                                            <StackPanel Orientation="Vertical"  Margin="0,0,50,0">
+                                            </Border>
+                                            <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                                <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
                                                 <TextBlock FontWeight="Bold" FontSize="15" Text="Оперативная память:" Margin="5"/>
                                                 <ItemsControl ItemsSource="{Binding RamInfoTexts}">
                                                     <ItemsControl.ItemTemplate>
@@ -293,7 +299,28 @@
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
                                             </StackPanel>
-                                            <StackPanel Orientation="Vertical"  Margin="0,0,50,0">
+                                            </Border>
+                                            </StackPanel>
+                                            <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                                <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
+                                                    <TextBlock FontWeight="Bold" FontSize="15" Text="ОС:" Margin="5"/>
+                                                    <ItemsControl ItemsSource="{Binding OSInfoTexts}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
+                                                                    <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Border>
+                                            
+                                          
+                                        </StackPanel>
+                                        <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                            <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
                                                 <TextBlock FontWeight="Bold" FontSize="15" Text="Диски:" Margin="5"/>
                                                 <ItemsControl ItemsSource="{Binding DriveInfoTexts}">
                                                     <ItemsControl.ItemTemplate>
@@ -306,9 +333,7 @@
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
                                             </StackPanel>
-
-                                        </StackPanel>
-
+                                        </Border>
                                     </StackPanel>
 
                                     <!-- Текстовые данные - Графический процессор, ОС и Диск -->
@@ -545,7 +570,7 @@
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
-
+                            <Button Height="23" Click="Button_Click_1"></Button>
 
 
                         </StackPanel>
@@ -564,7 +589,7 @@
                             <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique" >Название:</Label>
                             <StackPanel Orientation="Horizontal">
                                 <Label FontStyle="Italic" Content="Поиск:" ></Label>
-                                <TextBox Background="AntiqueWhite" Height="20" MinWidth="165" MaxWidth="500" Width="Auto"  ></TextBox>
+                                <TextBox x:Name="SearchTextBox" TextChanged="SearchTextBox_TextChanged"  Background="AntiqueWhite" Height="20" MinWidth="165" MaxWidth="500" Width="Auto"  ></TextBox>
 
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
@@ -575,11 +600,11 @@
                         <StackPanel>
                             <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique" >Вес:</Label>
                             <StackPanel Orientation="Horizontal">
-                                <Label FontStyle="Italic">От</Label>
-                                <TextBox Background="AntiqueWhite" Height="20" Width="50" ></TextBox>
-                                <Label FontStyle="Italic">До</Label>
-                                <TextBox Background="AntiqueWhite" Height="20"  Width="50" ></TextBox>
-                                <Label FontStyle="Italic">МБ</Label>
+                                <Label FontStyle="Italic" Content="От" />
+                                <TextBox x:Name="MinSizeTextBox" Background="AntiqueWhite" Height="20" Width="50" TextChanged="SizeRangeTextBox_TextChanged"/>
+                                <Label FontStyle="Italic" Content="До" />
+                                <TextBox x:Name="MaxSizeTextBox" Background="AntiqueWhite" Height="20" Width="50" TextChanged="SizeRangeTextBox_TextChanged"/>
+                                <Label FontStyle="Italic" Content="МБ" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label FontStyle="Italic" Content="Сортировка:" ></Label>
@@ -593,9 +618,9 @@
                             <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique" >Дата установки:</Label>
                             <StackPanel Orientation="Horizontal">
                                 <Label FontStyle="Italic">С</Label>
-                                <DatePicker />
+                                <DatePicker x:Name="StartDatePicker" SelectedDateChanged="DatePicker_SelectedDateChanged" />
                                 <Label FontStyle="Italic">По</Label>
-                                <DatePicker />
+                                <DatePicker x:Name="EndDatePicker" SelectedDateChanged="DatePicker_SelectedDateChanged" />
 
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">

@@ -34,6 +34,23 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Wpf;
 using DocumentFormat.OpenXml.Vml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.IO;
+using System.Windows.Controls;
+using System.Windows;
+using System.Windows.Controls;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AdminInterfase
 {
@@ -607,7 +624,53 @@ namespace AdminInterfase
 
             return userApplications;
         }
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterApplications();
+        }
 
+        private void SizeRangeTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterApplications();
+        }
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ApplyFilters();
+        }
+        private void FilterApplications()
+        {
+            string searchText = SearchTextBox.Text.ToLower();
+            ApplicationsListBox.Items.Clear();
+
+            double minSize = 0;
+            double maxSize = double.MaxValue;
+
+            if (!string.IsNullOrWhiteSpace(MinSizeTextBox.Text))
+            {
+                double.TryParse(MinSizeTextBox.Text, out minSize);
+            }
+
+            if (!string.IsNullOrWhiteSpace(MaxSizeTextBox.Text))
+            {
+                double.TryParse(MaxSizeTextBox.Text, out maxSize);
+            }
+
+            foreach (var application in userApplications)
+            {
+                if (application.Name.ToLower().Contains(searchText) &&
+                    application.Size >= minSize && application.Size <= maxSize)
+                {
+                    ApplicationsListBox.Items.Add(application);
+                }
+            }
+        }
+
+        List<ApplicationData> userApplications;
         private void UsersListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (UsersListBox.SelectedIndex != -1)
@@ -618,7 +681,7 @@ namespace AdminInterfase
                 string selectedUserSid = usersDictionary[selectedUserName];
 
                 // Вызываем процедуру ПриложенияПользователя с передачей SID
-                List<ApplicationData> userApplications = GetApplicationsForUser(selectedUserSid);//Так1
+                userApplications = GetApplicationsForUser(selectedUserSid);//Так1
                 
                 // Заполняем второй ListBox результатами процедуры
                 FillApplicationsListBox(userApplications);
@@ -883,8 +946,25 @@ namespace AdminInterfase
                 List<VideoAdapterInfo> videoAdapterInfos = GetVideoAdapterInfos(bios, connection);
                 List<DriveInfo> driveInfos = GetDriveInfos(bios, connection);
                 List<RamInfo> ramInfos = GetRamInfos(bios, connection);
+                List<OSInfo> osInfos = GetOSInfos(bios, connection);
                 // Создаем объект ViewModel и добавляем его в список элементов ListBox
-                allComputersListBox.Items.Add(new HardwareInfoViewModel(processorInfos, videoAdapterInfos, driveInfos, ramInfos));
+                allComputersListBox.Items.Add(new HardwareInfoViewModel(processorInfos, videoAdapterInfos, driveInfos, ramInfos, osInfos));
+            }
+        }
+        public void CreateWordDocument(ListBox listBox, string filePath)
+        {
+            using (WordprocessingDocument doc = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
+            {
+                MainDocumentPart mainPart = doc.AddMainDocumentPart();
+                mainPart.Document = new Document();
+                Body body = mainPart.Document.AppendChild(new Body());
+
+                foreach (var item in listBox.Items)
+                {
+                    DocumentFormat.OpenXml.Wordprocessing.Paragraph para = body.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Paragraph());
+                    DocumentFormat.OpenXml.Wordprocessing.Run run = para.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Run());
+                    run.AppendChild(new Text(item.ToString()));
+                }
             }
         }
         private List<DriveInfo> GetDriveInfos(string biosSerialNumber, SqlConnection connection)
@@ -917,6 +997,7 @@ namespace AdminInterfase
             return driveInfos;
         }
 
+
         private List<RamInfo> GetRamInfos(string biosSerialNumber, SqlConnection connection)
         {
             List<RamInfo> ramInfos = new List<RamInfo>();
@@ -947,7 +1028,33 @@ namespace AdminInterfase
 
             return ramInfos;
         }
+        private List<OSInfo> GetOSInfos(string biosSerialNumber, SqlConnection connection)
+        {
+            List<OSInfo> OSInfos = new List<OSInfo>();
 
+            using (SqlCommand command = new SqlCommand("GetOS", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@BIOS", biosSerialNumber);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        OSInfo osInfo = new OSInfo
+                        {
+                            Name = reader["Название"] != DBNull.Value ? reader["Название"].ToString() : "",
+                            Architecture = reader["Архитектура"] != DBNull.Value ? reader["Архитектура"].ToString() : "",
+                            Version = reader["Версия"] != DBNull.Value ? reader["Версия"].ToString() : ""
+                        };
+
+                        OSInfos.Add(osInfo);
+                    }
+                }
+            }
+
+            return OSInfos;
+        }
         private void RAMDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             FillUsersUsageListBox(UsersListBox,RAMDate.SelectedDate.Value);
@@ -1024,6 +1131,11 @@ namespace AdminInterfase
             //UsersListBox.Items.Clear();
             SetUsageVisibility();
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 
     // Классы моделей для хранения информации о процессоре и видеоадаптере
@@ -1057,7 +1169,12 @@ namespace AdminInterfase
         public bool Pool { get; set; }
         public string Layout { get; set; }
     }
-
+    public class OSInfo
+    {
+        public string Name { get; set; }
+        public string Architecture { get; set; }
+        public string Version { get; set; }
+    }
     public class VideoAdapterInfo
     {
         public string Model { get; set; }
@@ -1074,13 +1191,22 @@ namespace AdminInterfase
         public ObservableCollection<KeyValuePair<string, string>> VideoAdapterInfoTexts { get; set; }
         public ObservableCollection<KeyValuePair<string, string>> DriveInfoTexts { get; set; }
         public ObservableCollection<KeyValuePair<string, string>> RamInfoTexts { get; set; }
+        public ObservableCollection<KeyValuePair<string, string>> OSInfoTexts { get; set; }
 
-        public HardwareInfoViewModel(List<ProcessorInfo> processorInfos, List<VideoAdapterInfo> videoAdapterInfos, List<DriveInfo> driveInfos, List<RamInfo> ramInfos)
+        public HardwareInfoViewModel(List<ProcessorInfo> processorInfos, List<VideoAdapterInfo> videoAdapterInfos, List<DriveInfo> driveInfos, List<RamInfo> ramInfos, List<OSInfo> osInfos)
         {
             ProcessorInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
             VideoAdapterInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
             DriveInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
             RamInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
+            OSInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
+
+            foreach(var osInfo in osInfos)
+            {
+                OSInfoTexts.Add(new KeyValuePair<string, string>("Название:", osInfo.Name));
+                OSInfoTexts.Add(new KeyValuePair<string, string>("Архитектура:", osInfo.Architecture));
+                OSInfoTexts.Add(new KeyValuePair<string, string>("Версия:", osInfo.Version));
+            }
 
             foreach (var ramInfo in ramInfos)
             {
