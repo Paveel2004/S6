@@ -594,7 +594,11 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label FontStyle="Italic" Content="Сортировка:" ></Label>
-                                <ComboBox HorizontalAlignment="Left" Width="130" Height="20"></ComboBox>
+                                <ComboBox x:Name="SortComboBox" HorizontalAlignment="Left" Width="130" Height="20" SelectionChanged="SortComboBox_SelectionChanged">
+                                    <ComboBoxItem>От А до Я</ComboBoxItem>
+                                    <ComboBoxItem>От Я до А</ComboBoxItem>
+                                </ComboBox>
+
                             </StackPanel>
                         </StackPanel>
                         <StackPanel>
@@ -608,7 +612,11 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label FontStyle="Italic" Content="Сортировка:" ></Label>
-                                <ComboBox HorizontalAlignment="Left" Width="130" Height="20"></ComboBox>
+                                <ComboBox HorizontalAlignment="Left" Width="130" Height="20" SelectionChanged="SortComboBox_SelectionChanged">
+                                    <ComboBoxItem>От большего</ComboBoxItem>
+                                    <ComboBoxItem>От меньшего</ComboBoxItem>
+                                </ComboBox>
+
                             </StackPanel>
                         </StackPanel>
 

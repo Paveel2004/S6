@@ -633,15 +633,7 @@ namespace AdminInterfase
         {
             FilterApplications();
         }
-        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ApplyFilters();
-        }
 
-        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ApplyFilters();
-        }
         private void FilterApplications()
         {
             string searchText = SearchTextBox.Text.ToLower();
@@ -660,15 +652,52 @@ namespace AdminInterfase
                 double.TryParse(MaxSizeTextBox.Text, out maxSize);
             }
 
-            foreach (var application in userApplications)
+            DateTime? startDate = StartDatePicker.SelectedDate;
+            DateTime? endDate = EndDatePicker.SelectedDate;
+
+            // Создаем новый список для отсортированных приложений
+            List<ApplicationData> sortedApplications = new List<ApplicationData>();
+
+            // Добавляем в него отсортированные приложения
+            sortedApplications.AddRange(userApplications.OrderBy(app => app.Name));
+
+            // Проверяем направление сортировки
+            if (SortComboBox.SelectedItem != null)
+            {
+                ComboBoxItem selectedItem = (ComboBoxItem)SortComboBox.SelectedItem;
+                string sortOrder = selectedItem.Content.ToString();
+
+                if (sortOrder == "От Я до А")
+                {
+                    sortedApplications.Reverse();
+                }
+            }
+
+            // Добавляем отфильтрованные и отсортированные приложения в список ListBox
+            foreach (var application in sortedApplications)
             {
                 if (application.Name.ToLower().Contains(searchText) &&
-                    application.Size >= minSize && application.Size <= maxSize)
+                    application.Size >= minSize && application.Size <= maxSize &&
+                    (!startDate.HasValue || application.InstallDate >= startDate.Value) &&
+                    (!endDate.HasValue || application.InstallDate <= endDate.Value))
                 {
                     ApplicationsListBox.Items.Add(application);
                 }
             }
         }
+
+
+        private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FilterApplications();
+        }
+
+
+        private void DatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FilterApplications();
+        }
+
 
         List<ApplicationData> userApplications;
         private void UsersListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
