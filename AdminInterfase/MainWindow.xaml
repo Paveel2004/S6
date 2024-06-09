@@ -612,7 +612,7 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label FontStyle="Italic" Content="Сортировка:" ></Label>
-                                <ComboBox HorizontalAlignment="Left" Width="130" Height="20" SelectionChanged="SortComboBox_SelectionChanged">
+                                <ComboBox x:Name="SortAppSize" HorizontalAlignment="Left" Width="130" Height="20" SelectionChanged="SortComboBox_SelectionChanged">
                                     <ComboBoxItem>От большего</ComboBoxItem>
                                     <ComboBoxItem>От меньшего</ComboBoxItem>
                                 </ComboBox>
@@ -632,15 +632,37 @@
 
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <Label FontStyle="Italic" Content="Сортировка:" ></Label>
-                                <ComboBox HorizontalAlignment="Left" Width="130" Height="20"></ComboBox>
+                                <Label  FontStyle="Italic" Content="Сортировка:" ></Label>
+                                <ComboBox  SelectionChanged="SortComboBox_SelectionChanged" Name="SortDate" HorizontalAlignment="Left" Width="130" Height="20">
+                                    <ComboBoxItem>С более ранних</ComboBoxItem>
+                                    <ComboBoxItem>С более поздних</ComboBoxItem>
+                                </ComboBox>
+                            
                             </StackPanel>
                         </StackPanel>
 
                     </StackPanel>
                 </TabItem >
                 <TabItem PreviewMouseLeftButtonDown="Online_Click" Background="#80FFFFFF"  Header="Онлайн">
+                    <StackPanel  Orientation="Horizontal">
+                        <StackPanel.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </StackPanel.Background>
+                        <StackPanel>
+                            <Button Background="AntiqueWhite" Height="50" Width="100">Обновить</Button>
+                        </StackPanel>
+                    </StackPanel>
+                 
 
+                </TabItem>
+                <TabItem  Background="#80FFFFFF"  Header="Доступ">
+                    <StackPanel  Orientation="Horizontal">
+                        <StackPanel.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </StackPanel.Background>
+                     </StackPanel>
+                    
+                    
 
                 </TabItem>
                 <TabItem PreviewMouseLeftButtonDown="Usage_Click" Background="#80FFFFFF"  Header="Использование">

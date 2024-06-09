@@ -633,6 +633,42 @@ namespace AdminInterfase
         {
             FilterApplications();
         }
+        private void ResetComboBoxSelection(ComboBox comboBox)
+        {
+            comboBox.SelectedIndex = -1;
+        }
+        private List<ApplicationData> SortBySize(List<ApplicationData> applications, string sortOrder)
+        {
+            if (sortOrder == "От большего")
+            {
+                return applications.OrderByDescending(app => app.Size).ToList();
+            }
+            else if (sortOrder == "От меньшего")
+            {
+                return applications.OrderBy(app => app.Size).ToList();
+            }
+            else
+            {
+                // Возвращаем исходный список приложений, если направление сортировки указано неверно
+                return applications;
+            }
+        }
+        private List<ApplicationData> SortByDate(List<ApplicationData> applications, string sortOrder)
+        {
+            if (sortOrder == "С более ранних")
+            {
+                return applications.OrderBy(app => app.InstallDate).ToList();
+            }
+            else if (sortOrder == "С более поздних")
+            {
+                return applications.OrderByDescending(app => app.InstallDate).ToList();
+            }
+            else
+            {
+                // Возвращаем исходный список приложений, если направление сортировки указано неверно
+                return applications;
+            }
+        }
 
         private void FilterApplications()
         {
@@ -661,7 +697,23 @@ namespace AdminInterfase
             // Добавляем в него отсортированные приложения
             sortedApplications.AddRange(userApplications.OrderBy(app => app.Name));
 
-            // Проверяем направление сортировки
+            // Применяем сортировку по размеру
+            if (SortAppSize.SelectedItem != null)
+            {
+                ComboBoxItem selectedSizeItem = (ComboBoxItem)SortAppSize.SelectedItem;
+                string sizeDirection = selectedSizeItem.Content.ToString();
+                sortedApplications = SortBySize(sortedApplications, sizeDirection);
+            }
+
+            // Применяем сортировку по дате установки
+            if (SortDate.SelectedItem != null)
+            {
+                ComboBoxItem selectedDateItem = (ComboBoxItem)SortDate.SelectedItem;
+                string dateSortOrder = selectedDateItem.Content.ToString();
+                sortedApplications = SortByDate(sortedApplications, dateSortOrder);
+            }
+
+            // Проверяем направление сортировки по имени
             if (SortComboBox.SelectedItem != null)
             {
                 ComboBoxItem selectedItem = (ComboBoxItem)SortComboBox.SelectedItem;
@@ -684,7 +736,9 @@ namespace AdminInterfase
                     ApplicationsListBox.Items.Add(application);
                 }
             }
+
         }
+
 
 
         private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
