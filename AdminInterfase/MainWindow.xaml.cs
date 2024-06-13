@@ -1,63 +1,33 @@
-﻿using System;
+﻿using AdminInterfase.MoreWindow;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.Data.SqlClient;
+using Microsoft.VisualBasic.Devices;
+using OxyPlot;
+using OxyPlot.Axes;
+using OxyPlot.Series;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using System.Threading.Channels;
-using System.Text.RegularExpressions;
-using AdminInterfase.MoreWindow;
-using Newtonsoft.Json;
-using System.Diagnostics;
-using Microsoft.Data.SqlClient;
-using System.Data;
-using System.Runtime.CompilerServices;
-using System.Management;
-using DocumentFormat.OpenXml.AdditionalCharacteristics;
-using GlobalClass;
-using Server;
-using GlobalClass.Static_data;
-using OxyPlot;
-using OxyPlot.Axes;
-using OxyPlot.Series;
-using OxyPlot.Wpf;
-using DocumentFormat.OpenXml.Vml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using System.IO;
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Controls;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AdminInterfase
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    
+
 
     public partial class MainWindow : Window
     {
@@ -68,12 +38,12 @@ namespace AdminInterfase
         private int localPort = 2222;
         private int localPort2 = 3333;
         private IPAddress localAddr = IPAddress.Parse(ManagerIP.GetIPAddress());
-        private string connectionString = "Server=WIN-5CLMGM4LR48\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
+        string connectionString = "Server=WIN-5CLMGM4LR48\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
         public PlotModel PlotModel { get; private set; }
 
         private void LoadDataAndPlot(string sid, DateTime selectedDate)
         {
-            
+
             DateTime startDate = selectedDate.Date;
             DateTime endDate = selectedDate.Date.AddDays(1).AddTicks(-1);
 
@@ -142,7 +112,7 @@ namespace AdminInterfase
         public MainWindow()
         {
             InitializeComponent();
-           
+
 
             /*            FillComboBoxFromProcedure(NameOS, "Операционная система", "ОС");
                         FillComboBoxFromProcedure(VersionOS, "Версия", "ОС");
@@ -157,9 +127,9 @@ namespace AdminInterfase
                         FillComboBoxFromProcedure(SpeedRAM, "Частота", "ОЗУ");
                         FillComboBoxFromProcedure(TypeRam, "Тип", "ОЗУ");
             */
-            LoadProcessorModels();
+            LoadFilter();
             DataContext = this;
-           
+
             Task.Run(() => StartServer(localPort, client => HandleClient(client, onlineComputersListBox), localAddr));
             //Task.Run(() => StartServer(localPort2, client => HandleDB(client), localAddr));
         }
@@ -194,7 +164,8 @@ namespace AdminInterfase
             {
                 connection.Open();
 
-                using (SqlCommand command = new SqlCommand($"SELECT * FROM {view}", connection))
+                // Используйте DISTINCT для получения уникальных значений
+                using (SqlCommand command = new SqlCommand($"SELECT DISTINCT [{col}] FROM {view}", connection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -209,6 +180,7 @@ namespace AdminInterfase
 
             return processorModels;
         }
+
         public List<string> GetFilteredSerialNumbers(string osName = null, string osArchitecture = null,
                                                string osVersion = null, string processorModel = null,
                                                string processorManufacturer = null, string processorArchitecture = null,
@@ -272,74 +244,74 @@ namespace AdminInterfase
             return serialNumbers;
         }
 
-   /*     private void CallStoredProc(string osName, string osArchitecture, string osVersion, string processorModel,
-                                 string processorManufacturer, string processorArchitecture, int? logicalProcessors,
-                                 int? cores, string videoModel, string graphicsProcessor, string videoManufacturer,
-                                 long? videoMemorySize, string ramPlacement, float? ramSize, string ramType,
-                                 int? ramSpeed, string driveType, bool? drivePool)
+        /*     private void CallStoredProc(string osName, string osArchitecture, string osVersion, string processorModel,
+                                      string processorManufacturer, string processorArchitecture, int? logicalProcessors,
+                                      int? cores, string videoModel, string graphicsProcessor, string videoManufacturer,
+                                      long? videoMemorySize, string ramPlacement, float? ramSize, string ramType,
+                                      int? ramSpeed, string driveType, bool? drivePool)
+             {
+
+
+                 using (SqlConnection connection = new SqlConnection(connectionString))
+                 {
+                     using (SqlCommand command = new SqlCommand("sp_GetFilteredDevices", connection))
+                     {
+                         command.CommandType = CommandType.StoredProcedure;
+
+                         // Добавление параметров
+                         command.Parameters.AddWithValue("@osName", osName ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@osArchitecture", osArchitecture ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@osVersion", osVersion ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@processorModel", processorModel ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@processorManufacturer", processorManufacturer ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@processorArchitecture", processorArchitecture ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@logicalProcessors", logicalProcessors ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@cores", cores ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@videoModel", videoModel ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@graphicsProcessor", graphicsProcessor ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@videoManufacturer", videoManufacturer ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@videoMemorySize", videoMemorySize ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@ramPlacement", ramPlacement ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@ramSize", ramSize ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@ramType", ramType ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@ramSpeed", ramSpeed ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@driveType", driveType ?? (object)DBNull.Value);
+                         command.Parameters.AddWithValue("@drivePool", drivePool ?? (object)DBNull.Value);
+
+                         try
+                         {
+                             connection.Open();
+                             SqlDataReader reader = command.ExecuteReader();
+
+                             // Обработка результатов запроса
+                             while (reader.Read())
+                             {
+                                 // Ваш код для обработки результатов
+                             }
+                             reader.Close();
+                         }
+                         catch (Exception ex)
+                         {
+                             // Обработка ошибок
+                         }
+                     }
+                 }
+             }*/
+
+        private void LoadFilter()
         {
-            
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                using (SqlCommand command = new SqlCommand("sp_GetFilteredDevices", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    // Добавление параметров
-                    command.Parameters.AddWithValue("@osName", osName ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@osArchitecture", osArchitecture ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@osVersion", osVersion ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@processorModel", processorModel ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@processorManufacturer", processorManufacturer ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@processorArchitecture", processorArchitecture ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@logicalProcessors", logicalProcessors ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@cores", cores ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@videoModel", videoModel ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@graphicsProcessor", graphicsProcessor ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@videoManufacturer", videoManufacturer ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@videoMemorySize", videoMemorySize ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@ramPlacement", ramPlacement ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@ramSize", ramSize ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@ramType", ramType ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@ramSpeed", ramSpeed ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@driveType", driveType ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@drivePool", drivePool ?? (object)DBNull.Value);
-
-                    try
-                    {
-                        connection.Open();
-                        SqlDataReader reader = command.ExecuteReader();
-
-                        // Обработка результатов запроса
-                        while (reader.Read())
-                        {
-                            // Ваш код для обработки результатов
-                        }
-                        reader.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        // Обработка ошибок
-                    }
-                }
-            }
-        }*/
-
-        private void LoadProcessorModels()
-        {        
             ModelCPU.ItemsSource = GetFilter("vw_ProcessorModels", "Модель");
-            ArchitectureCPU.ItemsSource = GetFilter("vw_ProcessorArchitectures","Архитектура");
+            ArchitectureCPU.ItemsSource = GetFilter("vw_ProcessorArchitectures", "Архитектура");
             CoreCPU.ItemsSource = GetFilter("vw_ProcessorCoreCounts", "Количество ядер");
             GPUmanufacturers.ItemsSource = GetFilter("vw_ProcessorManufacturers", "Производитель");
             LP.ItemsSource = GetFilter("vw_ProcessorLogicalProcessorCounts", "Количество логичских процессов");
 
-         
+
             GPU.ItemsSource = GetFilter("vw_VideoAdapterGPUs", "Графический процессор");
             memoryVideo.ItemsSource = GetFilter("vw_VideoAdapterMemorySizes", "Объём памяти");
             videoManufactur.ItemsSource = GetFilter("vw_VideoAdapterManufacturers", "Производитель");
             ModelVideo.ItemsSource = GetFilter("vw_VideoAdapterModels", "Модель");
-         
+
             NameOS.ItemsSource = GetFilter("vw_OSNames", "Название");
 
 
@@ -356,10 +328,16 @@ namespace AdminInterfase
             DiskType.ItemsSource = GetFilter("vw_DiskTypes", "Тип");
             Pool.ItemsSource = GetFilter("vw_DiskPools", "Пул");
         }
-      
+
+        private void LoadSessionFilterParams()
+        {
+            SessionConputerName.ItemsSource = GetFilter("AllUsersWork", "Имя компьютера");
+            SessionUser.ItemsSource = GetFilter("AllUsersWork", "Пользователь");
+            SessionEvent.ItemsSource = GetFilter("AllUsersWork", "Событие");
+            SessionOS.ItemsSource = GetFilter("AllUsersWork", "ОС");
+        }
 
 
-     
         private void Details_Click(object sender, RoutedEventArgs e)
         {
             ListBoxItemButtonHandler.Show_Details(sender);
@@ -377,37 +355,37 @@ namespace AdminInterfase
             var slideUpStoryboard = Resources["SlideUp"] as Storyboard;
             slideUpStoryboard?.Begin();
         }
-/*      public void FillComboBoxFromProcedure(ComboBox comboBox, string characteristic, string type)
-        {
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+        /*      public void FillComboBoxFromProcedure(ComboBox comboBox, string characteristic, string type)
                 {
-                    connection.Open();
-                    SqlCommand command = new SqlCommand("ПараметрыДляФильтра", connection);
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@Характеристика", characteristic);
-                    command.Parameters.AddWithValue("@ТипХарактеристики", type);
-
-                    SqlDataAdapter adapter = new SqlDataAdapter(command);
-                    DataTable dataTable = new DataTable();
-                    adapter.Fill(dataTable);
-
-                    // Очищаем комбобокс перед добавлением новых элементов
-                    comboBox.Items.Clear();
-
-                    // Добавляем значения из столбца "Значение" в комбобокс
-                    foreach (DataRow row in dataTable.Rows)
+                    try
                     {
-                        comboBox.Items.Add(row["Значение"].ToString());
+                        using (SqlConnection connection = new SqlConnection(connectionString))
+                        {
+                            connection.Open();
+                            SqlCommand command = new SqlCommand("ПараметрыДляФильтра", connection);
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.AddWithValue("@Характеристика", characteristic);
+                            command.Parameters.AddWithValue("@ТипХарактеристики", type);
+
+                            SqlDataAdapter adapter = new SqlDataAdapter(command);
+                            DataTable dataTable = new DataTable();
+                            adapter.Fill(dataTable);
+
+                            // Очищаем комбобокс перед добавлением новых элементов
+                            comboBox.Items.Clear();
+
+                            // Добавляем значения из столбца "Значение" в комбобокс
+                            foreach (DataRow row in dataTable.Rows)
+                            {
+                                comboBox.Items.Add(row["Значение"].ToString());
+                            }
+                        }
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка: " + ex.Message);
-            }
-        }*/
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Ошибка: " + ex.Message);
+                    }
+                }*/
 
         private void App_Click(object sender, RoutedEventArgs e)
         {
@@ -421,46 +399,80 @@ namespace AdminInterfase
         {
             onlineComputersListBox.Visibility = Visibility.Hidden;
             allComputersListBox.Visibility = Visibility.Visible;
-            Apps.Visibility = Visibility.Hidden;
+           
             Usage.Visibility = Visibility.Hidden;
+            UsersListBox.Visibility = Visibility.Hidden;
+            OSListBox.Visibility = Visibility.Hidden;
+            ApplicationsListBox.Visibility = Visibility.Hidden;
+            SiteListBox.Visibility = Visibility.Hidden;
+
+
         }
         private void SetOnlineVisibility()
         {
+            HideAll();
             onlineComputersListBox.Visibility = Visibility.Visible;
+ 
+
+        }
+        private void HideAll()
+        {
             allComputersListBox.Visibility = Visibility.Hidden;
-            Apps.Visibility = Visibility.Hidden;
+            UsersListBox.Visibility = Visibility.Hidden;
+            OSListBox.Visibility = Visibility.Hidden;
+            ApplicationsListBox.Visibility = Visibility.Hidden;
             Usage.Visibility = Visibility.Hidden;
+            SiteListBox.Visibility = Visibility.Hidden;
+            onlineComputersListBox.Visibility = Visibility.Hidden;
+
+            allComputersListBox.Visibility = Visibility.Hidden;
+
+            onlineComputersListBox.Visibility = Visibility.Hidden;
+            allComputersListBox.Visibility = Visibility.Hidden;
+            OSListBox.Visibility = Visibility.Hidden;
+            ApplicationsListBox.Visibility = Visibility.Hidden;
+            SiteListBox.Visibility = Visibility.Hidden;
+            Usage.Visibility = Visibility.Hidden;
+            SiteListBox.Visibility = Visibility.Hidden;
+            onlineComputersListBox.Visibility = Visibility.Hidden;
+            allComputersListBox.Visibility = Visibility.Hidden;
+            OSListBox.Visibility = Visibility.Hidden;
         }
         private void SetUsageVisibility()
         {
-            onlineComputersListBox.Visibility = Visibility.Hidden;        
-            Apps.Visibility = Visibility.Hidden;         
-            allComputersListBox.Visibility = Visibility.Hidden;
-            Apps.Visibility = Visibility.Hidden;
-            onlineComputersListBox.Visibility = Visibility.Hidden;
-            allComputersListBox.Visibility = Visibility.Hidden;
+            HideAll();
             Usage.Visibility = Visibility.Visible;
-            Apps.Visibility = Visibility.Visible;//////////
+            UsersListBox.Visibility = Visibility.Visible;
+
+
+        }
+        private void SiteVisibility()
+        {
+            HideAll();
+            SiteListBox.Visibility = Visibility.Visible;
+            OSListBox.Visibility = Visibility.Visible;
+            
         }
         private void AppsVisibility()
         {
-            onlineComputersListBox.Visibility = Visibility.Hidden;
-            allComputersListBox.Visibility = Visibility.Hidden;
-            Apps.Visibility = Visibility.Visible;
-            Usage.Visibility = Visibility.Hidden;
+            HideAll();
+            UsersListBox.Visibility = Visibility.Visible;
+
+            ApplicationsListBox.Visibility = Visibility.Visible;
+
         }
         public void Apps_Click(object sender, RoutedEventArgs e)
         {
             AppsVisibility();
             FillUsersAppListBox(UsersListBox);
         }
-        
+
         public void Computers_Click(object sender, RoutedEventArgs e)
         {
-          //  allComputersListBox.Items.Clear();
+            //  allComputersListBox.Items.Clear();
             //GetBuild();
             SetComputersVisibility();
-       
+
             allComputersListBox.Items.Clear();
             LoadAllComputerInfo();
             ////////////////
@@ -592,6 +604,7 @@ namespace AdminInterfase
             ListBoxItemButtonHandler.OpenControlWindow(sender);
         }
         private Dictionary<string, string> usersDictionary = new Dictionary<string, string>();
+        private Dictionary<string, string> osDictionary = new Dictionary<string, string>();
         private List<ApplicationData> GetApplicationsForUser(string userSid)
         {//Так2
             List<ApplicationData> userApplications = new List<ApplicationData>();
@@ -752,7 +765,7 @@ namespace AdminInterfase
             FilterApplications();
         }
 
-
+        List<string> BlockSite;
         List<ApplicationData> userApplications;
         private void UsersListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -765,15 +778,62 @@ namespace AdminInterfase
 
                 // Вызываем процедуру ПриложенияПользователя с передачей SID
                 userApplications = GetApplicationsForUser(selectedUserSid);//Так1
-                
+
                 // Заполняем второй ListBox результатами процедуры
                 FillApplicationsListBox(userApplications);
                 try
                 {
                     LoadDataAndPlot(selectedUserSid, RAMDate.SelectedDate.Value);
                 }
-                catch {}
-         
+                catch { }
+
+
+
+            }
+        }
+        private List<string> GetBlockSiteFor(string userSid)
+        {//Так2
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                BlockSite = new List<string>();
+                string query = "EXEC GetBlockSite @OS";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@OS", userSid);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            BlockSite.Add(reader.GetString(reader.GetOrdinal("URL")));
+                           
+
+                        }
+                    }
+                }
+            }
+
+            return BlockSite;
+        }
+        private void OSListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (OSListBox.SelectedIndex != -1)
+            {
+                string selectedUserName = OSListBox.SelectedItem.ToString();
+
+                // Получаем SID выбранного пользователя из словаря
+                string selectedUserSid = osDictionary[selectedUserName];
+
+                // Вызываем процедуру ПриложенияПользователя с передачей SID
+                BlockSite = GetBlockSiteFor(selectedUserSid);//Так1
+
+                // Заполняем второй ListBox результатами процедуры
+                FillBlockSiteListBox(BlockSite);
+
+
 
 
             }
@@ -790,7 +850,7 @@ namespace AdminInterfase
                 // Вызываем процедуру ПриложенияПользователя с передачей SID                
 
                 // Заполняем второй ListBox результатами процедуры
-            
+
 
             }
         }
@@ -802,6 +862,15 @@ namespace AdminInterfase
             foreach (var application in applications)
             {
                 ApplicationsListBox.Items.Add(application);
+            }
+        }
+        private void FillBlockSiteListBox(List<string> urls)
+        {
+            SiteListBox.Items.Clear();
+
+            foreach (var url in urls)
+            {
+                SiteListBox.Items.Add(url);
             }
         }
 
@@ -832,35 +901,63 @@ namespace AdminInterfase
                 }
             }
         }
-        public void FillUsersUsageListBox(ListBox listBox,DateTime Date)
-        {           
-            
-                listBox.Items.Clear();
-                usersDictionary.Clear();
+        public void FillComputerNameControlListBox(ListBox listBox)
+        {
+            listBox.Items.Clear();
+            osDictionary.Clear();
 
-                using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM ОсСЗаблокированнымиСайтами";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    connection.Open();
-                    string query = $"EXEC UsersUsageRamDateList @Date='{Date}'";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                string name = reader.GetString(0);
-                                string sid = reader.GetString(1);
+                            string name = reader.GetString(0);
+                            string serialNumber = reader.GetString(1);
 
-                                listBox.Items.Add(name);
-                                usersDictionary[name] = sid;
-                            }
+                            listBox.Items.Add(name);
+                            osDictionary[name] = serialNumber;
                         }
                     }
                 }
-            
+            }
+        }
+        public void FillUsersUsageListBox(ListBox listBox, DateTime Date)
+        {
+
+            listBox.Items.Clear();
+            usersDictionary.Clear();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = $"EXEC UsersUsageRamDateList @Date='{Date}'";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string name = reader.GetString(0);
+                            string sid = reader.GetString(1);
+
+                            listBox.Items.Add(name);
+                            usersDictionary[name] = sid;
+                        }
+                    }
+                }
+            }
+
 
         }
+
 
 
         static async void StartServer(int port, Action<TcpClient> handleClient, IPAddress localAddr)
@@ -899,9 +996,9 @@ namespace AdminInterfase
                 {
                     string message = Encoding.UTF8.GetString(data, 0, bytesRead);
                     byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
-                    
+
                     // Обновляем listBox в UI потоке
-                   Application.Current.Dispatcher.Invoke(() => listBox.Items.Add(new ListBoxInfo { Text = TextHelper.DictionaryToText(message), Buttons = new ObservableCollection<string> { "Кнопка 1", "Кнопка 2", "Кнопка 3" } }));
+                    Application.Current.Dispatcher.Invoke(() => listBox.Items.Add(new ListBoxInfo { Text = TextHelper.DictionaryToText(message), Buttons = new ObservableCollection<string> { "Кнопка 1", "Кнопка 2", "Кнопка 3" } }));
 
                     stream.Write(response, 0, response.Length);
                 }
@@ -915,41 +1012,41 @@ namespace AdminInterfase
                 tcpClient.Close();
             }
         }
-      /*  static void HandleDB(TcpClient tcpClient)
-        {            
-            try
-            {
-                DataBaseHelper.connectionString = connectionString;
-                using NetworkStream stream = tcpClient.GetStream();
-                byte[] data = new byte[999999*100];
-                int bytesRead;
-                while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
-                {
-                    string message = Encoding.UTF8.GetString(data, 0, bytesRead);
-                    byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
+        /*  static void HandleDB(TcpClient tcpClient)
+          {            
+              try
+              {
+                  DataBaseHelper.connectionString = connectionString;
+                  using NetworkStream stream = tcpClient.GetStream();
+                  byte[] data = new byte[999999*100];
+                  int bytesRead;
+                  while ((bytesRead = stream.Read(data, 0, data.Length)) != 0)
+                  {
+                      string message = Encoding.UTF8.GetString(data, 0, bytesRead);
+                      byte[] response = Encoding.UTF8.GetBytes("Сообщение получено");
 
-                    DeviceCharacteristics sborka = JsonConvert.DeserializeObject<DeviceCharacteristics>(message);
-                    DataBaseHelper.Query($"\tDELETE FROM Устройтво WHERE [Серийный номер BIOS] = '{sborka.SerialNumberBIOS}'");
-                    DataBaseHelper.Query($"INSERT INTO Устройтво VALUES ('{sborka.SerialNumberBIOS}','{sborka.ComputerName}')");
-                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'Диск', @Характеристика = 'Объём', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.TotalSpaceDisk}'");
-                    DataBaseHelper.Query($"EXECUTE ДобавитьПроцессор @BIOS = '{sborka.SerialNumberBIOS}', @Модель = '{sborka.ProcessorModel}', @Архитектура = '{sborka.ProcessorArchitecture}', @КоличествоЯдер = '{sborka.ProcessorCores}' ");
-                    DataBaseHelper.Query($"EXECUTE ДобавитьОЗУ @BIOS = '{sborka.SerialNumberBIOS}', @Объём = '{sborka.RAMSize}', @Частота = '{sborka.RAMFrequency}', @Тип = '{sborka.RAMType}'");
-                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Операционная система', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OS}'");
-                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Версия', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OSVersion}'");
-                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Разрядность', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OSArchitecture}'");
-                    DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'Графический процессор', @Характеристика = 'Модель', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение = '{sborka.GPUModel}'");
-                    stream.Write(response, 0, response.Length);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                tcpClient.Close();
-            }
-        }*/
+                      DeviceCharacteristics sborka = JsonConvert.DeserializeObject<DeviceCharacteristics>(message);
+                      DataBaseHelper.Query($"\tDELETE FROM Устройтво WHERE [Серийный номер BIOS] = '{sborka.SerialNumberBIOS}'");
+                      DataBaseHelper.Query($"INSERT INTO Устройтво VALUES ('{sborka.SerialNumberBIOS}','{sborka.ComputerName}')");
+                      DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'Диск', @Характеристика = 'Объём', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.TotalSpaceDisk}'");
+                      DataBaseHelper.Query($"EXECUTE ДобавитьПроцессор @BIOS = '{sborka.SerialNumberBIOS}', @Модель = '{sborka.ProcessorModel}', @Архитектура = '{sborka.ProcessorArchitecture}', @КоличествоЯдер = '{sborka.ProcessorCores}' ");
+                      DataBaseHelper.Query($"EXECUTE ДобавитьОЗУ @BIOS = '{sborka.SerialNumberBIOS}', @Объём = '{sborka.RAMSize}', @Частота = '{sborka.RAMFrequency}', @Тип = '{sborka.RAMType}'");
+                      DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Операционная система', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OS}'");
+                      DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Версия', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OSVersion}'");
+                      DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'ОС', @Характеристика = 'Разрядность', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение =  '{sborka.OSArchitecture}'");
+                      DataBaseHelper.Query($"EXECUTE ДобавитьВСборку @ТипХарактеристики = 'Графический процессор', @Характеристика = 'Модель', @СерийныйНомерBIOS = '{sborka.SerialNumberBIOS}', @Значение = '{sborka.GPUModel}'");
+                      stream.Write(response, 0, response.Length);
+                  }
+              }
+              catch (Exception ex)
+              {
+                  Console.WriteLine(ex.Message);
+              }
+              finally
+              {
+                  tcpClient.Close();
+              }
+          }*/
         static void getApp()
         {
 
@@ -959,53 +1056,53 @@ namespace AdminInterfase
             onlineComputersListBox.Items.Clear();
             MessageSender.BroadcastMessage("getAll", BroadcastAddress, BroadcastPort);
 
-            
-        }
-/*        public void GetBuild()
-        {
-     
-            MessageSender.BroadcastMessage("getBuild", BroadcastAddress, BroadcastPort);
 
-        }*/
+        }
+        /*        public void GetBuild()
+                {
+
+                    MessageSender.BroadcastMessage("getBuild", BroadcastAddress, BroadcastPort);
+
+                }*/
         private void Online_Click(object sender, RoutedEventArgs e)
         {
             SetOnlineVisibility();
             GetAll();
         }
-        
+
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = (MenuItem)((Button)sender).DataContext;
             menuItem.ClickHandler?.Invoke(sender, e);
         }
-       
+
         private void Menu_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
-              /*  ToggleMenuVisibility(onlineComputersListBox);
-                ToggleMenuVisibility(allComputersListBox);*/
+                /*  ToggleMenuVisibility(onlineComputersListBox);
+                  ToggleMenuVisibility(allComputersListBox);*/
             }
         }
-       /* private void ToggleMenuVisibility(ListBox listBox)
-        {
-            DoubleAnimation animation = new DoubleAnimation();
-            if (Menu.Margin.Left >= 0) // Если Menu видимо, то анимируем его влево (скрываем)
-            {
-                animation.To = -Menu.ActualWidth;
-                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(40, 40, 30, 30), TimeSpan.FromSeconds(0.3)));
-          
-            }
-            else // Иначе анимируем вправо (показываем)
-            {
-                animation.To = 0;
-                listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(220, 40, 30, 30), TimeSpan.FromSeconds(0.3)));
-            }
-            animation.Duration = TimeSpan.FromSeconds(0.3);
-            Menu.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(Menu.Margin, new Thickness(animation.To.Value, 0, 0, 0), animation.Duration));
-            // Используем сравнение с 0, чтобы понять, видимо ли меню
-            isMenuVisible = Math.Abs(Menu.Margin.Left) < double.Epsilon;
-        }*/
+        /* private void ToggleMenuVisibility(ListBox listBox)
+         {
+             DoubleAnimation animation = new DoubleAnimation();
+             if (Menu.Margin.Left >= 0) // Если Menu видимо, то анимируем его влево (скрываем)
+             {
+                 animation.To = -Menu.ActualWidth;
+                 listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(40, 40, 30, 30), TimeSpan.FromSeconds(0.3)));
+
+             }
+             else // Иначе анимируем вправо (показываем)
+             {
+                 animation.To = 0;
+                 listBox.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(listBox.Margin, new Thickness(220, 40, 30, 30), TimeSpan.FromSeconds(0.3)));
+             }
+             animation.Duration = TimeSpan.FromSeconds(0.3);
+             Menu.BeginAnimation(ListBox.MarginProperty, new ThicknessAnimation(Menu.Margin, new Thickness(animation.To.Value, 0, 0, 0), animation.Duration));
+             // Используем сравнение с 0, чтобы понять, видимо ли меню
+             isMenuVisible = Math.Abs(Menu.Margin.Left) < double.Epsilon;
+         }*/
         private void App_LocalDB(object sender, RoutedEventArgs e)
         {
             AppWindow app = new AppWindow();
@@ -1019,6 +1116,7 @@ namespace AdminInterfase
             //var searchText = textBox.Text.ToLower();
             //listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
         }
+
         private void LoadComputerInfo(string bios)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -1081,6 +1179,76 @@ namespace AdminInterfase
         }
 
 
+
+
+        private ObservableCollection<SessionInfo> Session_Filter()
+        {
+            ObservableCollection<SessionInfo> sessionInfos = new ObservableCollection<SessionInfo>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    using (SqlCommand command = new SqlCommand("SessionFilter", connection))
+                    {
+                        connection.Open();
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("@ComputerName", string.IsNullOrEmpty(SessionConputerName.Text) ? DBNull.Value : (object)SessionConputerName.Text);
+                        command.Parameters.AddWithValue("@UserName", string.IsNullOrEmpty(SessionUser.Text) ? DBNull.Value : (object)SessionUser.Text);
+                        command.Parameters.AddWithValue("@Event", string.IsNullOrEmpty(SessionEvent.Text) ? DBNull.Value : (object)SessionEvent.Text);
+                        command.Parameters.AddWithValue("@OS", string.IsNullOrEmpty(SessionOS.Text) ? DBNull.Value : (object)SessionOS.Text);
+                        command.Parameters.AddWithValue("@StartData", string.IsNullOrEmpty(SessionStartData.Text) ? DBNull.Value : (object)SessionStartData.Text);
+                        command.Parameters.AddWithValue("@EndData", string.IsNullOrEmpty(SessionEndData.Text) ? DBNull.Value : (object)SessionEndData.Text);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                SessionInfo sessionInfo = new SessionInfo
+                                {
+                                    computerName = reader["Имя компьютера"] != DBNull.Value ? reader["Имя компьютера"].ToString() : "",
+                                    user = reader["Пользователь"] != DBNull.Value ? reader["Пользователь"].ToString() : "",
+                                    OSEevent = reader["Событие"] != DBNull.Value ? reader["Событие"].ToString() : "",
+                                    date = reader["Дата/Время"] != DBNull.Value ? reader["Дата/Время"].ToString() : "",
+                                    os = reader["ОС"] != DBNull.Value ? reader["ОС"].ToString() : ""
+                                };
+
+                                sessionInfos.Add(sessionInfo);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("An error occurred: " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            return sessionInfos;
+        }
+
+
+        private void SessionFilter_Clisk(object sender, RoutedEventArgs e)
+        {
+            var sessionInfos = Session_Filter();
+            SessionListBox.ItemsSource = sessionInfos;
+            LoadSessionFilterParams();
+        }
+
+        public class SessionInfo
+        {
+            public string computerName { get; set; }
+            public string user { get; set; }
+            public string OSEevent { get; set; }
+            public string date { get; set; }
+            public string os { get; set; }
+
+        }
+       
         private List<RamInfo> GetRamInfos(string biosSerialNumber, SqlConnection connection)
         {
             List<RamInfo> ramInfos = new List<RamInfo>();
@@ -1124,11 +1292,17 @@ namespace AdminInterfase
                 {
                     while (reader.Read())
                     {
+                        // Получаем информацию о дисках в формате "ИмяДиска - Xмб из Yмб"
+                        string systemDrives = reader["Системные диски"] != DBNull.Value ? reader["Системные диски"].ToString() : "";
+
                         OSInfo osInfo = new OSInfo
                         {
+                            ComputerName = reader["Имя компьютера"] != DBNull.Value ? reader["Имя компьютера"].ToString() : "",
                             Name = reader["Название"] != DBNull.Value ? reader["Название"].ToString() : "",
                             Architecture = reader["Архитектура"] != DBNull.Value ? reader["Архитектура"].ToString() : "",
-                            Version = reader["Версия"] != DBNull.Value ? reader["Версия"].ToString() : ""
+                            Version = reader["Версия"] != DBNull.Value ? reader["Версия"].ToString() : "",
+                            Users = reader["Пользователи"] != DBNull.Value ? reader["Пользователи"].ToString() : "",
+                            SystemDrives = systemDrives // Заполняем новое поле
                         };
 
                         OSInfos.Add(osInfo);
@@ -1138,9 +1312,11 @@ namespace AdminInterfase
 
             return OSInfos;
         }
+
+
         private void RAMDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            FillUsersUsageListBox(UsersListBox,RAMDate.SelectedDate.Value);
+            FillUsersUsageListBox(UsersListBox, RAMDate.SelectedDate.Value);
         }
 
         private List<ProcessorInfo> GetProcessorInfos(string biosSerialNumber, SqlConnection connection)
@@ -1202,22 +1378,25 @@ namespace AdminInterfase
 
             return videoAdapterInfos;
         }
-        
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-          
 
-        }
+    
+
 
         private void Usage_Click(object sender, MouseButtonEventArgs e)
-        {           
+        {
             //UsersListBox.Items.Clear();
             SetUsageVisibility();
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Drop_Click(object sender, RoutedEventArgs e)
         {
             
+        }
+
+        private void Control_Click(object sender, MouseButtonEventArgs e)
+        {
+            SiteVisibility();
+            FillComputerNameControlListBox(OSListBox);
         }
     }
 
@@ -1257,7 +1436,12 @@ namespace AdminInterfase
         public string Name { get; set; }
         public string Architecture { get; set; }
         public string Version { get; set; }
+        public string Users { get; set; }
+        public string SystemDrives { get; set; }  // Новое поле для хранения информации о системных дисках
+        public string ComputerName { get; set; }
     }
+
+
     public class VideoAdapterInfo
     {
         public string Model { get; set; }
@@ -1284,11 +1468,14 @@ namespace AdminInterfase
             RamInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
             OSInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
 
-            foreach(var osInfo in osInfos)
+            foreach (var osInfo in osInfos)
             {
                 OSInfoTexts.Add(new KeyValuePair<string, string>("Название:", osInfo.Name));
                 OSInfoTexts.Add(new KeyValuePair<string, string>("Архитектура:", osInfo.Architecture));
                 OSInfoTexts.Add(new KeyValuePair<string, string>("Версия:", osInfo.Version));
+                OSInfoTexts.Add(new KeyValuePair<string, string>("Пользователи:", osInfo.Users));
+                OSInfoTexts.Add(new KeyValuePair<string, string>("Системные диски:", osInfo.SystemDrives));  // Новая строка для системных дисков
+                OSInfoTexts.Add(new KeyValuePair<string, string>("Имя компьютера:", osInfo.ComputerName));
             }
 
             foreach (var ramInfo in ramInfos)
@@ -1306,6 +1493,8 @@ namespace AdminInterfase
             foreach (var driveInfo in driveInfos)
             {
                 DriveInfoTexts.Add(new KeyValuePair<string, string>("Модель:", driveInfo.Model));
+                DriveInfoTexts.Add(new KeyValuePair<string, string>("Объём:", (driveInfo.Size / (1024.0 * 1024 * 1024)).ToString("N2") + " ГБ"));
+
                 DriveInfoTexts.Add(new KeyValuePair<string, string>("Пул:", driveInfo.Pool ? "Да" : "Нет"));
                 DriveInfoTexts.Add(new KeyValuePair<string, string>("Тип:", driveInfo.Type));
                 DriveInfoTexts.Add(new KeyValuePair<string, string>("Разметка:", driveInfo.Layout));

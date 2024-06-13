@@ -4,13 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AdminInterfase"
+        
          xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         KeyDown="Menu_KeyDown" Icon="Image\icons8-компьютер-96.png"
         Title="MainWindow" Height="450" Width="950">
-
+ 
     <Window.Resources>
-        
+        <local:EventColorConverter x:Key="EventColorConverter" />
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="AliceBlue"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
         <!-- Анимация для выдвижного меню -->
         <Storyboard x:Key="SlideDown">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MenuPanel" Storyboard.TargetProperty="(Canvas.Top)">
@@ -179,7 +186,7 @@
 -->
 
 
-                <Grid Name="Apps" Visibility="Visible" Margin="30,30,30,30">
+                <Grid Visibility="Visible" Margin="30,30,30,30">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="200"/>
                         <!-- Ширина UsersListBox -->
@@ -188,12 +195,24 @@
                         <ColumnDefinition Width="*"/>
                         <!-- Остальное место для ApplicationsListBox -->
                     </Grid.ColumnDefinitions>
+                    <ListBox x:Name="SiteListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" HorizontalAlignment="Stretch" Visibility="Hidden" Grid.Column="2">
+                        <ListBox.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </ListBox.Background>
 
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                    <TextBlock Text="{Binding}" Foreground="Black" />
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                     <ListBox SelectionChanged="UsersListBox_SelectionChanged"
         x:Name="UsersListBox" 
         Foreground="Black" 
         ScrollViewer.CanContentScroll="False" 
-        Visibility="Visible">
+        Visibility="Hidden">
                         <ListBox.Background>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                         </ListBox.Background>
@@ -205,7 +224,29 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Image Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Image\green-user-icon.png" Height="30" Margin="5"/>
+                                    <Image Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Image\user.png" Height="30" Margin="5"/>
+                                    <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <ListBox Visibility="Hidden"  SelectionChanged="OSListBox_SelectionChanged"
+                                x:Name="OSListBox" 
+                                Foreground="Black" 
+                                ScrollViewer.CanContentScroll="False" 
+                                >
+                        <ListBox.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </ListBox.Background>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="C:\Users\ASUS\source\repos\ClientS6\AdminInterfase\Image\WindowsIco.png" Height="30" Margin="5"/>
                                     <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="5,0,0,0"/>
                                 </StackPanel>
                             </DataTemplate>
@@ -215,7 +256,7 @@
                     <!-- Пустое пространство для отступа -->
                     <Grid Grid.Column="1"/>
 
-                    <ListBox x:Name="ApplicationsListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" HorizontalAlignment="Stretch" Visibility="Visible" Grid.Column="2">
+                    <ListBox x:Name="ApplicationsListBox" Foreground="Black" ScrollViewer.CanContentScroll="False" HorizontalAlignment="Stretch" Visibility="Hidden" Grid.Column="2">
                         <ListBox.Background>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                         </ListBox.Background>
@@ -234,13 +275,47 @@
 
                 </Grid>
 
+                <ListBox x:Name="SessionListBox" Visibility="Hidden" Margin="30,30,30,30" Foreground="Black" ScrollViewer.CanContentScroll="False" HorizontalAlignment="Stretch" Grid.Column="2">
+                    <ListBox.Background>
+                        <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                    </ListBox.Background>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Имя компьютера: " Foreground="Black" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding computerName}" Foreground="Black" Margin="5,0,15,0"/>
+
+
+                                    <TextBlock Text="ОС: " Foreground="Black" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding os}" Foreground="Black" Margin="5,0,15,0"/>
+
+                                    <TextBlock Text="Пользователь: " Foreground="Black" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding user}" Foreground="Black" Margin="5,0,15,0"/>
+
+                                    <TextBlock Text="Событие: " Foreground="Black"  FontWeight="Bold" />
+                                    <TextBlock FontWeight="Bold" Text="{Binding OSEevent}" Foreground="{Binding OSEevent, Converter={StaticResource EventColorConverter}}"   Margin="5,0,15,0"/>
+
+                                    <TextBlock Text="Дата/Время: " Foreground="Black" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding date}" Foreground="Black" Margin="5,0,15,0"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+
+
+                </ListBox>
+
+
+
                 <ListBox x:Name="allComputersListBox" Foreground="Black" Visibility="Hidden" ScrollViewer.CanContentScroll="False"  Margin="30,30,30,30">
                     <ListBox.Background>
                         <SolidColorBrush Color="White" Opacity="0.8"/>
                     </ListBox.Background>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            
+
                             <StackPanel Orientation="Vertical">
                                 <!-- Имя компьютера -->
                                 <TextBlock FontStyle="Italic" FontWeight="Bold" FontSize="16" Text="{Binding ComputerName}" Margin="0,0,0,10"/>
@@ -257,58 +332,58 @@
                                     <!-- Текстовые данные - Процессор и ОЗУ -->
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,10,0">
                                         <StackPanel>
-                                        <StackPanel Orientation="Horizontal" Margin="5">
-                                            <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
-                                                <StackPanel Orientation="Vertical" Margin="0,0,10,0">
-                                                    <!-- Добавлен отступ справа -->
-                                                <TextBlock FontWeight="Bold" FontSize="15" Text="Процессоры:" Margin="5"/>
-                                                <ItemsControl ItemsSource="{Binding ProcessorInfoTexts}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal" >
-                                                                <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
-                                                                <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                            </Border>
-                                            <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
-                                                <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
-                                                <TextBlock FontWeight="Bold" FontSize="15" Text="Видеоадаптеры:" Margin="5"/>
-                                                <ItemsControl ItemsSource="{Binding VideoAdapterInfoTexts}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
-                                                                <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
+                                            <StackPanel Orientation="Horizontal" Margin="5">
+                                                <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                                    <StackPanel Orientation="Vertical" Margin="0,0,10,0">
+                                                        <!-- Добавлен отступ справа -->
+                                                        <TextBlock FontWeight="Bold" FontSize="15" Text="Процессоры:" Margin="5"/>
+                                                        <ItemsControl ItemsSource="{Binding ProcessorInfoTexts}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" >
+                                                                        <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
+                                                                        <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </StackPanel>
+                                                </Border>
+                                                <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                                    <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
+                                                        <TextBlock FontWeight="Bold" FontSize="15" Text="Видеоадаптеры:" Margin="5"/>
+                                                        <ItemsControl ItemsSource="{Binding VideoAdapterInfoTexts}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
+                                                                        <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
 
+                                                    </StackPanel>
+                                                </Border>
+                                                <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                                    <StackPanel  Orientation="Vertical"  Margin="0,0,10,0">
+                                                        <TextBlock FontWeight="Bold" FontSize="15" Text="Оперативная память:" Margin="5"/>
+                                                        <ItemsControl ItemsSource="{Binding RamInfoTexts}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
+                                                                        <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </StackPanel>
+                                                </Border>
                                             </StackPanel>
-                                            </Border>
                                             <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
                                                 <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
-                                                <TextBlock FontWeight="Bold" FontSize="15" Text="Оперативная память:" Margin="5"/>
-                                                <ItemsControl ItemsSource="{Binding RamInfoTexts}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock FontWeight="Bold" Text="{Binding Key}" Margin="2"/>
-                                                                <TextBlock FontStyle="Italic" Text="{Binding Value}" Margin="2"/>
-                                                            </StackPanel>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                            </Border>
-                                            </StackPanel>
-                                            <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
-                                                <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
-                                                    <TextBlock FontWeight="Bold" FontSize="15" Text="ОС:" Margin="5"/>
+                                                    <TextBlock FontWeight="Bold" FontSize="15" Text="Операционные системы:" Margin="5"/>
                                                     <ItemsControl ItemsSource="{Binding OSInfoTexts}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
@@ -321,8 +396,8 @@
                                                     </ItemsControl>
                                                 </StackPanel>
                                             </Border>
-                                            
-                                          
+
+
                                         </StackPanel>
                                         <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
                                             <StackPanel Orientation="Vertical"  Margin="0,0,10,0">
@@ -408,7 +483,7 @@
 
 
                 </StackPanel>
-                <Grid Name="Usage"  Margin="260,30,30,30">
+                <Grid Visibility="Visible" Name="Usage"   Margin="260,30,30,30">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
@@ -419,21 +494,8 @@
                     </Grid.ColumnDefinitions>
 
                     <oxy:PlotView Name="RamUsage" Grid.Row="0" Grid.Column="0" Model="{Binding PlotModel1}" />
-                    <oxy:PlotView Name="CPUtemp" Grid.Row="0" Grid.Column="1" Model="{Binding PlotModel2}" />
                     <oxy:PlotView Name="LPCPU" Grid.Row="1" Grid.Column="0" Model="{Binding PlotModel3}" />
-                    <oxy:PlotView Name="CpmputerUsage" Grid.Row="1" Grid.Column="1" Model="{Binding PlotModel4}" />
                 </Grid>
-
-
-
-
-
-
-
-
-
-
-
             </Grid>
         </Grid>
         <!-- Верхний Canvas для выдвижного меню -->
@@ -530,9 +592,9 @@
 
                             <StackPanel Orientation="Horizontal">
                                 <Label FontStyle="Italic">От</Label>
-                                <TextBox Background="AliceBlue" Height="20" Width="50" ></TextBox>
+                                <TextBox Height="20" Width="50" ></TextBox>
                                 <Label FontStyle="Italic">До</Label>
-                                <TextBox Background="AliceBlue" Height="20"  Width="50" ></TextBox>
+                                <TextBox Height="20"  Width="50" ></TextBox>
                                 <Label FontStyle="Italic">ГБ</Label>
                             </StackPanel>
                             <StackPanel  Orientation="Horizontal">
@@ -575,9 +637,14 @@
                                     </StackPanel>
                                 </StackPanel>
                             </StackPanel>
-                            <Button Height="23" Click="Button_Click_1"></Button>
 
 
+
+
+                        </StackPanel>
+                        <StackPanel Margin="20,0,0,0">
+                            <Label  FontWeight="Bold" FontSize="14">Опции:</Label>
+                            <Button  Background="AliceBlue" Height="23" Click="Drop_Click">Сбросить фильтры</Button>
                         </StackPanel>
 
 
@@ -589,7 +656,7 @@
                         <StackPanel.Background>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                         </StackPanel.Background>
- 
+
                         <StackPanel>
                             <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique" >Название:</Label>
                             <StackPanel Orientation="Horizontal">
@@ -642,7 +709,7 @@
                                     <ComboBoxItem>С более ранних</ComboBoxItem>
                                     <ComboBoxItem>С более поздних</ComboBoxItem>
                                 </ComboBox>
-                            
+
                             </StackPanel>
                         </StackPanel>
 
@@ -657,20 +724,270 @@
                             <Button Background="AntiqueWhite" Height="50" Width="100">Обновить</Button>
                         </StackPanel>
                     </StackPanel>
-                 
+
 
                 </TabItem>
-                <TabItem  Background="#80FFFFFF" Height="22"  Header="Доступ">
+                <TabItem PreviewMouseLeftButtonDown="Control_Click"  Background="#80FFFFFF" Height="22"  Header="Доступ">
                     <StackPanel  Orientation="Horizontal">
                         <StackPanel.Background>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                         </StackPanel.Background>
-                     </StackPanel>
-                    
-                    
+                    </StackPanel>
+
+
 
                 </TabItem>
-                <TabItem Height="22" PreviewMouseLeftButtonDown="Usage_Click" Background="#80FFFFFF"  Header="Использование">
+                <TabItem PreviewMouseLeftButtonDown="SessionFilter_Clisk"   Background="#80FFFFFF" Height="22"  Header="Сессии">
+                    <StackPanel  Orientation="Horizontal">
+                        <StackPanel.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </StackPanel.Background>
+                        <StackPanel Margin="0,0,20,0">
+                            <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique">Параметры:</Label>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Row="0" Grid.Column="0" FontStyle="Italic">Имя компьютера</Label>
+                                    <ComboBox Name="SessionConputerName"   Grid.Row="0" Grid.Column="1" MinWidth="100" Height="20"/>
+
+                                    <Label Grid.Row="1" Grid.Column="0" FontStyle="Italic">Пользователь</Label>
+                                    <ComboBox Name="SessionUser"  Grid.Row="1" Grid.Column="1" MinWidth="100" Height="20"/>
+                                </Grid>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Row="0" Grid.Column="0" FontStyle="Italic">Событие</Label>
+                                    <ComboBox Name="SessionEvent"  Grid.Row="0" Grid.Column="1" MinWidth="100" Height="20"/>
+
+                                    <Label Grid.Row="1" Grid.Column="0" FontStyle="Italic">ОС:</Label>
+                                    <ComboBox Name="SessionOS" Grid.Row="1" Grid.Column="1" MinWidth="100" Height="20"/>
+                                </Grid>
+
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal"/>
+
+                        </StackPanel>
+
+
+                        <StackPanel>
+                            <Label FontSize="15" FontWeight="Bold" FontStyle="Oblique" >Временной период:</Label>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="С" FontStyle="Italic"></Label>
+                                    <DatePicker Name="SessionStartData" Width="131"/>
+                                    <Label Content="По" FontStyle="Italic"></Label>
+                                    <DatePicker Name="SessionEndData"  Width="131"/>
+                                </StackPanel>
+
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label FontSize="12" FontStyle="Oblique">HH:</Label>
+                                <ComboBox Height="20" Name="StartHH" SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                    <ComboBoxItem Content="00" />
+                                    <ComboBoxItem Content="01" />
+                                    <ComboBoxItem Content="02" />
+                                    <ComboBoxItem Content="03" />
+                                    <ComboBoxItem Content="04" />
+                                    <ComboBoxItem Content="05" />
+                                    <ComboBoxItem Content="06" />
+                                    <ComboBoxItem Content="07" />
+                                    <ComboBoxItem Content="08" />
+                                    <ComboBoxItem Content="09" />
+                                    <ComboBoxItem Content="10" />
+                                    <ComboBoxItem Content="11" />
+                                    <ComboBoxItem Content="12" />
+                                    <ComboBoxItem Content="13" />
+                                    <ComboBoxItem Content="14" />
+                                    <ComboBoxItem Content="15" />
+                                    <ComboBoxItem Content="16" />
+                                    <ComboBoxItem Content="17" />
+                                    <ComboBoxItem Content="18" />
+                                    <ComboBoxItem Content="19" />
+                                    <ComboBoxItem Content="20" />
+                                    <ComboBoxItem Content="21" />
+                                    <ComboBoxItem Content="22" />
+                                    <ComboBoxItem Content="23" />
+                                </ComboBox>
+                                <Label FontSize="12" FontStyle="Oblique">MM:</Label>
+                                <ComboBox Height="20"  SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                    <ComboBoxItem Content="00" />
+                                    <ComboBoxItem Content="01" />
+                                    <ComboBoxItem Content="02" />
+                                    <ComboBoxItem Content="03" />
+                                    <ComboBoxItem Content="04" />
+                                    <ComboBoxItem Content="05" />
+                                    <ComboBoxItem Content="06" />
+                                    <ComboBoxItem Content="07" />
+                                    <ComboBoxItem Content="08" />
+                                    <ComboBoxItem Content="09" />
+                                    <ComboBoxItem Content="10" />
+                                    <ComboBoxItem Content="11" />
+                                    <ComboBoxItem Content="12" />
+                                    <ComboBoxItem Content="13" />
+                                    <ComboBoxItem Content="14" />
+                                    <ComboBoxItem Content="15" />
+                                    <ComboBoxItem Content="16" />
+                                    <ComboBoxItem Content="17" />
+                                    <ComboBoxItem Content="18" />
+                                    <ComboBoxItem Content="19" />
+                                    <ComboBoxItem Content="20" />
+                                    <ComboBoxItem Content="21" />
+                                    <ComboBoxItem Content="22" />
+                                    <ComboBoxItem Content="23" />
+                                    <ComboBoxItem Content="24" />
+                                    <ComboBoxItem Content="25" />
+                                    <ComboBoxItem Content="26" />
+                                    <ComboBoxItem Content="27" />
+                                    <ComboBoxItem Content="28" />
+                                    <ComboBoxItem Content="29" />
+                                    <ComboBoxItem Content="30" />
+                                    <ComboBoxItem Content="31" />
+                                    <ComboBoxItem Content="32" />
+                                    <ComboBoxItem Content="33" />
+                                    <ComboBoxItem Content="34" />
+                                    <ComboBoxItem Content="35" />
+                                    <ComboBoxItem Content="36" />
+                                    <ComboBoxItem Content="37" />
+                                    <ComboBoxItem Content="38" />
+                                    <ComboBoxItem Content="39" />
+                                    <ComboBoxItem Content="40" />
+                                    <ComboBoxItem Content="41" />
+                                    <ComboBoxItem Content="42" />
+                                    <ComboBoxItem Content="43" />
+                                    <ComboBoxItem Content="44" />
+                                    <ComboBoxItem Content="45" />
+                                    <ComboBoxItem Content="46" />
+                                    <ComboBoxItem Content="47" />
+                                    <ComboBoxItem Content="48" />
+                                    <ComboBoxItem Content="49" />
+                                    <ComboBoxItem Content="50" />
+                                    <ComboBoxItem Content="51" />
+                                    <ComboBoxItem Content="52" />
+                                    <ComboBoxItem Content="53" />
+                                    <ComboBoxItem Content="54" />
+                                    <ComboBoxItem Content="55" />
+                                    <ComboBoxItem Content="56" />
+                                    <ComboBoxItem Content="57" />
+                                    <ComboBoxItem Content="58" />
+                                    <ComboBoxItem Content="59" />
+                                </ComboBox>
+                                <Label FontSize="12" FontWeight="Bold" FontStyle="Oblique">—</Label>
+                                <Label FontSize="12" FontStyle="Oblique">HH:</Label>
+                                <ComboBox Height="20"   SelectedIndex="23"  ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                    <ComboBoxItem Content="00" />
+                                    <ComboBoxItem Content="01" />
+                                    <ComboBoxItem Content="02" />
+                                    <ComboBoxItem Content="03" />
+                                    <ComboBoxItem Content="04" />
+                                    <ComboBoxItem Content="05" />
+                                    <ComboBoxItem Content="06" />
+                                    <ComboBoxItem Content="07" />
+                                    <ComboBoxItem Content="08" />
+                                    <ComboBoxItem Content="09" />
+                                    <ComboBoxItem Content="10" />
+                                    <ComboBoxItem Content="11" />
+                                    <ComboBoxItem Content="12" />
+                                    <ComboBoxItem Content="13" />
+                                    <ComboBoxItem Content="14" />
+                                    <ComboBoxItem Content="15" />
+                                    <ComboBoxItem Content="16" />
+                                    <ComboBoxItem Content="17" />
+                                    <ComboBoxItem Content="18" />
+                                    <ComboBoxItem Content="19" />
+                                    <ComboBoxItem Content="20" />
+                                    <ComboBoxItem Content="21" />
+                                    <ComboBoxItem Content="22" />
+                                    <ComboBoxItem Content="23" />
+                                </ComboBox>
+                                <Label FontSize="12" FontStyle="Oblique">MM:</Label>
+                                <ComboBox Height="20"   SelectedIndex="59" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                    <ComboBoxItem Content="00" />
+                                    <ComboBoxItem Content="01" />
+                                    <ComboBoxItem Content="02" />
+                                    <ComboBoxItem Content="03" />
+                                    <ComboBoxItem Content="04" />
+                                    <ComboBoxItem Content="05" />
+                                    <ComboBoxItem Content="06" />
+                                    <ComboBoxItem Content="07" />
+                                    <ComboBoxItem Content="08" />
+                                    <ComboBoxItem Content="09" />
+                                    <ComboBoxItem Content="10" />
+                                    <ComboBoxItem Content="11" />
+                                    <ComboBoxItem Content="12" />
+                                    <ComboBoxItem Content="13" />
+                                    <ComboBoxItem Content="14" />
+                                    <ComboBoxItem Content="15" />
+                                    <ComboBoxItem Content="16" />
+                                    <ComboBoxItem Content="17" />
+                                    <ComboBoxItem Content="18" />
+                                    <ComboBoxItem Content="19" />
+                                    <ComboBoxItem Content="20" />
+                                    <ComboBoxItem Content="21" />
+                                    <ComboBoxItem Content="22" />
+                                    <ComboBoxItem Content="23" />
+                                    <ComboBoxItem Content="24" />
+                                    <ComboBoxItem Content="25" />
+                                    <ComboBoxItem Content="26" />
+                                    <ComboBoxItem Content="27" />
+                                    <ComboBoxItem Content="28" />
+                                    <ComboBoxItem Content="29" />
+                                    <ComboBoxItem Content="30" />
+                                    <ComboBoxItem Content="31" />
+                                    <ComboBoxItem Content="32" />
+                                    <ComboBoxItem Content="33" />
+                                    <ComboBoxItem Content="34" />
+                                    <ComboBoxItem Content="35" />
+                                    <ComboBoxItem Content="36" />
+                                    <ComboBoxItem Content="37" />
+                                    <ComboBoxItem Content="38" />
+                                    <ComboBoxItem Content="39" />
+                                    <ComboBoxItem Content="40" />
+                                    <ComboBoxItem Content="41" />
+                                    <ComboBoxItem Content="42" />
+                                    <ComboBoxItem Content="43" />
+                                    <ComboBoxItem Content="44" />
+                                    <ComboBoxItem Content="45" />
+                                    <ComboBoxItem Content="46" />
+                                    <ComboBoxItem Content="47" />
+                                    <ComboBoxItem Content="48" />
+                                    <ComboBoxItem Content="49" />
+                                    <ComboBoxItem Content="50" />
+                                    <ComboBoxItem Content="51" />
+                                    <ComboBoxItem Content="52" />
+                                    <ComboBoxItem Content="53" />
+                                    <ComboBoxItem Content="54" />
+                                    <ComboBoxItem Content="55" />
+                                    <ComboBoxItem Content="56" />
+                                    <ComboBoxItem Content="57" />
+                                    <ComboBoxItem Content="58" />
+                                    <ComboBoxItem Content="59" />
+                                </ComboBox>
+                            </StackPanel>
+
+                        </StackPanel>
+
+                    </StackPanel>
+
+
+
+                </TabItem>
+                <TabItem Height="22" PreviewMouseLeftButtonDown="Usage_Click" Background="#80FFFFFF"  Header="Мониторинг">
 
 
                     <StackPanel Orientation="Horizontal">
@@ -688,7 +1005,7 @@
                                     <DatePicker x:Name="RAMDate" SelectedDateChanged="RAMDate_SelectedDateChanged"/>
                                     <StackPanel Orientation="Horizontal">
                                         <Label FontSize="12" FontStyle="Oblique">HH:</Label>
-                                        <ComboBox Name="StartHH" SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                        <ComboBox Height="20"  SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
                                             <ComboBoxItem Content="00" />
                                             <ComboBoxItem Content="01" />
                                             <ComboBoxItem Content="02" />
@@ -715,7 +1032,7 @@
                                             <ComboBoxItem Content="23" />
                                         </ComboBox>
                                         <Label FontSize="12" FontStyle="Oblique">MM:</Label>
-                                        <ComboBox Name="StartMM" SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                        <ComboBox Height="20" Name="StartMM" SelectedIndex="0" ScrollViewer.VerticalScrollBarVisibility="Hidden">
                                             <ComboBoxItem Content="00" />
                                             <ComboBoxItem Content="01" />
                                             <ComboBoxItem Content="02" />
@@ -779,7 +1096,7 @@
                                         </ComboBox>
                                         <Label FontSize="12" FontWeight="Bold" FontStyle="Oblique">——</Label>
                                         <Label FontSize="12" FontStyle="Oblique">HH:</Label>
-                                        <ComboBox Name="EndHH"  SelectedIndex="23"  ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                        <ComboBox Height="20" Name="EndHH"  SelectedIndex="23"  ScrollViewer.VerticalScrollBarVisibility="Hidden">
                                             <ComboBoxItem Content="00" />
                                             <ComboBoxItem Content="01" />
                                             <ComboBoxItem Content="02" />
@@ -806,7 +1123,7 @@
                                             <ComboBoxItem Content="23" />
                                         </ComboBox>
                                         <Label FontSize="12" FontStyle="Oblique">MM:</Label>
-                                        <ComboBox Name="EndMM"  SelectedIndex="59" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                        <ComboBox Height="20" Name="EndMM"  SelectedIndex="59" ScrollViewer.VerticalScrollBarVisibility="Hidden">
                                             <ComboBoxItem Content="00" />
                                             <ComboBoxItem Content="01" />
                                             <ComboBoxItem Content="02" />
@@ -874,19 +1191,13 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel >
-                            <TextBlock FontWeight="Bold" FontSize="15" Text="Процессор:" Margin="5"/>
-                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Температура</Label>
-
+                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Работа компьютера:</Label>
                             <StackPanel Orientation="Horizontal">
 
-                                <Label FontStyle="Italic">День:</Label>
-                                <DatePicker x:Name="TempDate" SelectedDate="{Binding SelectedDate}" />
+                                <DatePicker SelectedDateChanged="RAMDate_SelectedDateChanged"/>
+                                <DatePicker SelectedDateChanged="RAMDate_SelectedDateChanged"/>
                             </StackPanel>
-                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Логические процессы:</Label>
-                            <StackPanel Orientation="Horizontal">
-                                <Label FontStyle="Italic">День:</Label>
-                                <DatePicker x:Name="CoreDate" SelectedDate="{Binding SelectedDate}" />
-                            </StackPanel>
+                            <StackPanel Orientation="Horizontal"/>
 
                         </StackPanel>
 
