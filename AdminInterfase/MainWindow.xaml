@@ -510,28 +510,33 @@
                             </oxy:PlotView.Background>
                         </oxy:PlotView>
 
-                        <ListBox Name="RamUsageListbox" Grid.Row="1" FontFamily="Arial Black">
+                        <ListBox Name="RamUsageListbox" Grid.Row="1">
                             <ListBox.Background>
                                 <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                             </ListBox.Background>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="5" CornerRadius="5">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="10"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                                            <TextBlock Grid.Column="0" Text="{Binding Date}" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}" />
-                                            <TextBlock Grid.Column="2" Text="{Binding Value}" FontWeight="Bold" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}" />
-                                        </Grid>
-                                    </Border>
+                                        <TextBlock Grid.Column="0" Text="{Binding Date}" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}">
+                                            <TextBlock.Effect>
+                                                <DropShadowEffect Color="Black" Direction="0" ShadowDepth="0" BlurRadius="1"/>
+                                            </TextBlock.Effect>
+                                        </TextBlock>
+                                        <TextBlock Grid.Column="2" Text="{Binding Value}" FontWeight="Bold" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}">
+                                            <TextBlock.Effect>
+                                                <DropShadowEffect Color="Black" Direction="0" ShadowDepth="0" BlurRadius="1"/>
+                                            </TextBlock.Effect>
+                                        </TextBlock>
+                                    </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-
                     </Grid>
 
                     <!-- Правая вертикальная часть, содержащая Label и ListBox -->

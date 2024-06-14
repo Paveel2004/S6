@@ -14,7 +14,8 @@ namespace AdminInterfase
             else if (memory >= 60 && memory < 70)
                 return new SolidColorBrush(Color.FromRgb(139, 139, 0)); // DarkYellow
             else if (memory >= 70 && memory < 90)
-                return new SolidColorBrush(Color.FromRgb(255, 140, 0)); // DarkOrange
+                return new SolidColorBrush(Color.FromRgb(204, 102, 0)); // Goldenrod
+
             else if (memory >= 90)
                 return new SolidColorBrush(Color.FromRgb(139, 0, 0)); // DarkRed
 
