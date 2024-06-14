@@ -440,6 +440,12 @@ namespace AdminInterfase
             onlineComputersListBox.Visibility = Visibility.Visible;
  
 
+
+        }
+        public void SessionVisibibity()
+        {
+            HideAll();
+            SessionListBox.Visibility = Visibility.Visible;
         }
         private void HideAll()
         {
@@ -463,6 +469,7 @@ namespace AdminInterfase
             onlineComputersListBox.Visibility = Visibility.Hidden;
             allComputersListBox.Visibility = Visibility.Hidden;
             OSListBox.Visibility = Visibility.Hidden;
+            SessionListBox.Visibility = Visibility.Hidden;
         }
         private void SetUsageVisibility()
         {
@@ -834,12 +841,33 @@ namespace AdminInterfase
             // Очищаем ListBox перед заполнением новыми данными
             StartPcocessIndoListbox.Items.Clear();
 
+            // Получаем дату из DatePicker
+            DateTime selectedDate = DataProcess.SelectedDate ?? DateTime.Today;
+
+            // Получаем значения времени из ComboBox
+            string startHH = (StartHHProcess.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string startMM = (StartMMProcess.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string endHH = (EndHHProcess.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string endMM = (EndMMProcess.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+            // Формируем начальную и конечную дату на основе полученных значений
+            DateTime startDate = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day,
+                                              int.Parse(startHH ?? "0"), int.Parse(startMM ?? "0"), 0);
+            DateTime endDate = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day,
+                                            int.Parse(endHH ?? "23"), int.Parse(endMM ?? "59"), 59);
+
+            // Получаем значение поискового запроса из TextBox
+            string processName = SearchProcess.Text.Trim();
+
             // Создаем подключение и команду для выполнения запроса
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "EXEC UserProcessFilter @UserSID";
+                string query = "EXEC UserProcessFilter @UserSID, @StartDate, @EndDate, @ProcessName";
                 SqlCommand command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@UserSID", sid);
+                command.Parameters.AddWithValue("@StartDate", startDate);
+                command.Parameters.AddWithValue("@EndDate", endDate);
+                command.Parameters.AddWithValue("@ProcessName", processName);
 
                 try
                 {
@@ -864,6 +892,7 @@ namespace AdminInterfase
                 }
             }
         }
+
 
         private void UserProcessFilter()
         {
@@ -1322,6 +1351,7 @@ namespace AdminInterfase
 
         private void SessionFilter_Clisk(object sender, RoutedEventArgs e)
         {
+            SessionVisibibity();
             var sessionInfos = Session_Filter();
             SessionListBox.ItemsSource = sessionInfos;
             LoadSessionFilterParams();
