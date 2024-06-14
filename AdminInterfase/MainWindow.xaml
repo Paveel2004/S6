@@ -509,6 +509,7 @@
                                 <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                             </oxy:PlotView.Background>
                         </oxy:PlotView>
+
                         <ListBox Name="RamUsageListbox" Grid.Row="1">
                             <ListBox.Background>
                                 <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
@@ -522,13 +523,20 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Column="0" Text="{Binding Date}" />
-                                        <TextBlock Grid.Column="2" Text="{Binding Value}" FontWeight="Bold" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}" />
+                                        <TextBlock Grid.Column="0" Text="{Binding Date}" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}">
+                                            <TextBlock.Effect>
+                                                <DropShadowEffect Color="Black" Direction="0" ShadowDepth="0" BlurRadius="1"/>
+                                            </TextBlock.Effect>
+                                        </TextBlock>
+                                        <TextBlock Grid.Column="2" Text="{Binding Value}" FontWeight="Bold" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}">
+                                            <TextBlock.Effect>
+                                                <DropShadowEffect Color="Black" Direction="0" ShadowDepth="0" BlurRadius="1"/>
+                                            </TextBlock.Effect>
+                                        </TextBlock>
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-
                     </Grid>
 
                     <!-- Правая вертикальная часть, содержащая Label и ListBox -->
