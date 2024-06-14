@@ -74,7 +74,11 @@ namespace AdminInterfase
 
             PlotModel.Series.Add(lineSeries);
             RamUsage.Model = PlotModel;
-            RamUsageListbox.ItemsSource = GetDataFromDatabase(sid, startDate, endDate);
+            var ListBox = GetDataFromDatabase(sid, startDate, endDate);
+            data.Reverse(); // Реверсировать порядок элементов в списке
+
+            RamUsageListbox.ItemsSource = data; // Установить реверсированный список в ItemsSource
+
         }
         private List<UsageData> GetDataFromDatabase(string user, DateTime startDate, DateTime endDate)
         {

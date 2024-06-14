@@ -523,12 +523,12 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Grid.Column="0" Text="{Binding Date}" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}">
+                                        <TextBlock Grid.Column="0" FontSize="15" FontFamily="Arial Black" Text="{Binding Date}" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}">
                                             <TextBlock.Effect>
                                                 <DropShadowEffect Color="Black" Direction="0" ShadowDepth="0" BlurRadius="1"/>
                                             </TextBlock.Effect>
                                         </TextBlock>
-                                        <TextBlock Grid.Column="2" Text="{Binding Value}" FontWeight="Bold" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}">
+                                        <TextBlock Grid.Column="2" FontSize="15" FontFamily="Arial Black" Text="{Binding Value}" FontWeight="Bold" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}">
                                             <TextBlock.Effect>
                                                 <DropShadowEffect Color="Black" Direction="0" ShadowDepth="0" BlurRadius="1"/>
                                             </TextBlock.Effect>
