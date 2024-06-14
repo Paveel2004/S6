@@ -44,42 +44,58 @@ namespace AdminInterfase
         public PlotModel PlotModel { get; private set; }
 
         private void LoadDataAndPlot(string sid, DateTime selectedDate)
-        {            
-            DateTime startDate = selectedDate.Date;
-            DateTime endDate = selectedDate.Date.AddDays(1).AddTicks(-1);
+        {
+            // Получаем время из ComboBox элементов
+            string startHH = (StartHH.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string startMM = (StartMM.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string endHH = (EndHH.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string endMM = (EndMM.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            var data = GetDataFromDatabase(sid, startDate, endDate);
-
-            if (data.Count == 0)
+            if (startHH != null && startMM != null && endHH != null && endMM != null)
             {
-                MessageBox.Show("Нет данных за выбранную дату.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
+                // Создаем начальную дату на основе выбранного времени
+                DateTime startDate = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day,
+                                                  int.Parse(startHH), int.Parse(startMM), 0);
+
+                // Создаем конечную дату на основе выбранного времени
+                DateTime endDate = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day,
+                                                int.Parse(endHH), int.Parse(endMM), 0);
+
+                var data = GetDataFromDatabase(sid, startDate, endDate);
+
+                if (data.Count == 0)
+                {
+                    MessageBox.Show("Нет данных за выбранную дату.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                PlotModel = new PlotModel { Title = "Оперативная память" };
+                var xAxis = new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Дата" };
+                PlotModel.Axes.Add(xAxis);
+                var yAxis = new LinearAxis { Position = AxisPosition.Left, Title = "Значение" };
+                PlotModel.Axes.Add(yAxis);
+                var lineSeries = new LineSeries
+                {
+                    Title = "RAM Usage"
+                };
+
+                foreach (var item in data)
+                {
+                    lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(item.Date), item.Value));
+                }
+
+                PlotModel.Series.Add(lineSeries);
+                RamUsage.Model = PlotModel;
+
+                data.Reverse(); // Реверсировать порядок элементов в списке
+                RamUsageListbox.ItemsSource = data; // Установить реверсированный список в ItemsSource
             }
-
-            PlotModel = new PlotModel { Title = "Оперативная память" };
-            var xAxis = new DateTimeAxis { Position = AxisPosition.Bottom, Title = "Дата" };
-            PlotModel.Axes.Add(xAxis);
-            var yAxis = new LinearAxis { Position = AxisPosition.Left, Title = "Значение" };
-            PlotModel.Axes.Add(yAxis);
-            var lineSeries = new LineSeries
+            else
             {
-                Title = "RAM Usage"
-                // MarkerType = MarkerType.Circle  // Удалена эта строка
-            };
-
-            foreach (var item in data)
-            {
-                lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(item.Date), item.Value));
+                MessageBox.Show("Ошибка: выберите начальное и конечное время.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            PlotModel.Series.Add(lineSeries);
-            RamUsage.Model = PlotModel;
-            var ListBox = GetDataFromDatabase(sid, startDate, endDate);
-            data.Reverse(); // Реверсировать порядок элементов в списке
-
-            RamUsageListbox.ItemsSource = data; // Установить реверсированный список в ItemsSource
-
         }
+
         private List<UsageData> GetDataFromDatabase(string user, DateTime startDate, DateTime endDate)
         {
             var data = new List<UsageData>();
@@ -112,8 +128,8 @@ namespace AdminInterfase
 
             return data;
         }
-
-
+        private System.Timers.Timer reloadTimer;
+        private bool canReload = true;
         public MainWindow()
         {
             InitializeComponent();
@@ -132,6 +148,11 @@ namespace AdminInterfase
                         FillComboBoxFromProcedure(SpeedRAM, "Частота", "ОЗУ");
                         FillComboBoxFromProcedure(TypeRam, "Тип", "ОЗУ");
             */
+            reloadTimer = new System.Timers.Timer();
+            reloadTimer.Interval = 10000; // 10 секунд (в миллисекундах)
+            reloadTimer.AutoReset = true; // Автоматическое повторение
+            reloadTimer.Elapsed += ReloadTimer_Elapsed;
+            reloadTimer.Start();
             LoadFilter();
             DataContext = this;
 
@@ -985,19 +1006,24 @@ namespace AdminInterfase
                 }
             }
         }
-        public void FillUsersUsageListBox(ListBox listBox, DateTime Date)
-        {
 
+        public void FillUsersUsageListBox(ListBox listBox, DateTime startDate, DateTime endDate)
+        {
             listBox.Items.Clear();
             usersDictionary.Clear();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string query = $"EXEC UsersUsageRamDateList @Date='{Date}'";
+                string query = "EXEC UsersUsageRamDateList @StartDate, @EndDate";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
+
+                    // Добавление параметров @StartDate и @EndDate
+                    command.Parameters.Add("@StartDate", SqlDbType.DateTime).Value = startDate;
+                    command.Parameters.Add("@EndDate", SqlDbType.DateTime).Value = endDate;
+
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -1011,9 +1037,8 @@ namespace AdminInterfase
                     }
                 }
             }
-
-
         }
+
 
 
 
@@ -1108,19 +1133,25 @@ namespace AdminInterfase
         {
 
         }
+
         public void GetAll()
         {
+            if (!canReload)
+            {
+                // Если перезарядка еще не разрешена, выходим
+                return;
+            }
+
             onlineComputersListBox.Items.Clear();
             MessageSender.BroadcastMessage("getAll", BroadcastAddress, BroadcastPort);
 
-
+            // Блокируем повторную перезарядку до следующего тика таймера
+            canReload = false;
         }
-        /*        public void GetBuild()
-                {
-
-                    MessageSender.BroadcastMessage("getBuild", BroadcastAddress, BroadcastPort);
-
-                }*/
+        private void ReloadTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            canReload = true; // Разрешаем перезарядку метода GetAll() по истечению интервала
+        }
         private void Online_Click(object sender, RoutedEventArgs e)
         {
             SetOnlineVisibility();
@@ -1371,10 +1402,41 @@ namespace AdminInterfase
         }
 
 
-        private void RAMDate_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        private void UsageSelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            FillUsersUsageListBox(UsersListBox, RAMDate.SelectedDate.Value);
+            // Получаем дату из RAMDate.SelectedDate
+            DateTime selectedDate = RAMDate.SelectedDate ?? DateTime.Today;
+
+            // Создаем начальную дату на основе времени из StartHH и StartMM
+            string startHH = (StartHH.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string startMM = (StartMM.SelectedItem as ComboBoxItem)?.Content.ToString();
+            if (startHH != null && startMM != null)
+            {
+                DateTime startDate = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day,
+                                                   int.Parse(startHH), int.Parse(startMM), 0);
+
+                // Создаем конечную дату на основе времени из EndHH и EndMM
+                string endHH = (EndHH.SelectedItem as ComboBoxItem)?.Content.ToString();
+                string endMM = (EndMM.SelectedItem as ComboBoxItem)?.Content.ToString();
+                if (endHH != null && endMM != null)
+                {
+                    DateTime endDate = new DateTime(selectedDate.Year, selectedDate.Month, selectedDate.Day,
+                                                     int.Parse(endHH), int.Parse(endMM), 0);
+
+                    // Вызываем FillUsersUsageListBox с полученными датами
+                    FillUsersUsageListBox(UsersListBox, startDate, endDate);
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка: выбранное время окончания неверно.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Ошибка: выбранное начальное время неверно.");
+            }
         }
+
 
         private List<ProcessorInfo> GetProcessorInfos(string biosSerialNumber, SqlConnection connection)
         {
