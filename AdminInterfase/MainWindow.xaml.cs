@@ -1,6 +1,7 @@
 ﻿using AdminInterfase.MoreWindow;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Data.SqlClient;
@@ -21,6 +22,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
+using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
 
 namespace AdminInterfase
 {
@@ -42,7 +44,7 @@ namespace AdminInterfase
         public PlotModel PlotModel { get; private set; }
 
         private void LoadDataAndPlot(string sid, DateTime selectedDate)
-        {
+        {            
             DateTime startDate = selectedDate.Date;
             DateTime endDate = selectedDate.Date.AddDays(1).AddTicks(-1);
 
@@ -72,9 +74,8 @@ namespace AdminInterfase
 
             PlotModel.Series.Add(lineSeries);
             RamUsage.Model = PlotModel;
+            RamUsageListbox.ItemsSource = GetDataFromDatabase(sid, startDate, endDate);
         }
-
-
         private List<UsageData> GetDataFromDatabase(string user, DateTime startDate, DateTime endDate)
         {
             var data = new List<UsageData>();
@@ -787,7 +788,7 @@ namespace AdminInterfase
                     
                 }
                 catch { }
-
+      
 
 
             }

@@ -12,7 +12,7 @@
 
     <Window.Resources>
         <local:EventColorConverter x:Key="EventColorConverter" />
-
+        <local:MemoryToColorConverter x:Key="MemoryToColorConverter"/>
         <Style TargetType="TextBox">
             <Setter Property="Background" Value="AliceBlue"/>
             <Setter Property="BorderBrush" Value="Black"/>
@@ -493,9 +493,7 @@
                         <!-- Левая колонка занимает больше места -->
                         <ColumnDefinition Width="67*" />
                         <!-- Правая колонка занимает меньше места -->
-                        
                     </Grid.ColumnDefinitions>
-                    
 
                     <!-- Левая верхняя часть разделена на две строки -->
                     <Grid Grid.Row="0" Grid.Column="0">
@@ -511,16 +509,35 @@
                                 <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                             </oxy:PlotView.Background>
                         </oxy:PlotView>
-
-                        <oxy:PlotView Name="LPCPU" Grid.Row="1" Model="{Binding PlotModel3}">
-                            <oxy:PlotView.Background>
+                        <ListBox Name="RamUsageListbox" Grid.Row="1">
+                            <ListBox.Background>
                                 <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
-                            </oxy:PlotView.Background>
-                        </oxy:PlotView>
+                            </ListBox.Background>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="10"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0" Text="{Binding Date}" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Value}" FontWeight="Bold" Foreground="{Binding Value, Converter={StaticResource MemoryToColorConverter}}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
                     </Grid>
 
-                    <!-- Правая вертикальная часть, содержащая ListBox -->
-                    <ListBox Name="StartPcocessIndoListbox" Grid.Row="0" Grid.Column="1">
+                    <!-- Правая вертикальная часть, содержащая Label и ListBox -->
+                    <Label FontWeight="Bold" Content="Процессы" FontSize="15" VerticalAlignment="Top" Grid.Row="0" Grid.Column="1" Margin="30,0,0,0" >
+                        <Label.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </Label.Background>
+                    </Label>
+                    <ListBox Name="StartPcocessIndoListbox" Grid.Row="0" Grid.Column="1" Margin="30,30,0,0">
                         <ListBox.Background>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                         </ListBox.Background>
@@ -532,16 +549,13 @@
                                     <StackPanel>
                                         <TextBlock Text="{Binding Process}" FontWeight="Bold" FontSize="14" />
                                         <TextBlock Text="{Binding Date}" FontStyle="Italic" FontSize="12" />
-                                 
                                     </StackPanel>
                                 </Border>
-
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-
-
                 </Grid>
+
 
 
             </Grid>
@@ -1239,9 +1253,13 @@
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
-                        <StackPanel >
-                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Процессор:</Label>
-                            <StackPanel Orientation="Horizontal"/>
+                        <StackPanel Margin="30,0,0,0">
+                        
+                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Процессы:</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <Label>Поиск</Label>
+                                <TextBox Height="20" MinWidth="250"></TextBox>
+                             </StackPanel>
                             <StackPanel Orientation="Horizontal"/>
 
                         </StackPanel>
