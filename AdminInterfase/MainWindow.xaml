@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         KeyDown="Menu_KeyDown" Icon="Image\icons8-компьютер-96.png"
         Title="MainWindow" Height="450" Width="950">
- 
+
     <Window.Resources>
         <local:EventColorConverter x:Key="EventColorConverter" />
 
@@ -212,7 +212,7 @@
         x:Name="UsersListBox" 
         Foreground="Black" 
         ScrollViewer.CanContentScroll="False" 
-        Visibility="Hidden">
+        Visibility="Visible">
                         <ListBox.Background>
                             <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
                         </ListBox.Background>
@@ -483,19 +483,67 @@
 
 
                 </StackPanel>
-                <Grid Visibility="Visible" Name="Usage"   Margin="260,30,30,30">
+                <Grid Visibility="Visible" Name="Usage" Margin="260,30,30,30">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
+                        <!-- Первая строка занимает все доступное пространство -->
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="153*" />
+                        <!-- Левая колонка занимает больше места -->
+                        <ColumnDefinition Width="67*" />
+                        <!-- Правая колонка занимает меньше места -->
+                        
                     </Grid.ColumnDefinitions>
+                    
 
-                    <oxy:PlotView Name="RamUsage" Grid.Row="0" Grid.Column="0" Model="{Binding PlotModel1}" />
-                    <oxy:PlotView Name="LPCPU" Grid.Row="1" Grid.Column="0" Model="{Binding PlotModel3}" />
+                    <!-- Левая верхняя часть разделена на две строки -->
+                    <Grid Grid.Row="0" Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="3*" />
+                            <!-- Первая строка занимает больше места -->
+                            <RowDefinition Height="3*" />
+                            <!-- Вторая строка занимает меньше места -->
+                        </Grid.RowDefinitions>
+
+                        <oxy:PlotView  Name="RamUsage" Grid.Row="0" Model="{Binding PlotModel1}">
+                            <oxy:PlotView.Background>
+                                <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                            </oxy:PlotView.Background>
+                        </oxy:PlotView>
+
+                        <oxy:PlotView Name="LPCPU" Grid.Row="1" Model="{Binding PlotModel3}">
+                            <oxy:PlotView.Background>
+                                <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                            </oxy:PlotView.Background>
+                        </oxy:PlotView>
+                    </Grid>
+
+                    <!-- Правая вертикальная часть, содержащая ListBox -->
+                    <ListBox Name="StartPcocessIndoListbox" Grid.Row="0" Grid.Column="1">
+                        <ListBox.Background>
+                            <SolidColorBrush Color="#FFFFFF" Opacity="0.7"/>
+                        </ListBox.Background>
+
+                        <!-- DataTemplate для элементов ListBox -->
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10" CornerRadius="5">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Process}" FontWeight="Bold" FontSize="14" />
+                                        <TextBlock Text="{Binding Date}" FontStyle="Italic" FontSize="12" />
+                                 
+                                    </StackPanel>
+                                </Border>
+
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+
                 </Grid>
+
+
             </Grid>
         </Grid>
         <!-- Верхний Canvas для выдвижного меню -->
@@ -612,6 +660,7 @@
                         </StackPanel>
 
                         <StackPanel>
+                            
                             <Label  FontWeight="Bold" FontSize="14">Оперативная память:</Label>
                             <StackPanel Orientation="Horizontal">
 
@@ -1094,7 +1143,7 @@
                                             <ComboBoxItem Content="58" />
                                             <ComboBoxItem Content="59" />
                                         </ComboBox>
-                                        <Label FontSize="12" FontWeight="Bold" FontStyle="Oblique">——</Label>
+                                        <Label FontSize="12" FontWeight="Bold" FontStyle="Oblique">—</Label>
                                         <Label FontSize="12" FontStyle="Oblique">HH:</Label>
                                         <ComboBox Height="20" Name="EndHH"  SelectedIndex="23"  ScrollViewer.VerticalScrollBarVisibility="Hidden">
                                             <ComboBoxItem Content="00" />
@@ -1191,12 +1240,8 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel >
-                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Работа компьютера:</Label>
-                            <StackPanel Orientation="Horizontal">
-
-                                <DatePicker SelectedDateChanged="RAMDate_SelectedDateChanged"/>
-                                <DatePicker SelectedDateChanged="RAMDate_SelectedDateChanged"/>
-                            </StackPanel>
+                            <Label FontWeight="Bold" FontSize="14" FontStyle="Oblique" >Процессор:</Label>
+                            <StackPanel Orientation="Horizontal"/>
                             <StackPanel Orientation="Horizontal"/>
 
                         </StackPanel>

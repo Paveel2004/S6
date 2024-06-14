@@ -43,7 +43,6 @@ namespace AdminInterfase
 
         private void LoadDataAndPlot(string sid, DateTime selectedDate)
         {
-
             DateTime startDate = selectedDate.Date;
             DateTime endDate = selectedDate.Date.AddDays(1).AddTicks(-1);
 
@@ -62,8 +61,8 @@ namespace AdminInterfase
             PlotModel.Axes.Add(yAxis);
             var lineSeries = new LineSeries
             {
-                Title = "RAM Usage",
-                MarkerType = MarkerType.Circle
+                Title = "RAM Usage"
+                // MarkerType = MarkerType.Circle  // Удалена эта строка
             };
 
             foreach (var item in data)
@@ -74,6 +73,7 @@ namespace AdminInterfase
             PlotModel.Series.Add(lineSeries);
             RamUsage.Model = PlotModel;
         }
+
 
         private List<UsageData> GetDataFromDatabase(string user, DateTime startDate, DateTime endDate)
         {
@@ -778,18 +778,70 @@ namespace AdminInterfase
 
                 // Вызываем процедуру ПриложенияПользователя с передачей SID
                 userApplications = GetApplicationsForUser(selectedUserSid);//Так1
-
+                PopulateListBox(selectedUserSid);
                 // Заполняем второй ListBox результатами процедуры
                 FillApplicationsListBox(userApplications);
                 try
                 {
                     LoadDataAndPlot(selectedUserSid, RAMDate.SelectedDate.Value);
+                    
                 }
                 catch { }
 
 
 
             }
+        }
+        public class ProcessInfo
+        {
+            public string Process { get; set; }
+            public DateTime Date { get; set; }
+
+            public ProcessInfo(string process, DateTime date)
+            {
+                Process = process;
+                Date = date;
+            }
+        }
+        private void PopulateListBox(string sid)
+        {
+            // Очищаем ListBox перед заполнением новыми данными
+            StartPcocessIndoListbox.Items.Clear();
+
+            // Создаем подключение и команду для выполнения запроса
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "EXEC UserProcessFilter @UserSID";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@UserSID", sid);
+
+                try
+                {
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        string process = reader["Процесс"].ToString();
+                        DateTime dateTime = Convert.ToDateTime(reader["Дата/Время"]);
+
+                        // Создаем объект ProcessInfo и добавляем его в ListBox
+                        ProcessInfo processInfo = new ProcessInfo(process, dateTime);
+                        StartPcocessIndoListbox.Items.Add(processInfo);
+                    }
+
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex.Message}");
+                }
+            }
+        }
+
+        private void UserProcessFilter()
+        {
+            
         }
         private List<string> GetBlockSiteFor(string userSid)
         {//Так2
