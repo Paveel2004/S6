@@ -27,7 +27,7 @@ namespace AdminInterfase
                 return response;
             }
             catch (Exception ex)
-            { return ""; }
+            {return "";}
 
         }
         public static async void BroadcastMessage(string message, string address, int port)
