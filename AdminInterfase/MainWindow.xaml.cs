@@ -23,10 +23,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-
+using System.Collections.ObjectModel;
 using System.IO;
 using NPOI.XWPF.UserModel;
-
+using System.IO;
+using NPOI.XWPF.UserModel;
+using NPOI.OpenXmlFormats.Wordprocessing;
+using Microsoft.Win32;
+using System.Windows;
 namespace AdminInterfase
 {
     /// <summary>
@@ -510,6 +514,8 @@ namespace AdminInterfase
             SetComputersVisibility();
 
             allComputersListBox.Items.Clear();
+            hardwareInfoViewModels.Clear();
+
             LoadAllComputerInfo();
             ////////////////
             ///
@@ -545,6 +551,37 @@ namespace AdminInterfase
             foreach (var biosSerialNumber in biosSerialNumbers)
             {
                 LoadComputerInfo(biosSerialNumber);
+            }
+        }
+        private void ExportComputerInfo(string path)
+        {
+            string osName = NameOS.SelectedItem?.ToString();
+            string osArchitecture = ArchitectureOS.SelectedItem?.ToString();
+            string osVersion = VersionOS.SelectedItem?.ToString();
+            string processorModel = ModelCPU.SelectedItem?.ToString();
+            string processorManufacturer = GPUmanufacturers.SelectedItem?.ToString();
+            string processorArchitecture = ArchitectureCPU.SelectedItem?.ToString();
+            string? logicalProcessors = LP.SelectedItem?.ToString();
+            string? cores = CoreCPU.SelectedItem?.ToString();
+            string videoModel = ModelVideo.SelectedItem?.ToString();
+            string graphicsProcessor = GPU.SelectedItem?.ToString();
+            string videoManufacturer = videoManufactur.SelectedItem?.ToString();
+            string? videoMemorySize = memoryVideo.SelectedItem?.ToString();
+            string ramPlacement = null; // Не уверен, откуда брать это значение
+            string? ramSize = TotalSpaseRAM.SelectedItem?.ToString();
+            string ramType = TypeRam.SelectedItem?.ToString();
+            string? ramSpeed = SpeedRAM.SelectedItem?.ToString();
+            string driveType = DiskType.SelectedItem?.ToString();
+            string? drivePool = Pool.SelectedItem?.ToString();
+            List<string> biosSerialNumbers = GetFilteredSerialNumbers(
+     osName, osArchitecture, osVersion, processorModel, processorManufacturer,
+     processorArchitecture, logicalProcessors, cores, videoModel, graphicsProcessor,
+     videoManufacturer, videoMemorySize, ramPlacement, ramSize, ramType,
+     ramSpeed, driveType, drivePool);
+
+            foreach (var biosSerialNumber in biosSerialNumbers)
+            {
+                ExportComputerInfo(biosSerialNumber, path);
             }
         }
 
@@ -1236,7 +1273,7 @@ namespace AdminInterfase
             //var searchText = textBox.Text.ToLower();
             //listBox.ItemsSource = items.Where(item => item.ToLower().Contains(searchText));
         }
-
+        public static List<HardwareInfoViewModel> hardwareInfoViewModels = new List<HardwareInfoViewModel>();
         private void LoadComputerInfo(string bios)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -1250,28 +1287,46 @@ namespace AdminInterfase
                 List<OSInfo> osInfos = GetOSInfos(bios, connection);
                 // Создаем объект ViewModel и добавляем его в список элементов ListBox
                 HardwareInfoViewModel model = new HardwareInfoViewModel(processorInfos, videoAdapterInfos, driveInfos, ramInfos, osInfos);
-                allComputersListBox.Items.Add(model);
-                model.ExportToWord(@"C:\Users\ASUS\Desktop\Test\test.docx");
+                allComputersListBox.Items.Add(model);     
+    
                 
             }
         }
-        
-/*        public void CreateWordDocument(ListBox listBox, string filePath)
+        private void ExportComputerInfo(string bios, string path)
         {
-            using (WordprocessingDocument doc = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                MainDocumentPart mainPart = doc.AddMainDocumentPart();
-                mainPart.Document = new Document();
-                Body body = mainPart.Document.AppendChild(new Body());
+                connection.Open();
 
-                foreach (var item in listBox.Items)
-                {
-                    DocumentFormat.OpenXml.Wordprocessing.Paragraph para = body.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Paragraph());
-                    DocumentFormat.OpenXml.Wordprocessing.Run run = para.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Run());
-                    run.AppendChild(new Text(item.ToString()));
-                }
+                List<ProcessorInfo> processorInfos = GetProcessorInfos(bios, connection);
+                List<VideoAdapterInfo> videoAdapterInfos = GetVideoAdapterInfos(bios, connection);
+                List<DriveInfo> driveInfos = GetDriveInfos(bios, connection);
+                List<RamInfo> ramInfos = GetRamInfos(bios, connection);
+                List<OSInfo> osInfos = GetOSInfos(bios, connection);
+                // Создаем объект ViewModel и добавляем его в список элементов ListBox
+                HardwareInfoViewModel model = new HardwareInfoViewModel(processorInfos, videoAdapterInfos, driveInfos, ramInfos, osInfos);
+                model.ExportToWord(path);
+
+
             }
-        }*/
+        }
+
+        /*        public void CreateWordDocument(ListBox listBox, string filePath)
+                {
+                    using (WordprocessingDocument doc = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
+                    {
+                        MainDocumentPart mainPart = doc.AddMainDocumentPart();
+                        mainPart.Document = new Document();
+                        Body body = mainPart.Document.AppendChild(new Body());
+
+                        foreach (var item in listBox.Items)
+                        {
+                            DocumentFormat.OpenXml.Wordprocessing.Paragraph para = body.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Paragraph());
+                            DocumentFormat.OpenXml.Wordprocessing.Run run = para.AppendChild(new DocumentFormat.OpenXml.Wordprocessing.Run());
+                            run.AppendChild(new Text(item.ToString()));
+                        }
+                    }
+                }*/
         private List<DriveInfo> GetDriveInfos(string biosSerialNumber, SqlConnection connection)
         {
             List<DriveInfo> driveInfos = new List<DriveInfo>();
@@ -1570,11 +1625,20 @@ namespace AdminInterfase
                     doc.Write(fs);
                 }
             }
-        
+
 
         private void Export_Click(object sender, RoutedEventArgs e)
         {
-            CreateWordDocument(@"C:\Users\ASUS\Desktop\Test\test.docx","hello");
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Word Document|*.docx";
+            saveFileDialog.Title = "Сохранить как";
+            saveFileDialog.FileName = "ComputerInfo.docx"; // Предлагаемое имя файла
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                string filePath = saveFileDialog.FileName;
+                ExportComputerInfo(filePath);
+            }
         }
         private void Control_Click(object sender, MouseButtonEventArgs e)
         {
@@ -1654,21 +1718,74 @@ namespace AdminInterfase
             else
             {
                 doc = new XWPFDocument();
+                AddHeaderWithDate(doc);
             }
 
-            // Add data to the document
-            AddDataToDocument(doc, "Processor Information", ProcessorInfoTexts);
-            AddDataToDocument(doc, "Video Adapter Information", VideoAdapterInfoTexts);
-            AddDataToDocument(doc, "Drive Information", DriveInfoTexts);
-            AddDataToDocument(doc, "RAM Information", RamInfoTexts);
-            AddDataToDocument(doc, "OS Information", OSInfoTexts);
+            // Add data to the document       
+
+      
+
+            AddDataToDocument(doc, "Процессоры", ProcessorInfoTexts);
+            AddDataToDocument(doc, "Видеоадаптеры", VideoAdapterInfoTexts);
+            AddDataToDocument(doc, "Диски", DriveInfoTexts);
+            AddDataToDocument(doc, "ОЗУ", RamInfoTexts);
+            AddDataToDocument(doc, "Операционная система", OSInfoTexts);
+            AddSeparatorLine(doc);
 
             // Save the document to a file
             using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
                 doc.Write(fs);
+               
             }
         }
+
+        private void AddSeparatorLine(XWPFDocument doc)
+        {
+            // Create a new paragraph for the separator line
+            XWPFParagraph separatorParagraph = doc.CreateParagraph();
+
+            // Create a run with dashes
+            XWPFRun run = separatorParagraph.CreateRun();
+            run.SetText("██████████████████████████████████████████████████████████████████████████████████████████████████████████████");
+
+            // Set the style of the run to create a bold line
+            run.IsBold = true; // Bold
+            run.FontFamily = "Arial"; // Font family
+            run.FontSize = 12; // Font size
+
+            // Set paragraph properties to center align
+            separatorParagraph.Alignment = ParagraphAlignment.CENTER;
+        }
+        private void AddHeaderWithDate(XWPFDocument doc)
+        {
+            // Create a new paragraph for the header
+            XWPFParagraph headerParagraph = doc.CreateParagraph();
+            headerParagraph.Alignment = ParagraphAlignment.CENTER;
+
+            // Set paragraph style to look like a header
+            headerParagraph.SpacingAfter = 200; // Space after the header
+            headerParagraph.SpacingBefore = 200; // Space before the header
+
+            // Create a run for the header text
+            XWPFRun headerRun = headerParagraph.CreateRun();
+            headerRun.SetText($"Сведения о конфигурации компонентов компьютеров на {DateTime.Now.ToString("dd.MM.yyyy")}");
+            headerRun.IsBold = true;
+            headerRun.FontSize = 24; // Larger font size for the header
+            headerRun.FontFamily = "Arial"; // Set the font family
+            headerRun.SetColor("0000FF"); // Set the text color to blue
+
+            // Create a run for a horizontal line
+            XWPFParagraph lineParagraph = doc.CreateParagraph();
+            lineParagraph.Alignment = ParagraphAlignment.CENTER;
+            XWPFRun lineRun = lineParagraph.CreateRun();
+            lineRun.SetText("______________________________________________");
+            lineRun.IsBold = true;
+            lineRun.FontSize = 18; // Size of the line
+            lineRun.FontFamily = "Arial"; // Set the font family
+            lineRun.SetColor("0000FF"); // Set the line color to blue
+        }
+
 
         private void AddDataToDocument(XWPFDocument doc, string title, ObservableCollection<KeyValuePair<string, string>> data)
         {
