@@ -31,6 +31,8 @@ using NPOI.XWPF.UserModel;
 using NPOI.OpenXmlFormats.Wordprocessing;
 using Microsoft.Win32;
 using System.Windows;
+using OfficeOpenXml;
+
 namespace AdminInterfase
 {
     /// <summary>
@@ -1357,11 +1359,47 @@ namespace AdminInterfase
             return driveInfos;
         }
 
+        public void ExportToExcelSessionInfo(List<SessionInfo> sessionInfos, string filePath)
+        {
+            using (ExcelPackage pck = new ExcelPackage())
+            {
+                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("SessionInfo");
+                ws.Cells["A1"].Value = "Имя компьютера";
+                ws.Cells["B1"].Value = "Пользователь";
+                ws.Cells["C1"].Value = "Событие";
+                ws.Cells["D1"].Value = "Дата/Время";
+                ws.Cells["E1"].Value = "ОС";
 
+                int rowStart = 2;
+                foreach (var item in sessionInfos)
+                {
+                    ws.Cells[string.Format("A{0}", rowStart)].Value = item.computerName;
+                    ws.Cells[string.Format("B{0}", rowStart)].Value = item.user;
+                    ws.Cells[string.Format("C{0}", rowStart)].Value = item.OSEevent;
+                    ws.Cells[string.Format("D{0}", rowStart)].Value = item.date;
+                    ws.Cells[string.Format("E{0}", rowStart)].Value = item.os;
+                    rowStart++;
+                }
 
-
+                ws.Cells["A:AZ"].AutoFitColumns();
+                Byte[] bin = pck.GetAsByteArray();
+                File.WriteAllBytes(filePath, bin);
+            }
+        }
+        private void ExportSession_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Excel Workbook|*.xlsx";
+            if (sfd.ShowDialog() == true)
+            {
+                string filePath = sfd.FileName;
+                ExportToExcelSessionInfo(globalSessionInfo, filePath);
+            }
+        }
+        private static List<SessionInfo> globalSessionInfo = new List<SessionInfo>();
         private ObservableCollection<SessionInfo> Session_Filter()
         {
+            globalSessionInfo.Clear();
             ObservableCollection<SessionInfo> sessionInfos = new ObservableCollection<SessionInfo>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -1393,6 +1431,7 @@ namespace AdminInterfase
                                 };
 
                                 sessionInfos.Add(sessionInfo);
+                                globalSessionInfo.Add(sessionInfo);
                             }
                         }
                     }
@@ -1645,6 +1684,9 @@ namespace AdminInterfase
             SiteVisibility();
             FillComputerNameControlListBox(OSListBox);
         }
+
+
+       
     }
 
     // Классы моделей для хранения информации о процессоре и видеоадаптере

@@ -876,6 +876,12 @@
 
                         </StackPanel>
 
+                        <StackPanel Margin="20,0,0,0">
+                            <Label  FontWeight="Bold" FontSize="14">Опции:</Label>
+                            <Button  Background="AliceBlue" Height="23" Click="Drop_Click">Сбросить фильтры</Button>
+                            <Button  Margin="0,8"  Background="AliceBlue" Height="23" Click="ExportSession_Click">Экспорт</Button>
+                        </StackPanel>
+
                     </StackPanel>
 
 
