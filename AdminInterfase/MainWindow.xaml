@@ -787,6 +787,11 @@
 
                             </StackPanel>
                         </StackPanel>
+                        <StackPanel Margin="20,0,0,0">
+                            <Label  FontWeight="Bold" FontSize="14">Опции:</Label>
+                            <Button  Background="AliceBlue" Height="23" Click="Drop_Click">Сбросить фильтры</Button>
+                            <Button  Margin="0,8"  Background="AliceBlue" Height="23" Click="ExportApp_Click">Экспорт</Button>
+                        </StackPanel>
 
                     </StackPanel>
                 </TabItem >
@@ -1287,6 +1292,7 @@
                                     <Label FontStyle="Italic" FontWeight="Bold" Margin="20,-4,0,0">Поиск</Label>
                                     <TextBox Name="SearchProcess" Height="20" MinWidth="250" Width="264" Margin="0,-30,0,0"></TextBox>
                                 </StackPanel>
+                                
                             </StackPanel>
 
                         </StackPanel>

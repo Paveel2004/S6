@@ -32,6 +32,7 @@ using NPOI.OpenXmlFormats.Wordprocessing;
 using Microsoft.Win32;
 using System.Windows;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace AdminInterfase
 {
@@ -680,8 +681,10 @@ namespace AdminInterfase
         }
         private Dictionary<string, string> usersDictionary = new Dictionary<string, string>();
         private Dictionary<string, string> osDictionary = new Dictionary<string, string>();
+        public string exportUserSID;
         private List<ApplicationData> GetApplicationsForUser(string userSid)
         {//Так2
+            exportUserSID = userSid;
             List<ApplicationData> userApplications = new List<ApplicationData>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -712,6 +715,85 @@ namespace AdminInterfase
 
             return userApplications;
         }
+        public void ExportAppToExcel(List<ApplicationData> userApplications, string filePath, string exportUserSID)
+        {
+            using (ExcelPackage pck = new ExcelPackage())
+            {
+                ExcelWorksheet ws = pck.Workbook.Worksheets.Add("ApplicationData");
+
+                string header = $"Приложения пользователя {exportUserSID} на {DateTime.Now.ToString("dd.MM.yyyy")}";
+                ws.Cells["A1"].Value = header;
+                ws.Cells["A1"].Style.Font.Size = 20;
+                ws.Cells["A1"].Style.Font.Bold = true;
+                ws.Cells["A1"].Style.Font.Italic = true;
+                ws.Cells["A1:C1"].Merge = true;
+
+                ws.Cells["A2"].Value = "Название";
+                ws.Cells["B2"].Value = "Вес";
+                ws.Cells["C2"].Value = "Дата установки";
+
+                // Устанавливаем стиль шапки таблицы
+                using (var range = ws.Cells["A2:C2"])
+                {
+                    range.Style.Font.Bold = true;
+                    range.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Blue);
+                    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+
+                    // Добавляем рамку
+                    range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    range.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+
+                int rowStart = 3;
+                foreach (var item in userApplications)
+                {
+                    ws.Cells[string.Format("A{0}", rowStart)].Value = item.Name;
+                    ws.Cells[string.Format("B{0}", rowStart)].Value = item.Size;
+                    ws.Cells[string.Format("C{0}", rowStart)].Value = item.InstallDate.ToString("dd.MM.yyyy");
+
+                    // Добавляем рамку к данным
+                    using (var range = ws.Cells[string.Format("A{0}:C{0}", rowStart)])
+                    {
+                        range.Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        range.Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        range.Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        range.Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    }
+
+                    rowStart++;
+                }
+
+                ws.Cells["A:AZ"].AutoFitColumns();
+                Byte[] bin = pck.GetAsByteArray();
+                File.WriteAllBytes(filePath, bin);
+            }
+        }
+
+
+
+
+        private void ExportApp_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Excel Workbook|*.xlsx";
+            if (sfd.ShowDialog() == true)
+            {
+                string filePath = sfd.FileName;
+                string name = usersDictionary.FirstOrDefault(x => x.Value == exportUserSID).Key; // Извлекаем имя, которое соответствует exportUserSID
+                if (name != null)
+                {
+                    ExportAppToExcel(userApplications, filePath, name); // Передаем имя как третий аргумент
+                }
+                else
+                {
+                    // Обработка ситуации, когда имя не найдено
+                }
+            }
+        }
+
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             FilterApplications();
@@ -1721,8 +1803,7 @@ namespace AdminInterfase
             FillComputerNameControlListBox(OSListBox);
         }
 
-
-       
+     
     }
 
     // Классы моделей для хранения информации о процессоре и видеоадаптере
