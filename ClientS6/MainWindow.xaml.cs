@@ -48,9 +48,9 @@ namespace ClientS6
                     exeDataCollectionPath = @"C:\Users\ASUS\source\repos\Data collection\Data collection\bin\Debug\net6.0\Data collection.exe";
                 Process process = new Process();
 
+
                 var data = new
                 {
-
                     serverAddress = IP.Text
                 };
 

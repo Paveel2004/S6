@@ -3,6 +3,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Drawing;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic.Devices;
@@ -22,7 +23,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using Text = DocumentFormat.OpenXml.Wordprocessing.Text;
+
+using System.IO;
+using NPOI.XWPF.UserModel;
 
 namespace AdminInterfase
 {
@@ -1246,10 +1249,14 @@ namespace AdminInterfase
                 List<RamInfo> ramInfos = GetRamInfos(bios, connection);
                 List<OSInfo> osInfos = GetOSInfos(bios, connection);
                 // Создаем объект ViewModel и добавляем его в список элементов ListBox
-                allComputersListBox.Items.Add(new HardwareInfoViewModel(processorInfos, videoAdapterInfos, driveInfos, ramInfos, osInfos));
+                HardwareInfoViewModel model = new HardwareInfoViewModel(processorInfos, videoAdapterInfos, driveInfos, ramInfos, osInfos);
+                allComputersListBox.Items.Add(model);
+                model.ExportToWord(@"C:\Users\ASUS\Desktop\Test\test.docx");
+                
             }
         }
-        public void CreateWordDocument(ListBox listBox, string filePath)
+        
+/*        public void CreateWordDocument(ListBox listBox, string filePath)
         {
             using (WordprocessingDocument doc = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
             {
@@ -1264,7 +1271,7 @@ namespace AdminInterfase
                     run.AppendChild(new Text(item.ToString()));
                 }
             }
-        }
+        }*/
         private List<DriveInfo> GetDriveInfos(string biosSerialNumber, SqlConnection connection)
         {
             List<DriveInfo> driveInfos = new List<DriveInfo>();
@@ -1528,9 +1535,14 @@ namespace AdminInterfase
             return videoAdapterInfos;
         }
 
-    
+
+ 
 
 
+  
+ 
+
+      
         private void Usage_Click(object sender, MouseButtonEventArgs e)
         {
             //UsersListBox.Items.Clear();
@@ -1539,9 +1551,31 @@ namespace AdminInterfase
 
         private void Drop_Click(object sender, RoutedEventArgs e)
         {
-            
-        }
 
+        }
+      
+            public void CreateWordDocument(string filePath, string text)
+            {
+                // Создание документа Word
+                using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    XWPFDocument doc = new XWPFDocument();
+
+                    // Добавление параграфа с текстом "Hello"
+                    XWPFParagraph para = doc.CreateParagraph();
+                    XWPFRun run = para.CreateRun();
+                    run.SetText(text);
+
+                    // Сохранение документа в поток файловой системы
+                    doc.Write(fs);
+                }
+            }
+        
+
+        private void Export_Click(object sender, RoutedEventArgs e)
+        {
+            CreateWordDocument(@"C:\Users\ASUS\Desktop\Test\test.docx","hello");
+        }
         private void Control_Click(object sender, MouseButtonEventArgs e)
         {
             SiteVisibility();
@@ -1603,6 +1637,68 @@ namespace AdminInterfase
     // Класс ViewModel для отображения информации о процессоре и видеоадаптере
     public class HardwareInfoViewModel
     {
+        public void ExportToWord(string filePath)
+        {
+            // Check if the file already exists
+            bool fileExists = File.Exists(filePath);
+
+            // Create a new Word document or load existing one
+            XWPFDocument doc;
+            if (fileExists)
+            {
+                using (FileStream existingFile = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    doc = new XWPFDocument(existingFile);
+                }
+            }
+            else
+            {
+                doc = new XWPFDocument();
+            }
+
+            // Add data to the document
+            AddDataToDocument(doc, "Processor Information", ProcessorInfoTexts);
+            AddDataToDocument(doc, "Video Adapter Information", VideoAdapterInfoTexts);
+            AddDataToDocument(doc, "Drive Information", DriveInfoTexts);
+            AddDataToDocument(doc, "RAM Information", RamInfoTexts);
+            AddDataToDocument(doc, "OS Information", OSInfoTexts);
+
+            // Save the document to a file
+            using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                doc.Write(fs);
+            }
+        }
+
+        private void AddDataToDocument(XWPFDocument doc, string title, ObservableCollection<KeyValuePair<string, string>> data)
+        {
+            // Create a new paragraph for the title
+            XWPFParagraph titleParagraph = doc.CreateParagraph();
+            titleParagraph.Alignment = ParagraphAlignment.CENTER;
+
+            XWPFRun titleRun = titleParagraph.CreateRun();
+            titleRun.SetText(title);
+            titleRun.IsBold = true;
+            titleRun.FontSize = 14;
+
+            // Iterate through the data and add paragraphs
+            foreach (var pair in data)
+            {
+                // Create a new paragraph
+                XWPFParagraph paragraph = doc.CreateParagraph();
+
+                // Set text for the paragraph
+                XWPFRun runKey = paragraph.CreateRun();
+                runKey.SetText(pair.Key);
+                runKey.IsBold = true;
+
+                XWPFRun runValue = paragraph.CreateRun();
+                runValue.SetText(pair.Value);
+            }
+        }
+
+
+
         public ObservableCollection<KeyValuePair<string, string>> ProcessorInfoTexts { get; set; }
         public ObservableCollection<KeyValuePair<string, string>> VideoAdapterInfoTexts { get; set; }
         public ObservableCollection<KeyValuePair<string, string>> DriveInfoTexts { get; set; }
@@ -1611,6 +1707,8 @@ namespace AdminInterfase
 
         public HardwareInfoViewModel(List<ProcessorInfo> processorInfos, List<VideoAdapterInfo> videoAdapterInfos, List<DriveInfo> driveInfos, List<RamInfo> ramInfos, List<OSInfo> osInfos)
         {
+
+
             ProcessorInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
             VideoAdapterInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();
             DriveInfoTexts = new ObservableCollection<KeyValuePair<string, string>>();

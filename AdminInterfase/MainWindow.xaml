@@ -8,7 +8,7 @@
          xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         KeyDown="Menu_KeyDown" Icon="Image\icons8-компьютер-96.png"
-        Title="MainWindow" Height="450" Width="950">
+        Title="Администратор" Height="450" Width="950">
 
     <Window.Resources>
         <local:EventColorConverter x:Key="EventColorConverter" />
@@ -139,11 +139,10 @@
     </Window.Background>
     <Grid >
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="89*"/>
-            <ColumnDefinition Width="861*"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Grid x:Name="MainGrid" Grid.ColumnSpan="2">
+        <Grid x:Name="MainGrid">
 
 
 
@@ -573,7 +572,7 @@
             </Grid>
         </Grid>
         <!-- Верхний Canvas для выдвижного меню -->
-        <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Grid.ColumnSpan="2">
+        <Canvas Grid.Row="0" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}">
 
             <!-- Выдвижное меню -->
             <TabControl  x:Name="MenuPanel" Width="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ActualWidth}" Height="170" Canvas.Top="-170">
@@ -720,6 +719,7 @@
                         <StackPanel Margin="20,0,0,0">
                             <Label  FontWeight="Bold" FontSize="14">Опции:</Label>
                             <Button  Background="AliceBlue" Height="23" Click="Drop_Click">Сбросить фильтры</Button>
+                            <Button  Margin="0,8"  Background="AliceBlue" Height="23" Click="Export_Click">Экспорт</Button>
                         </StackPanel>
 
 

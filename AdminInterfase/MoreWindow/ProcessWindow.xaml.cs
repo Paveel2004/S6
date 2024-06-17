@@ -174,6 +174,10 @@ namespace AdminInterfase
                     ws.Cells["B3"].Value = ip;
                     ws.Cells["A4"].Value = "Время создания отчёта:";
                     ws.Cells["B4"].Value = DateTime.Now.ToString();
+                    ws.Cells["C1"].Value = "Зелёный: До 1.5%";
+                    ws.Cells["C2"].Value = "Желтый: От 1.5% до 6.25%";
+                    ws.Cells["C3"].Value = "Оранжевый: От 6.25% до 15%";
+                    ws.Cells["C4"].Value = "Красный: Более 15%";
 
                     // Применение стиля к новым ячейкам
                     using (var range = ws.Cells["A1:B4"])
