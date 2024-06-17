@@ -1364,32 +1364,63 @@ namespace AdminInterfase
             using (ExcelPackage pck = new ExcelPackage())
             {
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("SessionInfo");
-                ws.Cells["A1:E1"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                ws.Cells["A1:E1"].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Blue);
-                ws.Cells["A1:E1"].Style.Font.Color.SetColor(System.Drawing.Color.White);
 
-                ws.Cells["A1"].Value = "Имя компьютера";
-                ws.Cells["B1"].Value = "Пользователь";
-                ws.Cells["C1"].Value = "Событие";
-                ws.Cells["D1"].Value = "Дата/Время";
-                ws.Cells["E1"].Value = "ОС";
+                string header = string.IsNullOrEmpty(SessionStartData.Text) || string.IsNullOrEmpty(SessionEndData.Text)
+                    ? "Отчёт о времени использования компьютеров"
+                    : $"Отчёт о времени использования компьютеров с {SessionStartData.Text} по {SessionEndData.Text}";
 
-                int rowStart = 2;
+                ws.Cells["A1:E1"].Merge = true;
+                ws.Cells["A1:E1"].Value = header;
+                ws.Cells["A1:E1"].Style.Font.Size = 20;
+                ws.Cells["A1:E1"].Style.Font.Bold = true;
+                ws.Cells["A1:E1"].Style.Font.Italic = true;
+                ws.Cells["A1:E1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+
+                ws.Cells["A2"].Value = "Имя компьютера";
+                ws.Cells["B2"].Value = "Пользователь";
+                ws.Cells["C2"].Value = "Событие";
+                ws.Cells["D2"].Value = "Дата/Время";
+                ws.Cells["E2"].Value = "ОС";
+
+                ws.Cells["A2:E2"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                ws.Cells["A2:E2"].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Blue);
+                ws.Cells["A2:E2"].Style.Font.Color.SetColor(System.Drawing.Color.White);
+                ws.Cells["A2:E2"].Style.Font.Bold = true;
+
+                int rowStart = 3;
                 foreach (var item in sessionInfos)
                 {
                     ws.Cells[string.Format("A{0}", rowStart)].Value = item.computerName;
                     ws.Cells[string.Format("B{0}", rowStart)].Value = item.user;
                     ws.Cells[string.Format("C{0}", rowStart)].Value = item.OSEevent;
+                    ws.Cells[string.Format("C{0}", rowStart)].Style.Font.Bold = true;
                     ws.Cells[string.Format("D{0}", rowStart)].Value = item.date;
                     ws.Cells[string.Format("E{0}", rowStart)].Value = item.os;
+
+                    if (item.OSEevent == "Завершение работы")
+                    {
+                        ws.Cells[string.Format("C{0}", rowStart)].Style.Font.Color.SetColor(System.Drawing.Color.Red);
+                    }
+                    else if (item.OSEevent == "Запуск")
+                    {
+                        ws.Cells[string.Format("C{0}", rowStart)].Style.Font.Color.SetColor(System.Drawing.Color.Green);
+                    }
+
                     rowStart++;
                 }
+
+                var border = ws.Cells[1, 1, rowStart - 1, 5].Style.Border;
+                border.Left.Style = border.Top.Style = border.Right.Style = border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
 
                 ws.Cells["A:AZ"].AutoFitColumns();
                 Byte[] bin = pck.GetAsByteArray();
                 File.WriteAllBytes(filePath, bin);
             }
         }
+
+
+
+
 
         private void ExportSession_Click(object sender, RoutedEventArgs e)
         {
