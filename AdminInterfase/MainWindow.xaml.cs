@@ -1364,6 +1364,10 @@ namespace AdminInterfase
             using (ExcelPackage pck = new ExcelPackage())
             {
                 ExcelWorksheet ws = pck.Workbook.Worksheets.Add("SessionInfo");
+                ws.Cells["A1:E1"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                ws.Cells["A1:E1"].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Blue);
+                ws.Cells["A1:E1"].Style.Font.Color.SetColor(System.Drawing.Color.White);
+
                 ws.Cells["A1"].Value = "Имя компьютера";
                 ws.Cells["B1"].Value = "Пользователь";
                 ws.Cells["C1"].Value = "Событие";
@@ -1386,6 +1390,7 @@ namespace AdminInterfase
                 File.WriteAllBytes(filePath, bin);
             }
         }
+
         private void ExportSession_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
