@@ -464,8 +464,6 @@
 
 
                                         <Button Background="AliceBlue" FontFamily="Bahnschrift SemiBold" Content="Процессы" Margin="5" Click="Process_Click" />
-                                        <Button Background="AliceBlue" FontFamily="Bahnschrift SemiBold" Content="Трафик" Margin="5" Click="App_Click"/>
-                                        <Button Background="AliceBlue" FontFamily="Bahnschrift SemiBold" Content="Клавиатура" Margin="5" Click="App_Click"/>
                                         <Button Background="AliceBlue" FontFamily="Bahnschrift SemiBold" Content="Контроль" Margin="5" Click="Control_Click"/>
                                     </StackPanel>
                                     <!-- Кнопка Подробнее -->

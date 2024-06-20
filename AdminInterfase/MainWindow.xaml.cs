@@ -50,7 +50,7 @@ namespace AdminInterfase
         private int localPort = 2222;
         private int localPort2 = 3333;
         private IPAddress localAddr = IPAddress.Parse(ManagerIP.GetIPAddress());
-        string connectionString = "Server=WIN-5CLMGM4LR48\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
+        string connectionString;
         public PlotModel PlotModel { get; private set; }
 
         private void LoadDataAndPlot(string sid, DateTime selectedDate)
@@ -140,7 +140,7 @@ namespace AdminInterfase
         }
         private System.Timers.Timer reloadTimer;
         private bool canReload = true;
-        public MainWindow()
+        public MainWindow(string addres)
         {
             InitializeComponent();
 
@@ -158,6 +158,7 @@ namespace AdminInterfase
                         FillComboBoxFromProcedure(SpeedRAM, "Частота", "ОЗУ");
                         FillComboBoxFromProcedure(TypeRam, "Тип", "ОЗУ");
             */
+            this.connectionString = $"Server={addres}\\SQLEXPRESS; Database=Server; User Id=Name; Password=12345QWERTasdfg; TrustServerCertificate=true";
             reloadTimer = new System.Timers.Timer();
             reloadTimer.Interval = 10000; // 10 секунд (в миллисекундах)
             reloadTimer.AutoReset = true; // Автоматическое повторение
