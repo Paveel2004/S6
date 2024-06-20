@@ -1422,7 +1422,7 @@ namespace AdminInterfase
                         command.Parameters.AddWithValue("@OS", string.IsNullOrEmpty(SessionOS.Text) ? DBNull.Value : (object)SessionOS.Text);
                         command.Parameters.AddWithValue("@StartData", string.IsNullOrEmpty(SessionStartData.Text) ? DBNull.Value : (object)SessionStartData.Text);
                         command.Parameters.AddWithValue("@EndData", string.IsNullOrEmpty(SessionEndData.Text) ? DBNull.Value : (object)SessionEndData.Text);
-
+                        
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
